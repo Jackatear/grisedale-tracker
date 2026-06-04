@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#0f1113" />
+<meta name="theme-color" content="#f3f5f8" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Plan Tracker" />
@@ -12,27 +12,40 @@
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
 <style>
   :root{
-    color-scheme:dark;
-    --bg:#0f1113; --bg2:#181b1f; --panel:#141619; --panel2:#1a1d21;
-    --line:#23262b; --line2:#2c3037;
-    --txt:#e8eaed; --muted:#929aa3; --faint:#616771;
-    --accent:#ec5a28; --accent2:#ef6e42;
-    --good:#3fae7d; --shadow:0 8px 28px rgba(0,0,0,.32);
+    color-scheme:light;
+    /* default = clean light theme */
+    --bg:#f3f5f8; --bg2:#e9edf2; --panel:#ffffff; --panel2:#f6f8fb;
+    --line:#dde3ea; --line2:#cbd3dd;
+    --txt:#18222e; --muted:#586573; --faint:#8a96a4;
+    --accent:#df531d; --accent2:#e86f3e;
+    --good:#2c9c67; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
     --radius:12px;
-    --t-easy:#5bb38a; --t-recovery:#5aa6d4; --t-threshold:#cfa23e;
-    --t-hills:#d56e7a; --t-descent:#52b3c2; --t-simulation:#cc74a6;
-    --t-long:#8e85d2; --t-race:#cfae42; --t-rest:#727a83; --t-bike:#6b8fd4;
+    --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
+    --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
+    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8;
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    /* softer slate, not stark black, higher contrast */
+    --bg:#1a1e25; --bg2:#222730; --panel:#262b34; --panel2:#2d333d;
+    --line:#363d48; --line2:#454d5a;
+    --txt:#eef1f6; --muted:#aab3c0; --faint:#76818f;
+    --accent:#f2622e; --accent2:#f57f4e;
+    --good:#46b487; --shadow:0 10px 30px rgba(0,0,0,.38);
+    --t-easy:#5cc497; --t-recovery:#5aacde; --t-threshold:#d7ad4c;
+    --t-hills:#e07887; --t-descent:#54bccb; --t-simulation:#d57fb2;
+    --t-long:#988fe0; --t-race:#d7b84e; --t-rest:#7f8a99; --t-bike:#6f97e0;
   }
   [data-theme="light"]{
     color-scheme:light;
-    --bg:#f7f8f9; --bg2:#eef0f2; --panel:#ffffff; --panel2:#f8f9fa;
-    --line:#e8eaed; --line2:#dee1e5;
-    --txt:#1a1d20; --muted:#646b73; --faint:#9aa1a8;
-    --accent:#e0541f; --accent2:#e86f3e;
-    --good:#2f9e6a; --shadow:0 1px 2px rgba(20,30,50,.05),0 12px 28px rgba(20,30,50,.07);
-    --t-easy:#2f9e6a; --t-recovery:#2f84c0; --t-threshold:#b9842a;
-    --t-hills:#cd5562; --t-descent:#2f97a8; --t-simulation:#ba5a93;
-    --t-long:#6c62c4; --t-race:#b89b2e; --t-rest:#7b828a; --t-bike:#3d6dc4;
+    --bg:#f3f5f8; --bg2:#e9edf2; --panel:#ffffff; --panel2:#f6f8fb;
+    --line:#dde3ea; --line2:#cbd3dd;
+    --txt:#18222e; --muted:#586573; --faint:#8a96a4;
+    --accent:#df531d; --accent2:#e86f3e;
+    --good:#2c9c67; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
+    --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
+    --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
+    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -57,7 +70,7 @@
   .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
   .mark{
     width:30px;height:30px;border-radius:8px;flex:0 0 auto;
-    background:var(--panel2);border:1px solid var(--line2);
+    background:#13161a;border:1px solid rgba(0,0,0,.15);
     display:grid;place-items:center;
   }
   .mark svg{display:block}
@@ -427,6 +440,7 @@
         <button data-vis="todo">To-do</button>
         <button data-vis="done">Done</button>
       </div>
+      <button class="iconbtn" id="zonesBtn" title="Show/hide weekly intensity zones">Zones</button>
       <button class="iconbtn" id="collapseBtn" title="Expand / collapse all">⇕ Weeks</button>
     </div>
 
@@ -633,7 +647,7 @@ function newId(){ return "p"+Date.now().toString(36)+Math.random().toString(36).
 function seedRecord(){ return { id:"seed-grisedale", planName:"Grisedale Horseshoe", plan:SEED_PLAN.map(s=>({...s})), blocks:seedBlocks(), board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{} }; }
 function blankRecord(name){ return { id:newId(), planName:(name||"Untitled plan"), plan:[], blocks:{}, board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{} }; }
 function normalizeRec(r){ return Object.assign(blankRecord("Untitled plan"), r||{}, { id:(r&&r.id)||newId() }); }
-const defaultPrefs = () => ({ collapsed:{}, unit:"km", theme:"dark", tab:"plan", seenTypes:[...TYPE_ORDER], filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""} });
+const defaultPrefs = () => ({ collapsed:{}, unit:"km", theme:"light", themeV:2, showZones:false, tab:"plan", seenTypes:[...TYPE_ORDER], filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""} });
 // Copy the active plan record onto top-level `state` (the working mirror the UI reads/writes).
 function activateMirror(s){ const rec = s.activeId ? (s.plans||[]).find(p=>p.id===s.activeId) : null; const src = rec || blankRecord(""); PLAN_FIELDS.forEach(k=> s[k]=src[k]); return s; }
 // Fold the working mirror back into its library record before saving.
@@ -663,8 +677,11 @@ function idbSet(key,val){ return idbOpen().then(db=>new Promise((res,rej)=>{
 // Normalise any saved blob (legacy single-plan OR multi-plan library) into the current schema.
 function migrate(raw){
   raw = raw||{};
+  // one-time switch to the cleaner light default (existing users on the old themeV get flipped once, then their choice sticks)
+  let theme, themeV;
+  if((raw.themeV||0) < 2){ theme="light"; themeV=2; } else { theme=raw.theme||"light"; themeV=raw.themeV; }
   const s = Object.assign(defaultPrefs(), {
-    unit:raw.unit||"km", theme:raw.theme||"dark", tab:raw.tab||"plan",
+    unit:raw.unit||"km", theme, themeV, showZones:!!raw.showZones, tab:raw.tab||"plan",
     collapsed:raw.collapsed||{}, seenTypes:raw.seenTypes||[],
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
@@ -824,6 +841,7 @@ const weeksEl = $("#weeks");
 
 function render(){
   document.documentElement.dataset.theme = state.theme;
+  const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#1a1e25":"#f3f5f8");
   $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
@@ -1036,6 +1054,7 @@ function renderToolbarState(){
   const rb=$("#restBtn"); if(rb){ rb.setAttribute("aria-pressed", state.filters.rest); rb.textContent = state.filters.rest? "Hide rest days" : "Show rest days"; }
   $$("#visSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.vis===state.filters.vis));
   $("#search").value = state.filters.q;
+  const zb=$("#zonesBtn"); if(zb){ zb.setAttribute("aria-pressed", !!state.showZones); zb.style.opacity = state.showZones?1:.5; }
   updateFilterBtn();
 }
 function updateFilterBtn(){
@@ -1132,7 +1151,7 @@ function renderWeeks(){
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
     const Z = weekZones(weekIds);
     const planTxt = zbreakText(Z.plan), doneTxt = Z.hasAct ? zbreakText(Z.act) : "";
-    const zonestrip = (Z.planTot||Z.hasAct) ? `<div class="zonestrip">
+    const zonestrip = (state.showZones && (Z.planTot||Z.hasAct)) ? `<div class="zonestrip">
         ${Z.planTot? `<div class="zrow"><span class="zlab">Plan</span>${zoneBar(Z.plan)}</div>`:""}
         ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
         <div class="zbreak">${Z.planTot?`<span><b>Plan</b> ${planTxt}</span>`:""}${Z.hasAct?`<span><b>Done</b> ${doneTxt}</span>`:""}</div>
@@ -1148,7 +1167,7 @@ function renderWeeks(){
         <div class="week-body">${zonestrip}<div class="week-grid">${cells}</div></div>
       </div>`;
   });
-  const legend = `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>`;
+  const legend = state.showZones ? `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>` : "";
   weeksEl.innerHTML = html ? (legend+html) : `<p style="color:var(--faint);text-align:center;padding:46px 0">No sessions yet — drop a CSV anywhere to load a plan, or use the ⋯ menu.</p>`;
 }
 
@@ -1209,6 +1228,7 @@ $("#collapseBtn").onclick = ()=>{
   weekMondays().forEach(m=>{ state.collapsed[m] = anyOpen; });
   save(); renderWeeks();
 };
+$("#zonesBtn").onclick = ()=>{ state.showZones=!state.showZones; save(); renderToolbarState(); renderWeeks(); };
 
 // Week collapse + card click + checkbox + add
 weeksEl.addEventListener("click", e=>{
