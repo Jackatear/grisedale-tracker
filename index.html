@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0f1113" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Plan Tracker" />
+<title>Grisedale Horseshoe · 13-Week Plan</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#0f1113; --bg2:#181b1f; --panel:#141619; --panel2:#1a1d21;
+    --line:#23262b; --line2:#2c3037;
+    --txt:#e8eaed; --muted:#929aa3; --faint:#616771;
+    --accent:#ec5a28; --accent2:#ef6e42;
+    --good:#3fae7d; --shadow:0 8px 28px rgba(0,0,0,.32);
+    --radius:12px;
+    --t-easy:#5bb38a; --t-recovery:#5aa6d4; --t-threshold:#cfa23e;
+    --t-hills:#d56e7a; --t-descent:#52b3c2; --t-simulation:#cc74a6;
+    --t-long:#8e85d2; --t-race:#cfae42; --t-rest:#727a83; --t-bike:#6b8fd4;
+  }
+  [data-theme="light"]{
+    color-scheme:light;
+    --bg:#f7f8f9; --bg2:#eef0f2; --panel:#ffffff; --panel2:#f8f9fa;
+    --line:#e8eaed; --line2:#dee1e5;
+    --txt:#1a1d20; --muted:#646b73; --faint:#9aa1a8;
+    --accent:#e0541f; --accent2:#e86f3e;
+    --good:#2f9e6a; --shadow:0 1px 2px rgba(20,30,50,.05),0 12px 28px rgba(20,30,50,.07);
+    --t-easy:#2f9e6a; --t-recovery:#2f84c0; --t-threshold:#b9842a;
+    --t-hills:#cd5562; --t-descent:#2f97a8; --t-simulation:#ba5a93;
+    --t-long:#6c62c4; --t-race:#b89b2e; --t-rest:#7b828a; --t-bike:#3d6dc4;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--txt);
+    font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    padding:13px 24px;
+    background:var(--bg);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+  .mark{
+    width:30px;height:30px;border-radius:8px;flex:0 0 auto;
+    background:var(--panel2);border:1px solid var(--line2);
+    display:grid;place-items:center;
+  }
+  .mark svg{display:block}
+  .brand h1{font-size:14px;margin:0;font-weight:600;letter-spacing:.1px}
+  .brand p{margin:0;font-size:11.5px;color:var(--muted)}
+  .mini{display:flex;gap:16px;align-items:center}
+  .mini .m{display:flex;flex-direction:column;line-height:1.15;text-align:right}
+  .mini .m b{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+  .mini .m span{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .iconbtn{
+    background:transparent;border:1px solid var(--line2);color:var(--muted);
+    border-radius:8px;padding:7px 10px;font-size:13px;display:inline-flex;align-items:center;gap:7px;
+    transition:.15s;
+  }
+  .iconbtn:hover{border-color:var(--faint);color:var(--txt)}
+  .iconbtn:disabled{opacity:.4;cursor:default}
+  .iconbtn:disabled:hover{border-color:var(--line2);color:var(--muted)}
+
+  .wrap{max-width:1400px;margin:0 auto;padding:24px}
+
+  /* ---------- Dashboard ---------- */
+  .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+  .stat{
+    background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden;
+  }
+  .stat .lab{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+  .stat .val{font-size:25px;font-weight:600;margin-top:7px;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+  .stat .val small{font-size:13px;color:var(--muted);font-weight:500}
+  .stat .sub{font-size:12px;color:var(--muted);margin-top:4px}
+  .stat .spark{display:none}
+  .stat.progress{grid-column:span 2}
+  @media(max-width:640px){.stat.progress{grid-column:span 1}}
+  .bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:14px}
+  .bar>i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .prow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:9px}
+  .prow b{color:var(--txt);font-variant-numeric:tabular-nums}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{
+    border:1px solid var(--line2);background:transparent;color:var(--muted);
+    padding:5px 10px;border-radius:999px;font-size:12px;display:inline-flex;align-items:center;gap:7px;transition:.15s;
+    user-select:none;
+  }
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--c)}
+  .chip[aria-pressed="true"]{color:var(--txt);border-color:color-mix(in srgb,var(--c) 45%, var(--line2))}
+  .chip:not([aria-pressed="true"]){opacity:.45}
+  .chip .n{font-size:10px;color:var(--faint);font-variant-numeric:tabular-nums}
+  .search{
+    flex:1;min-width:160px;background:var(--panel);border:1px solid var(--line2);color:var(--txt);
+    border-radius:8px;padding:8px 12px;font-size:13px;
+  }
+  .search::placeholder{color:var(--faint)}
+  .search:focus{outline:none;border-color:var(--faint)}
+  .seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;background:var(--bg2)}
+  .seg button{background:transparent;border:0;color:var(--muted);padding:7px 12px;font-size:12px;transition:.15s}
+  .seg button[aria-pressed="true"]{background:var(--panel);color:var(--txt);font-weight:600}
+
+  /* ---------- Weeks ---------- */
+  .week{margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--bg)}
+  .week-head{
+    display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;
+    background:var(--panel);border-bottom:1px solid var(--line);transition:background .15s;
+  }
+  .week.collapsed .week-head{border-bottom:0}
+  .week-head:hover{background:var(--panel2)}
+  .week-head .caret{transition:.2s;color:var(--faint);font-size:11px}
+  .week.collapsed .caret{transform:rotate(-90deg)}
+  .week.collapsed .week-body{display:none}
+  .wn{font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line2);padding:3px 9px;border-radius:6px;white-space:nowrap}
+  .wtitle{display:flex;flex-direction:column;min-width:0}
+  .wtitle b{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wtitle span{font-size:11.5px;color:var(--muted)}
+  .wstats{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .wstat{font-size:12px;color:var(--muted);white-space:nowrap}
+  .wstat b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
+  .phasebadge{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid var(--line2);color:var(--muted)}
+  .phase1,.phase2{background:transparent}
+
+  .week-grid{display:grid;grid-template-columns:repeat(7,minmax(165px,1fr));gap:0;overflow-x:auto}
+  .day-cell{
+    border-right:1px solid var(--line);min-height:112px;padding:8px;display:flex;flex-direction:column;gap:8px;
+    transition:background .15s;
+  }
+  .day-cell:last-child{border-right:0}
+  .day-cell.drag-over{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+  .day-cell.is-today{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+  .day-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px}
+  .day-head .dnum{font-weight:600;color:var(--txt)}
+  .day-head.today .dnum{color:var(--accent)}
+  .day-head .addbtn{opacity:0;border:0;background:transparent;color:var(--faint);font-size:16px;line-height:1;padding:0 4px;transition:.15s}
+  .day-cell:hover .addbtn{opacity:1}
+  .day-head .addbtn:hover{color:var(--txt)}
+
+  /* ---------- Card ---------- */
+  .card{
+    background:var(--panel);border:1px solid var(--line2);border-left:2px solid var(--c);
+    border-radius:8px;padding:9px 10px;cursor:grab;position:relative;transition:border-color .12s,box-shadow .12s;
+  }
+  .card:hover{box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--c) 40%,var(--line2))}
+  .card.dragging{opacity:.4}
+  .card .ctype{display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--c)}
+  .card .ctype .icons{margin-left:auto;display:flex;gap:3px;font-size:11px;opacity:.7;filter:grayscale(.2)}
+  .card .cname{font-size:12.5px;font-weight:600;margin:5px 0 6px;line-height:1.3}
+  .card .cmeta{display:flex;flex-wrap:wrap;gap:5px}
+  .pill{font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums}
+  .pill.zone{color:var(--muted);border-color:var(--line)}
+  .check{
+    position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);
+    background:transparent;display:grid;place-items:center;color:transparent;font-size:11px;transition:.15s;
+  }
+  .check:hover{border-color:var(--good)}
+  .card.done{opacity:.5}
+  .card.done .cname{text-decoration:line-through;text-decoration-color:var(--faint)}
+  .card.done .check{background:var(--good);border-color:var(--good)}
+  .card.done .check::after{content:"";width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-1px}
+  .card.race{border-color:var(--t-race);border-left-color:var(--t-race);background:color-mix(in srgb,var(--t-race) 7%,var(--panel))}
+  .card.race .cname{font-weight:700}
+  .card.rest{opacity:.6}
+  .day-cell .empty{font-size:11px;color:var(--faint);text-align:center;padding:12px 0;border:1px dashed var(--line2);border-radius:6px}
+
+  /* ---------- Modal ---------- */
+  .backdrop{position:fixed;inset:0;background:rgba(8,10,12,.45);z-index:60;display:none;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+  .backdrop.open{display:flex}
+  .modal{width:min(620px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:12px}
+  .modal-head .mdate{font-size:12px;color:var(--muted)}
+  .modal-head h3{margin:3px 0 0;font-size:16px;font-weight:600}
+  .modal-head .x{margin-left:auto;background:transparent;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}
+  .modal-head .x:hover{color:var(--txt)}
+  .modal-body{padding:18px 20px;display:flex;flex-direction:column;gap:16px;max-height:64vh;overflow:auto}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field>label{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+  .field input,.field select,.field textarea{
+    background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:9px 11px;font:inherit;width:100%;
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--faint)}
+  .field textarea{resize:vertical;min-height:64px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .coach{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;white-space:pre-wrap;font-size:13px;color:var(--txt);line-height:1.55}
+  .donerow{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:12px 14px}
+  .toggle{position:relative;width:44px;height:25px;border-radius:999px;background:var(--line2);border:0;transition:.2s;flex:0 0 auto;cursor:pointer}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .toggle[aria-pressed="true"]{background:var(--good)}
+  .toggle[aria-pressed="true"]::after{left:22px}
+  .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+  .btn{border:1px solid var(--line2);background:transparent;color:var(--txt);padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;transition:.15s}
+  .btn:hover{border-color:var(--faint)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{filter:brightness(1.06);border-color:var(--accent)}
+  .btn.danger{color:#d9685f;border-color:color-mix(in srgb,#d9685f 35%,var(--line2))}
+  .btn.danger:hover{border-color:#d9685f}
+  .sectlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);margin:2px 0 -4px}
+
+  .legend-foot{margin:28px 0 50px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
+  .legend-foot b{color:var(--muted)}
+
+  /* menu + drop overlay */
+  .menuwrap{position:relative}
+  .menu{position:absolute;right:0;top:calc(100% + 8px);min-width:215px;background:var(--panel);border:1px solid var(--line2);border-radius:11px;box-shadow:var(--shadow);padding:6px;z-index:55;display:flex;flex-direction:column;gap:1px}
+  .menu[hidden]{display:none}
+  .menu button{text-align:left;background:transparent;border:0;color:var(--txt);padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
+  .menu button:hover{background:var(--bg2)}
+  .menu .sep{height:1px;background:var(--line);margin:5px 4px}
+  .dropzone{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bg) 76%,transparent);backdrop-filter:blur(2px)}
+  .dropzone.show{display:flex}
+  .dz-inner{pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:44px 70px;border:2px dashed var(--accent);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}
+  .dz-emoji{font-size:38px}
+  .dz-inner b{font-size:17px}
+  .dz-inner span{font-size:13px;color:var(--muted)}
+
+  /* filter dropdown + prominent undo */
+  .iconbtn.active{border-color:var(--accent);color:var(--accent)}
+  .filtermenu{min-width:300px;max-width:340px;left:0;right:auto}
+  .filtermenu .chips{flex-wrap:wrap;gap:6px;padding:2px 4px 6px}
+  .fm-head{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);padding:4px 6px 6px}
+  .fm-line{display:flex;justify-content:space-between;align-items:center;text-align:left;width:100%;background:transparent;border:0;color:var(--txt);padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
+  .fm-line:hover{background:var(--bg2)}
+  .undobtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;transition:.15s;cursor:pointer}
+  .undobtn:hover:not(:disabled){background:var(--accent);color:#fff}
+  .undobtn:disabled{border-color:var(--line2);background:transparent;color:var(--faint);opacity:.5;cursor:default;font-weight:500}
+
+  /* tabs + strength view */
+  .tabs{display:inline-flex;gap:4px;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:3px;margin-bottom:20px}
+  .tab{background:transparent;border:0;color:var(--muted);padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+  .tab[aria-pressed="true"]{background:var(--panel);color:var(--txt)}
+  .tab:hover:not([aria-pressed="true"]){color:var(--txt)}
+  .s-intro{max-width:780px;margin-bottom:18px}
+  .s-intro h2{font-size:20px;margin:0 0 6px;letter-spacing:-.2px}
+  .s-intro p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+  .s-principles{max-width:780px;margin-bottom:26px}
+  .s-principles h3{font-size:13px;margin:0;font-weight:600}
+  .s-principles ul{margin:10px 0 0;padding-left:18px}
+  .s-principles li{margin:7px 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
+  .s-principles li b{color:var(--txt);font-weight:600}
+  .s-section{margin-bottom:24px}
+  .s-section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .s-section-head h2{font-size:14px;margin:0;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .s-section-head span{font-size:12.5px;color:var(--muted)}
+  .s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .s-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .s-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .s-card-head h3{font-size:14.5px;margin:0;font-weight:600}
+  .s-focus{color:var(--muted);font-size:12.5px;margin:5px 0 10px;line-height:1.45}
+  .s-ex .ex-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+  .s-ex .ex-row:first-child{border-top:0}
+  .s-ex .name{color:var(--txt)}
+  .s-ex .dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  ::-webkit-scrollbar{height:9px;width:9px}
+  ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--faint)}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="mark"><svg viewBox="0 0 64 64" width="20" height="20" aria-hidden="true"><circle cx="46" cy="18" r="6" fill="#facc15"/><path d="M4 53 L24 17 L36 38 L44 25 L60 53 Z" fill="#ec5a28"/><path d="M20.5 25 L24 17 L27.5 25 L24 28.5 Z" fill="#f4f6f9"/></svg></div>
+      <div>
+        <h1 id="planTitle">Grisedale Horseshoe · 13-Week Plan</h1>
+        <p id="countdown">—</p>
+      </div>
+    </div>
+    <div class="mini" id="miniStats"></div>
+    <button class="iconbtn" id="unitBtn" title="Toggle distance unit">km</button>
+    <button class="iconbtn" id="themeBtn" title="Toggle theme">🌙</button>
+    <div class="menuwrap">
+      <button class="iconbtn" id="menuBtn" title="Plan / backup / data">⋯</button>
+      <div class="menu" id="menu" hidden>
+        <button data-act="exportCsv">Export plan (CSV)</button>
+        <button data-act="importCsv">Import plan (CSV…)</button>
+        <div class="sep"></div>
+        <button data-act="exportJson">Export backup (JSON)</button>
+        <button data-act="importJson">Restore backup (JSON…)</button>
+        <div class="sep"></div>
+        <button data-act="clear">Clear progress</button>
+        <button data-act="reset">Reset to seed plan</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab" data-tab="plan" aria-pressed="true">Training plan</button>
+      <button class="tab" data-tab="strength">Strength</button>
+    </div>
+
+    <div id="planView">
+    <div class="dash" id="dash"></div>
+
+    <div class="toolbar">
+      <div class="menuwrap">
+        <button class="iconbtn" id="filterBtn" title="Filter workout types"><span id="filterLabel">Filters</span></button>
+        <div class="menu filtermenu" id="filterMenu" hidden>
+          <div class="fm-head">Workout types</div>
+          <div class="chips" id="typeChips"></div>
+          <div class="sep"></div>
+          <button class="fm-line" id="restBtn" aria-pressed="true">Hide rest days</button>
+          <button class="fm-line" id="allTypesBtn">Show all types</button>
+        </div>
+      </div>
+      <button class="undobtn" id="undoBtn" title="Undo last change (⌘Z)" disabled>↶ Undo</button>
+      <input class="search" id="search" placeholder="Search sessions, notes…" />
+      <div class="seg" id="visSeg">
+        <button data-vis="all" aria-pressed="true">All</button>
+        <button data-vis="todo">To-do</button>
+        <button data-vis="done">Done</button>
+      </div>
+      <button class="iconbtn" id="collapseBtn" title="Expand / collapse all">⇕ Weeks</button>
+    </div>
+
+    <div id="weeks"></div>
+
+    <p class="legend-foot">
+      Drag a card to reschedule · click to log or delete · drop a <b>.csv</b> anywhere to load a new plan · saved automatically to this browser.
+      <br><b id="footTotals"></b>
+    </p>
+    </div><!-- /planView -->
+
+    <div id="strengthView" hidden></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="backdrop" id="backdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div>
+          <div class="mdate" id="mDate"></div>
+          <h3 id="mTitleHead">Session</h3>
+        </div>
+        <button class="x" id="mClose">×</button>
+      </div>
+      <div class="modal-body" id="mBody"></div>
+      <div class="modal-foot">
+        <button class="btn danger" id="mDelete" style="display:none">Delete</button>
+        <span style="flex:1"></span>
+        <button class="btn" id="mCancel">Cancel</button>
+        <button class="btn primary" id="mSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="importJsonFile" accept="application/json,.json" style="display:none" />
+  <input type="file" id="importCsvFile" accept=".csv,text/csv,text/plain" style="display:none" />
+
+  <div class="dropzone" id="dropzone">
+    <div class="dz-inner">
+      <div class="dz-emoji">📄</div>
+      <b>Drop a CSV to load a plan</b>
+      <span>…or a .json backup to restore everything</span>
+    </div>
+  </div>
+
+<script>
+/* ============================ DATA ============================ */
+const TYPES = {
+  Easy:       {label:"Easy",       c:"var(--t-easy)"},
+  Recovery:   {label:"Recovery",   c:"var(--t-recovery)"},
+  Threshold:  {label:"Threshold",  c:"var(--t-threshold)"},
+  Hills:      {label:"Hills / VO2",c:"var(--t-hills)"},
+  Descent:    {label:"Descent",    c:"var(--t-descent)"},
+  Simulation: {label:"Race Sim",   c:"var(--t-simulation)"},
+  Long:       {label:"Long Run",   c:"var(--t-long)"},
+  Bike:       {label:"Bike",       c:"var(--t-bike)"},
+  Race:       {label:"Race",       c:"var(--t-race)"},
+  Rest:       {label:"Rest",       c:"var(--t-rest)"},
+};
+const TYPE_ORDER = ["Easy","Recovery","Threshold","Hills","Descent","Simulation","Long","Bike","Race","Rest"];
+
+// d=duration min, k=distance km, v=vert m, z=zone, s=strength, sa=sauna
+const SEED_PLAN = [
+ {id:"s1", date:"2026-06-08", t:"Easy", n:"Easy aerobic + strength S1", d:45, k:9.5, v:null, z:"Z2", s:1, sa:1, note:`Aerobic re-entry. Z2 ceiling 146. Strength first day of the block while you're fresh.\n💪 Strength S1 (40 min): Trap-bar deadlift 4×5 · single-leg press 3×8/leg · Bulgarian split squat 3×6/leg · single-leg calf raise 4×12/leg · Copenhagen plank 2×20s/side · plank 3×45s.\n🧖 20 min @ 80°C after strength`},
+ {id:"s2", date:"2026-06-09", t:"Threshold", n:"Threshold 4×8 min @ T", d:70, k:15, v:null, z:"Z4", s:0, sa:0, note:`Cruise intervals, 90s jog between. Run them on rolling road if you can so the hills are part of the stimulus. 15 min WU + 10 min CD.`},
+ {id:"s3", date:"2026-06-10", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:1, note:`Deliberately slow. Z1 only. If you feel pressure to speed up, you're going too fast.\n🧖 25 min @ 85°C — recovery`},
+ {id:"s4", date:"2026-06-11", t:"Hills", n:"Hill reps 6×90s uphill + strength S2", d:55, k:11, v:null, z:"Z5", s:1, sa:0, note:`Strong uphill reps on a 5–8% road hill at ~3k effort. Jog down full recovery. Builds power and hurts less on race-day climbs. Then S2.\n💪 Strength S2 (40 min): Goblet squat 4×6 heavy · single-leg RDL 3×6/leg · step-ups 3×8/leg · box jumps 4×4 · Pallof press 2×10/side · single-leg balance 3×30s/leg.`},
+ {id:"s5", date:"2026-06-12", t:"Easy", n:"Easy + 4 strides", d:40, k:8.5, v:null, z:"Z2", s:0, sa:1, note:`Easy aerobic, 4 × 20s relaxed strides at the end. Flat or gently rolling.\n🧖 20 min @ 80°C after run`},
+ {id:"s6", date:"2026-06-13", t:"Long", n:"Long rolling road run", d:95, k:19, v:null, z:"Z2", s:0, sa:0, note:`Hilly route — this IS the specificity for a hilly half. Z2 for the bulk, then last 15 min lifted to HM effort. Practice rolling the descents, not braking. Fuel from min 60.`},
+ {id:"s7", date:"2026-06-14", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest. Walk/mobility optional. No sauna today.`},
+
+ {id:"s8", date:"2026-06-15", t:"Easy", n:"Easy aerobic + strength S1", d:45, k:9.5, v:null, z:"Z2", s:1, sa:1, note:`As week 1. Keep the lifts honest while volume is moderate.\n💪 Strength S1 (40 min): Trap-bar deadlift 4×5 · single-leg press 3×8/leg · Bulgarian split squat 3×6/leg · single-leg calf raise 4×12/leg · Copenhagen plank 2×20s/side · plank 3×45s.\n🧖 20 min @ 80°C after strength`},
+ {id:"s9", date:"2026-06-16", t:"Threshold", n:"Tempo 2×15 min @ T", d:70, k:15, v:null, z:"Z4", s:0, sa:0, note:`Longer continuous tempo, 3 min jog between. Rolling road. Hold form on the climbs rather than surging. 15 min WU + 10 min CD.`},
+ {id:"s10", date:"2026-06-17", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:1, note:`Z1 only.\n🧖 25 min @ 85°C — recovery`},
+ {id:"s11", date:"2026-06-18", t:"Hills", n:"Hill reps 8×90s uphill + strength S2", d:55, k:11, v:null, z:"Z5", s:1, sa:0, note:`Same hill, +2 reps. Powerful but controlled — these are not all-out. Then S2.\n💪 Strength S2 (40 min): Goblet squat 4×6 heavy · single-leg RDL 3×6/leg · step-ups 3×8/leg · box jumps 4×4 · Pallof press 2×10/side · single-leg balance 3×30s/leg.`},
+ {id:"s12", date:"2026-06-19", t:"Easy", n:"Easy + 4 strides", d:40, k:8.5, v:null, z:"Z2", s:0, sa:1, note:`Easy + 4 × 20s strides.\n🧖 20 min @ 80°C after run`},
+ {id:"s13", date:"2026-06-20", t:"Long", n:"Long rolling run + M/HM block", d:100, k:20, v:null, z:"Z2", s:0, sa:0, note:`Hilly route. After 35 min easy, run 30 min continuous at marathon-to-HM effort over the rolling ground, then easy to finish. Fuel from min 60.`},
+ {id:"s14", date:"2026-06-21", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s15", date:"2026-06-22", t:"Easy", n:"Easy aerobic + strength S1", d:45, k:9.5, v:null, z:"Z2", s:1, sa:1, note:`Last fully-loaded S1 of the block.\n💪 Strength S1 (40 min): Trap-bar deadlift 4×5 · single-leg press 3×8/leg · Bulgarian split squat 3×6/leg · single-leg calf raise 4×12/leg · Copenhagen plank 2×20s/side · plank 3×45s.\n🧖 20 min @ 80°C after strength`},
+ {id:"s16", date:"2026-06-23", t:"Threshold", n:"HM-pace 5×6 min @ HM effort", d:70, k:15, v:null, z:"Z4 (low)", s:0, sa:0, note:`Race-pace rehearsal, 90s float between. Rolling road — learn what goal effort feels like up and over hills. 15 min WU + 10 min CD.`},
+ {id:"s17", date:"2026-06-24", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:1, note:`Z1 only.\n🧖 25 min @ 85°C — recovery`},
+ {id:"s18", date:"2026-06-25", t:"Hills", n:"Hill VO2 5×3 min + strength S2 (light)", d:55, k:11, v:null, z:"Z5", s:1, sa:0, note:`Hard uphill 3-min reps on 5–8% near VO2 effort, jog down. Top-end sharpener. Keep S2 light today — power maintenance only.\n💪 Strength S2 (light, 30 min): Goblet squat 3×5 · single-leg RDL 2×6/leg · box jumps 3×3 · Pallof press 2×10/side.`},
+ {id:"s19", date:"2026-06-26", t:"Easy", n:"Easy + 4 strides", d:35, k:7.5, v:null, z:"Z2", s:0, sa:0, note:`Easy + strides.`},
+ {id:"s20", date:"2026-06-27", t:"Long", n:"Race-simulation long run", d:105, k:21, v:null, z:"Z2", s:0, sa:0, note:`Hilly route. 3 × 12 min at HM effort spread through the run with easy between. Rehearse pacing the climbs and committing to the descents. Practice race-morning fuel/kit.`},
+ {id:"s21", date:"2026-06-28", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s22", date:"2026-06-29", t:"Easy", n:"Easy aerobic + strength S1 (reduced)", d:40, k:8.5, v:null, z:"Z2", s:1, sa:0, note:`Trim lifting volume now — maintain, don't build.\n💪 Strength S1 (reduced, 30 min): Trap-bar deadlift 3×4 · Bulgarian split squat 2×6/leg · single-leg calf raise 3×12/leg · plank 2×45s.`},
+ {id:"s23", date:"2026-06-30", t:"Threshold", n:"Sharpener: 20 min @ T + 4×1 min @ I", d:65, k:14, v:null, z:"Z4–Z5", s:0, sa:0, note:`20 min continuous threshold, then 4 × 1 min faster with 90s jog. Crisp legs without depth of fatigue. 15 WU + 10 CD.`},
+ {id:"s24", date:"2026-07-01", t:"Recovery", n:"Recovery run", d:30, k:5.5, v:null, z:"Z1", s:0, sa:1, note:`Z1 only.\n🧖 25 min @ 85°C — last sauna of the block`},
+ {id:"s25", date:"2026-07-02", t:"Hills", n:"Hill reps 6×90s + strength S2 (light)", d:50, k:10, v:null, z:"Z5", s:1, sa:0, note:`Final real hill session. Last light S2 — no soreness allowed from here.\n💪 Strength S2 (light, 25 min): Goblet squat 3×5 · box jumps 3×3 · single-leg balance 3×30s/leg.`},
+ {id:"s26", date:"2026-07-03", t:"Easy", n:"Easy + 4 strides", d:35, k:7.5, v:null, z:"Z2", s:0, sa:0, note:`Easy + strides.`},
+ {id:"s27", date:"2026-07-04", t:"Long", n:"Long run + HM finish", d:90, k:18, v:null, z:"Z2", s:0, sa:0, note:`Final long run. Easy bulk, last 20 min at HM effort on rolling ground. After this, everything points at race day.`},
+ {id:"s28", date:"2026-07-05", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s29", date:"2026-07-06", t:"Easy", n:"Easy + strides + primer lift", d:35, k:7.5, v:null, z:"Z2", s:1, sa:0, note:`Easy + 4 × 20s strides. Optional bodyweight-only primer (squats, lunges, calf raises, plank) — activation, zero load. No sauna this week.`},
+ {id:"s30", date:"2026-07-07", t:"Threshold", n:"Race-pace primer 3×5 min @ HM", d:45, k:9.5, v:null, z:"Z4 (low)", s:0, sa:0, note:`Short rehearsal of goal effort, 2 min jog between. Should feel comfortably controlled. 12 WU + 8 CD.`},
+ {id:"s31", date:"2026-07-08", t:"Recovery", n:"Recovery run", d:30, k:5.5, v:null, z:"Z1", s:0, sa:0, note:`Very easy. Z1 only.`},
+ {id:"s32", date:"2026-07-09", t:"Easy", n:"Easy + 4×20s strides", d:30, k:6.4, v:null, z:"Z2", s:0, sa:0, note:`Easy, legs loose.`},
+ {id:"s33", date:"2026-07-10", t:"Easy", n:"Easy + 3×1 min @ HM effort", d:30, k:6.4, v:null, z:"Z2", s:0, sa:0, note:`Short, with 3 one-minute pickups at goal effort to keep the system primed.`},
+ {id:"s34", date:"2026-07-11", t:"Easy", n:"Easy shakeout", d:25, k:5, v:null, z:"Z2", s:0, sa:0, note:`Very relaxed, or rest if you'd rather. Legs should feel springy and impatient — that's the taper working.`},
+ {id:"s35", date:"2026-07-12", t:"Easy", n:"Pre-race shakeout", d:20, k:4, v:null, z:"Z1–Z2", s:0, sa:0, note:`20 min easy + 3 × 20s strides. Lay out kit, plan fuel, recce the start/finish if local.`},
+
+ {id:"s36", date:"2026-07-13", t:"Race", n:"RACE — Hilly road half marathon", d:null, k:21.1, v:null, z:"Race", s:0, sa:0, note:`Pace by effort, not the watch, especially on climbs — don't spike HR early on the hills; let them come back on the descents. Aim to run the second half as strong or stronger than the first. One gel around 45–50 min if you'll be out over ~75 min. Enjoy it.`},
+ {id:"s37", date:"2026-07-14", t:"Rest", n:"Rest or gentle walk", d:null, k:null, v:null, z:"—", s:0, sa:1, note:`Day after the race. Complete rest or an easy walk. Sauna optional, gentle.\n🧖 20 min @ 80°C if you fancy it`},
+ {id:"s38", date:"2026-07-15", t:"Recovery", n:"Easy recovery run", d:30, k:5.5, v:null, z:"Z1", s:0, sa:0, note:`Loosen the legs. Z1 only, conversational.`},
+ {id:"s39", date:"2026-07-16", t:"Rest", n:"Rest or easy spin/walk", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Keep it light. No structure, no targets.`},
+ {id:"s40", date:"2026-07-17", t:"Easy", n:"Easy aerobic", d:40, k:7.5, v:null, z:"Z2", s:0, sa:0, note:`Free, relaxed. Soft ground welcome.`},
+ {id:"s41", date:"2026-07-18", t:"Easy", n:"Easy fell run (Z2)", d:55, k:10, v:null, z:"Z2", s:0, sa:0, note:`Back on the hills, easy. Walk steep climbs, relaxed descents. Reawaken the terrain feel — no intensity.`},
+ {id:"s42", date:"2026-07-19", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest. Fell-specific block begins next week.`},
+
+ {id:"s43", date:"2026-07-20", t:"Easy", n:"Easy aerobic + strength (maximal)", d:45, k:9, v:null, z:"Z2", s:1, sa:0, note:`Re-entry after the half + recovery week. Legs should feel fresh now. Off-road if you can.\n💪 Strength (maximal, 40 min): Trap-bar deadlift 4×4 heavy · single-leg press 3×6/leg · Bulgarian split squat 3×5/leg · single-leg calf raise 4×10/leg · Copenhagen plank 2×25s/side.`},
+ {id:"s44", date:"2026-07-21", t:"Threshold", n:"Uphill threshold 4×6 min @ T", d:60, k:null, v:null, z:"Z4", s:0, sa:0, note:`On the steepest sustained climb you can find. RUN what you can, power-hike the steepest pitches efficiently — practise the run/hike transition, it's a fell skill. Easy jog/walk down. 15 WU + 10 CD.`},
+ {id:"s45", date:"2026-07-22", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:0, note:`Z1 only, flat. Legs absorbing the new load.`},
+ {id:"s46", date:"2026-07-23", t:"Descent", n:"Descent intro + strength (power)", d:50, k:null, v:null, z:"Z2", s:1, sa:0, note:`FIRST descent session — this is the gap we're closing. 6 × 60–90s controlled-fast descents on smooth grassy moderate slope: relaxed, quick light feet, eyes 5m ahead, do NOT brake. Walk back up. Expect mild quad soreness — that's the adaptation starting.\n💪 Strength (power, 30 min): box jumps 4×3 · single-leg bounding 3×20m · Pallof press 2×10/side · single-leg balance 3×30s.`},
+ {id:"s47", date:"2026-07-24", t:"Easy", n:"Easy + 4 strides", d:40, k:7.5, v:null, z:"Z2", s:0, sa:0, note:`Easy, soft ground, 4 × 20s strides.`},
+ {id:"s48", date:"2026-07-25", t:"Long", n:"Long hilly off-road run", d:90, k:null, v:900, z:"Z2", s:0, sa:0, note:`Rough terrain, accumulate vert aerobically. Walk steep climbs, practise descents relaxed and fast. Carry a small pack to get used to it. Fuel from min 60.`},
+ {id:"s49", date:"2026-07-26", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s50", date:"2026-07-27", t:"Easy", n:"Easy aerobic + strength (maximal)", d:45, k:9, v:null, z:"Z2", s:1, sa:0, note:`As wk1. Last fully-heavy strength session of the block — power takes over after this.\n💪 Strength (maximal, 40 min): Trap-bar deadlift 4×4 heavy · single-leg press 3×6/leg · Bulgarian split squat 3×5/leg · single-leg calf raise 4×10/leg · Copenhagen plank 2×25s/side.`},
+ {id:"s51", date:"2026-07-28", t:"Threshold", n:"Climb reps 5×7 min @ T", d:65, k:null, v:null, z:"Z4", s:0, sa:0, note:`Strong sustained climbing. Hold form to the top of each, hike the steepest efficiently. This builds the engine for Catstye Cam and St Sunday. 15 WU + 10 CD.`},
+ {id:"s52", date:"2026-07-29", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:0, note:`Z1 only.`},
+ {id:"s53", date:"2026-07-30", t:"Descent", n:"Descent progression + strength (power)", d:55, k:null, v:null, z:"Z2", s:1, sa:0, note:`Step up: 6–8 × 90s on steeper, rougher ground — add some rockier sections. Build eccentric tolerance progressively. Stay relaxed and reactive.\n💪 Strength (power, 35 min): box jumps 5×3 · depth drops 4×4 · single-leg bounding 3×20m · trap-bar jump 4×3 light · single-leg balance 3×30s.`},
+ {id:"s54", date:"2026-07-31", t:"Easy", n:"Easy + 4 strides", d:40, k:7.5, v:null, z:"Z2", s:0, sa:0, note:`Easy + strides.`},
+ {id:"s55", date:"2026-08-01", t:"Long", n:"Long mountain day", d:110, k:null, v:1200, z:"Z2", s:0, sa:0, note:`Race-style terrain. Climbs by effort (run/hike), descents fast and committed. Practise fuelling and carry partial FRA kit. If you can get to the Peak District or the Lakes, do it. Bring map + compass.`},
+ {id:"s56", date:"2026-08-02", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s57", date:"2026-08-03", t:"Easy", n:"Easy aerobic + strength (power)", d:40, k:8, v:null, z:"Z2", s:1, sa:0, note:`Power emphasis now — converts your strength base into fell-specific spring.\n💪 Strength (power, 35 min): box jumps 5×3 · depth drops 4×4 · single-leg bounding 3×20m · trap-bar jump 4×3 light · Pallof press 2×10/side.`},
+ {id:"s58", date:"2026-08-04", t:"Simulation", n:"Up-down race simulation 4×(8 min climb + descent)", d:70, k:null, v:null, z:"Z4–Z5", s:0, sa:0, note:`THE most specific session. Each rep: ~250m climb at race effort, then descend fast and controlled. Practise the transition from lungs-burning climb to legs-firing descent — that's the race. 15 WU + 10 CD.`},
+ {id:"s59", date:"2026-08-05", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:0, note:`Z1 only. You'll need it after Tuesday.`},
+ {id:"s60", date:"2026-08-06", t:"Hills", n:"Scramble + hill VO2", d:55, k:null, v:null, z:"Z5", s:0, sa:0, note:`Find rocky/hands-on ground and practise moving over it confidently — prep for Swirral Edge. Then 5 × 2 min steep near-max. Movement skill + top-end.`},
+ {id:"s61", date:"2026-08-07", t:"Easy", n:"Easy + 4 strides", d:35, k:7, v:null, z:"Z2", s:0, sa:0, note:`Easy + strides.`},
+ {id:"s62", date:"2026-08-08", t:"Long", n:"Big mountain day / RECCE", d:130, k:null, v:1500, z:"Z2", s:0, sa:0, note:`Biggest day of the block. IDEAL: recce the route — Catstye Cam, Swirral Edge to Helvellyn, and crucially scout the St Sunday Crag descent line. Practise map + compass. Carry full kit. If you can't reach the Lakes, replicate the vert and time at home.`},
+ {id:"s63", date:"2026-08-09", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s64", date:"2026-08-10", t:"Easy", n:"Easy aerobic + strength (power, reduced)", d:35, k:7, v:null, z:"Z2", s:1, sa:0, note:`Deload week — let the big block absorb. Trim strength volume.\n💪 Strength (power, reduced, 25 min): box jumps 3×3 · single-leg bounding 2×20m · single-leg balance 3×30s.`},
+ {id:"s65", date:"2026-08-11", t:"Threshold", n:"Climb reps 4×5 min @ T", d:50, k:null, v:null, z:"Z4", s:0, sa:0, note:`Keep climbing sharp, less volume. Don't chase it — this is a recovery-biased week.`},
+ {id:"s66", date:"2026-08-12", t:"Recovery", n:"Recovery run", d:30, k:5.5, v:null, z:"Z1", s:0, sa:0, note:`Z1 only.`},
+ {id:"s67", date:"2026-08-13", t:"Descent", n:"Easy descents (skill) + strides", d:40, k:null, v:null, z:"Z2", s:0, sa:0, note:`Technique only, LOW load: smooth quick-footed descents on easy ground, no hard eccentric work. Let the legs recover while keeping the pattern.`},
+ {id:"s68", date:"2026-08-14", t:"Easy", n:"Easy run", d:30, k:5.5, v:null, z:"Z2", s:0, sa:0, note:`Easy, relaxed.`},
+ {id:"s69", date:"2026-08-15", t:"Long", n:"Moderate long run", d:90, k:null, v:900, z:"Z2", s:0, sa:0, note:`Comfortable terrain day. No hard efforts — building back freshness for the peak week.`},
+ {id:"s70", date:"2026-08-16", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s71", date:"2026-08-17", t:"Easy", n:"Easy aerobic + strength (power)", d:35, k:7, v:null, z:"Z2", s:1, sa:0, note:`Sharp and powerful.\n💪 Strength (power, 35 min): box jumps 5×3 · depth drops 4×4 · single-leg bounding 3×20m · trap-bar jump 4×3 light.`},
+ {id:"s72", date:"2026-08-18", t:"Simulation", n:"Up-down race simulation 5×(10 min climb + descent)", d:75, k:null, v:null, z:"Z4–Z5", s:0, sa:0, note:`Hardest, most race-like session of the block. Climb at the effort you'll hold on race day, descend with commitment. If this feels controlled, you're ready. 15 WU + 10 CD.`},
+ {id:"s73", date:"2026-08-19", t:"Recovery", n:"Recovery run", d:35, k:6.4, v:null, z:"Z1", s:0, sa:0, note:`Z1 only.`},
+ {id:"s74", date:"2026-08-20", t:"Descent", n:"Descent peak + technical", d:50, k:null, v:null, z:"Z2", s:0, sa:0, note:`LAST hard descent session. Long sustained steep descents to mimic the 2000ft off St Sunday — confident, fast, controlled, relaxed shoulders. Add rocky ground. After today, legs only get fresher.`},
+ {id:"s75", date:"2026-08-21", t:"Easy", n:"Easy + 4 strides", d:35, k:7, v:null, z:"Z2", s:0, sa:0, note:`Easy + strides.`},
+ {id:"s76", date:"2026-08-22", t:"Long", n:"FULL ROUTE RECCE", d:140, k:null, v:1525, z:"Z2", s:0, sa:0, note:`Run/hike the actual race route at easy-moderate effort. Rehearse line choices (especially St Sunday descent + final climb), the Grisedale Tarn cut-off timing, fuelling, and full FRA kit. Map + compass throughout. If the Lakes aren't reachable, do your biggest race-simulation day at home.`},
+ {id:"s77", date:"2026-08-23", t:"Rest", n:"Rest day", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest.`},
+
+ {id:"s78", date:"2026-08-24", t:"Easy", n:"Easy aerobic + strength (primer)", d:35, k:7, v:null, z:"Z2", s:1, sa:0, note:`Strength now maintenance only.\n💪 Strength (primer, 20 min): bodyweight squats, lunges, calf raises, box jumps 3×3, plank — activation, no fatigue.`},
+ {id:"s79", date:"2026-08-25", t:"Threshold", n:"Sharpener: 3×5 min @ T climb + 3×1 min steep", d:55, k:null, v:null, z:"Z4–Z5", s:0, sa:0, note:`Keep the climbing system primed, volume down. Crisp, not deep. 15 WU + 10 CD.`},
+ {id:"s80", date:"2026-08-26", t:"Recovery", n:"Recovery run", d:30, k:5.5, v:null, z:"Z1", s:0, sa:0, note:`Z1 only.`},
+ {id:"s81", date:"2026-08-27", t:"Easy", n:"Easy + short descents + strides", d:35, k:null, v:null, z:"Z2", s:0, sa:0, note:`Light descents for feel, 4 strides. Sharp legs, zero fatigue.`},
+ {id:"s82", date:"2026-08-28", t:"Easy", n:"Easy run", d:30, k:5.5, v:null, z:"Z2", s:0, sa:0, note:`Easy.`},
+ {id:"s83", date:"2026-08-29", t:"Long", n:"Moderate hilly run + 3 race-effort climbs", d:75, k:null, v:700, z:"Z2", s:0, sa:0, note:`Last longer session. 3 × 3 min at race effort on climbs to stay sharp. Relaxed otherwise.`},
+ {id:"s84", date:"2026-08-30", t:"Rest", n:"Rest + kit/nav check", d:null, k:null, v:null, z:"—", s:0, sa:0, note:`Complete rest. Lay out full FRA kit (taped-seam waterproof jacket + overtrousers, hat, gloves, whistle, map, compass, emergency food). Plan your route lines and the Grisedale Tarn cut-off split.`},
+
+ {id:"s85", date:"2026-08-31", t:"Easy", n:"Easy + strides + primer", d:30, k:6, v:null, z:"Z2", s:1, sa:0, note:`Easy + 4 × 20s strides + light primer (bodyweight squats, box jumps 3×3). Keep moving, no load.`},
+ {id:"s86", date:"2026-09-01", t:"Simulation", n:"Race-effort primer 3×3 min climb + descent", d:45, k:null, v:null, z:"Z4 (low)", s:0, sa:0, note:`Short rehearsal of race effort up and down — should feel comfortably controlled. 12 WU + 8 CD.`},
+ {id:"s87", date:"2026-09-02", t:"Recovery", n:"Recovery run", d:25, k:4.5, v:null, z:"Z1", s:0, sa:0, note:`Very easy. Z1 only.`},
+ {id:"s88", date:"2026-09-03", t:"Easy", n:"Easy + 3×20s strides", d:25, k:5, v:null, z:"Z2", s:0, sa:0, note:`Loose and springy. Legs should feel impatient.`},
+ {id:"s89", date:"2026-09-04", t:"Easy", n:"Pre-race + travel", d:20, k:4, v:null, z:"Z1–Z2", s:0, sa:0, note:`20 min easy + 3 × 20s strides. Travel to the Lakes. Final kit check, plan race nutrition, study the route and the 1:30pm Grisedale Tarn cut-off.`},
+ {id:"s90", date:"2026-09-05", t:"Race", n:"RACE — Grisedale Horseshoe", d:null, k:16, v:1525, z:"Cat AM", s:0, sa:0, note:`Climb efficiently — settle into a sustainable effort up Catstye Cam, don't redline early. Hands-on and calm across Swirral Edge. On the long St Sunday descent, stay relaxed and let gravity work — this is where your descent training pays off and where under-trained legs fall apart. Save something for the final sting-in-the-tail climb to the finish. Watch the Grisedale Tarn cut-off. Fuel early and regularly. Full FRA kit, map + compass, no GPS for nav.`},
+];
+
+const WEEK_BLOCKS = {
+  "2026-06-08":{ph:1, t:"Half block — reintroduce quality on hills", s:"~60 km"},
+  "2026-06-15":{ph:1, t:"Half block — lengthen the tempo", s:"~62 km"},
+  "2026-06-22":{ph:1, t:"Half block — peak quality (race-pace specific)", s:"~64 km"},
+  "2026-06-29":{ph:1, t:"Half block — last hard work, begin easing", s:"~58 km"},
+  "2026-07-06":{ph:1, t:"Taper — stay sharp, shed fatigue", s:"~35 km"},
+  "2026-07-13":{ph:1, t:"Race week + Recovery — absorb, ease toward fell", s:"~40 km"},
+  "2026-07-20":{ph:2, t:"Fell — transition road to fell", s:"~1500 m vert"},
+  "2026-07-27":{ph:2, t:"Fell — build climbing + descending", s:"~2000 m vert"},
+  "2026-08-03":{ph:2, t:"Fell — PEAK specificity (1)", s:"~2600 m vert"},
+  "2026-08-10":{ph:2, t:"Fell — CUTBACK (consolidate)", s:"~1500 m vert"},
+  "2026-08-17":{ph:2, t:"Fell — PEAK specificity (2)", s:"~2400 m vert"},
+  "2026-08-24":{ph:2, t:"Fell — taper begins", s:"~1500 m vert"},
+  "2026-08-31":{ph:2, t:"RACE WEEK — taper to Sat 5 Sep", s:"Grisedale Horseshoe"},
+};
+// Seed block labels (per Monday) → {phase,label}. Imported CSVs build their own from phase/block columns.
+function seedBlocks(){ const o={}; for(const k in WEEK_BLOCKS){ const b=WEEK_BLOCKS[k]; o[k]={phase:b.ph, label:b.t + (b.s?` · ${b.s}`:"")}; } return o; }
+
+/* ============================ STATE ============================ */
+const LS_KEY = "grisedale.tracker.v1";            // legacy / fallback localStorage key
+const DB_NAME = "grisedaleTracker", STORE = "app", STATE_KEY = "state";
+const KM_TO_MI = 0.621371, M_TO_FT = 3.28084;
+const defaultState = () => ({
+  plan: SEED_PLAN.map(s=>({...s})), blocks: seedBlocks(), planName: "Grisedale Horseshoe",
+  board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{},
+  collapsed:{}, unit:"km", theme:"dark", tab:"plan", seenTypes:[...TYPE_ORDER],
+  filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""}
+});
+let state = defaultState();   // in-memory source of truth; hydrated from IndexedDB on startup
+
+/* ---- IndexedDB data layer (durable store, with a localStorage backup/fallback) ---- */
+function idbOpen(){
+  return new Promise((res,rej)=>{
+    if(!('indexedDB' in window)) return rej(new Error("no-indexeddb"));
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = ()=>{ const db=req.result; if(!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE); };
+    req.onsuccess = ()=>res(req.result);
+    req.onerror   = ()=>rej(req.error);
+  });
+}
+function idbGet(key){ return idbOpen().then(db=>new Promise((res,rej)=>{
+  const r = db.transaction(STORE,"readonly").objectStore(STORE).get(key);
+  r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+})); }
+function idbSet(key,val){ return idbOpen().then(db=>new Promise((res,rej)=>{
+  const tx = db.transaction(STORE,"readwrite"); tx.objectStore(STORE).put(val,key);
+  tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error);
+})); }
+
+// Normalise any loaded blob into a complete, current-schema state object.
+function migrate(raw){
+  const s = Object.assign(defaultState(), raw||{});
+  s.filters = Object.assign(defaultState().filters, s.filters||{});
+  s.seenTypes = s.seenTypes || [];
+  TYPE_ORDER.forEach(t=>{                 // auto-enable any workout type added since this was saved
+    if(!s.seenTypes.includes(t)){ s.seenTypes.push(t); if(!s.filters.types.includes(t)) s.filters.types.push(t); }
+  });
+  return s;
+}
+
+// Load persisted state: IndexedDB first, then migrate a legacy localStorage save if present.
+async function hydrate(){
+  let raw=null;
+  try{ raw = await idbGet(STATE_KEY); }catch(e){}
+  if(raw==null){ try{ const ls=localStorage.getItem(LS_KEY); if(ls) raw=JSON.parse(ls); }catch(e){} }
+  if(raw!=null) state = migrate(raw);
+}
+
+let _saveTimer=null;
+function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
+function persist(){
+  _saveTimer=null;
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){}  // fast backup, survives unload
+  idbSet(STATE_KEY, state).catch(()=>{});                                // primary database
+}
+
+/* ============================ HELPERS ============================ */
+const $ = (s,el=document)=>el.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function d(s){ const [y,m,dd]=s.split("-").map(Number); return new Date(y, m-1, dd); } // local midnight, no UTC shift
+function iso(x){ const p=n=>String(n).padStart(2,"0"); return `${x.getFullYear()}-${p(x.getMonth()+1)}-${p(x.getDate())}`; }
+function mondayOf(s){ const x=d(s); const k=(x.getDay()+6)%7; x.setDate(x.getDate()-k); return iso(x); }
+function addDays(s,n){ const x=d(s); x.setDate(x.getDate()+n); return iso(x); }
+const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function dayShort(iso){ const x=d(iso); return WD[x.getDay()]+" "+x.getDate(); }
+function dayLong(iso){ const x=d(iso); return WD[x.getDay()]+", "+x.getDate()+" "+MO[x.getMonth()]+" "+x.getFullYear(); }
+function mdShort(iso){ const x=d(iso); return MO[x.getMonth()]+" "+x.getDate(); }
+function todayISO(){ return iso(new Date()); }
+
+// Effective workout (raw/custom + edits), or null if deleted
+function allRaw(){ return (state.plan||[]).concat(state.custom||[]); }
+function getWO(id){
+  if(state.deleted[id]) return null;
+  const base = allRaw().find(w=>w.id===id);
+  if(!base) return null;
+  return Object.assign({}, base, state.edits[id]||{});
+}
+function woMap(){ const m={}; allRaw().forEach(w=>{ if(!state.deleted[w.id]) m[w.id]=getWO(w.id); }); return m; }
+
+// Build/repair the board: ensure every active workout sits in exactly one day cell.
+function ensureBoard(){
+  const seen = new Set();
+  for(const k in state.board){
+    state.board[k] = (state.board[k]||[]).filter(id=>{
+      if(seen.has(id)) return false;
+      const w = getWO(id);
+      if(!w) return false;
+      seen.add(id); return true;
+    });
+  }
+  allRaw().forEach(w=>{
+    if(state.deleted[w.id] || seen.has(w.id)) return;
+    const day = (getWO(w.id)||w).date;
+    (state.board[day] = state.board[day]||[]).push(w.id);
+    seen.add(w.id);
+  });
+}
+function removeFromBoard(id){ for(const k in state.board) state.board[k]=state.board[k].filter(x=>x!==id); }
+
+// Week range is derived from the plan's dates, so any imported plan renders correctly.
+function planDateSet(){
+  const set=new Set();
+  allRaw().forEach(w=>{ if(!state.deleted[w.id]) set.add(w.date); });
+  for(const k in state.board){ if((state.board[k]||[]).length) set.add(k); }
+  return set;
+}
+function weekMondays(){
+  const set=planDateSet(); if(!set.size) return [];
+  let min=null,max=null; set.forEach(dt=>{ if(min===null||dt<min)min=dt; if(max===null||dt>max)max=dt; });
+  const out=[]; let m=mondayOf(min); const last=mondayOf(max); let g=0;
+  while(m<=last && g++<1040){ out.push(m); m=addDays(m,7); }
+  return out;
+}
+
+function unitDist(km){
+  if(km==null) return null;
+  return state.unit==="mi" ? km*KM_TO_MI : km;
+}
+function fmtDist(km,withUnit=true){
+  if(km==null) return "—";
+  const v = state.unit==="mi" ? km*KM_TO_MI : km;
+  const s = (v>=100? Math.round(v) : (Math.round(v*10)/10)).toLocaleString();
+  return withUnit ? s+" "+state.unit : s;
+}
+function fmtDur(min){
+  if(!min) return "—";
+  const h=Math.floor(min/60), m=Math.round(min%60);
+  return h? (m? `${h}h ${m}m` : `${h}h`) : `${m}m`;
+}
+function fmtVert(m,withUnit=true){
+  if(m==null) return "—";
+  const v = state.unit==="mi" ? Math.round(m*M_TO_FT) : m;
+  const s = v.toLocaleString();
+  return withUnit ? s+(state.unit==="mi"?" ft":" m") : s;
+}
+
+function totals(ids){
+  let dist=0,dur=0,vert=0,total=0,done=0,dDist=0,dDur=0,dVert=0;
+  let runDur=0,runDist=0,bikeDur=0,bikeDist=0,runDoneDur=0,runDoneDist=0,bikeDoneDur=0,bikeDoneDist=0;
+  ids.forEach(id=>{
+    const w=getWO(id); if(!w) return;
+    const isRest = w.t==="Rest", isBike = w.t==="Bike";
+    const lg = state.log[id]||{};
+    const k = lg.k!=null&&lg.k!==""? +lg.k : (w.k||0);
+    const mm = lg.d!=null&&lg.d!==""? +lg.d : (w.d||0);
+    const vv = lg.v!=null&&lg.v!==""? +lg.v : (w.v||0);
+    dist+=(w.k||0); dur+=(w.d||0); vert+=(w.v||0);
+    if(isBike){ bikeDur+=(w.d||0); bikeDist+=(w.k||0); }
+    else if(!isRest){ runDur+=(w.d||0); runDist+=(w.k||0); }
+    if(!isRest) total++;
+    if(state.done[id]){
+      if(!isRest) done++;
+      dDist+=k; dDur+=mm; dVert+=vv;
+      if(isBike){ bikeDoneDur+=mm; bikeDoneDist+=k; }
+      else if(!isRest){ runDoneDur+=mm; runDoneDist+=k; }
+    }
+  });
+  return {dist,dur,vert,total,done,dDist,dDur,dVert,
+          runDur,runDist,bikeDur,bikeDist,runDoneDur,runDoneDist,bikeDoneDur,bikeDoneDist};
+}
+function daysBetween(a,b){ return Math.round((d(b)-d(a))/86400000); }
+
+/* ============================ RENDER ============================ */
+const weeksEl = $("#weeks");
+
+function render(){
+  ensureBoard(); save();
+  document.documentElement.dataset.theme = state.theme;
+  $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
+  $("#unitBtn").textContent = state.unit;
+
+  renderCountdown();
+  renderDash();
+  renderChips();
+  renderToolbarState();
+  renderWeeks();
+  renderFoot();
+  updateUndoUI();
+  applyTab();
+}
+
+/* ============================ STRENGTH TAB ============================ */
+const STRENGTH = {
+  intro: "Runners don't lift to get big — they lift to get durable and economical. Heavy, low-rep strength plus explosive plyometrics build tendon stiffness and force production, so each stride costs less energy, climbs hurt less, and hard descents (and your femur) tolerate the pounding. These are the exact sessions threaded through your plan, gathered in one place.",
+  principles: [
+    "<b>Lift on a run day</b> — ideally after an easy or quality run — so easy days stay easy and hard days stay hard.",
+    "<b>Go heavy and low-rep</b> (4–6 reps, 1–2 in reserve). This is neural strength, not a bodybuilding pump.",
+    "<b>Explode on jumps and bounds</b> — intent and quality matter far more than volume.",
+    "<b>Single-leg work mirrors running</b> and exposes left/right imbalances — don't skip it.",
+    "<b>Load early in a block</b> when you're fresh; in the last ~10 days drop to short primer sessions — maintain, don't build.",
+    "<b>Never let strength soreness compromise a key run.</b> If in doubt, cut a set."
+  ],
+  sections: [
+    { title:"Foundation · Phase 1", sub:"2× per week through the base weeks (S1 + S2)", routines:[
+      { name:"Strength S1", mins:40, focus:"Posterior chain + single-leg control", ex:[
+        ["Trap-bar deadlift","4×5"],["Single-leg press","3×8 / leg"],["Bulgarian split squat","3×6 / leg"],
+        ["Single-leg calf raise","4×12 / leg"],["Copenhagen plank","2×20s / side"],["Plank","3×45s"] ] },
+      { name:"Strength S2", mins:40, focus:"Power + lateral stability", ex:[
+        ["Goblet squat (heavy)","4×6"],["Single-leg RDL","3×6 / leg"],["Step-ups","3×8 / leg"],
+        ["Box jumps","4×4"],["Pallof press","2×10 / side"],["Single-leg balance","3×30s / leg"] ] },
+    ]},
+    { title:"Fell-specific · Phase 2", sub:"Shift from maximal strength toward explosive power", routines:[
+      { name:"Maximal strength", mins:40, focus:"Heavy base for sustained climbing & descending", ex:[
+        ["Trap-bar deadlift (heavy)","4×4"],["Single-leg press","3×6 / leg"],["Bulgarian split squat","3×5 / leg"],
+        ["Single-leg calf raise","4×10 / leg"],["Copenhagen plank","2×25s / side"] ] },
+      { name:"Power / plyometric", mins:35, focus:"Convert strength into fell-specific spring", ex:[
+        ["Box jumps","5×3"],["Depth drops","4×4"],["Single-leg bounding","3×20m"],
+        ["Trap-bar jump (light)","4×3"],["Pallof press","2×10 / side"],["Single-leg balance","3×30s"] ] },
+    ]},
+    { title:"Taper & race week", sub:"Maintain, don't build — zero fatigue", routines:[
+      { name:"Primer / activation", mins:20, focus:"Wake the system up the day before/of quality, no load", ex:[
+        ["Bodyweight squats","2×10"],["Walking lunges","2×8 / leg"],["Calf raises","2×15"],
+        ["Box jumps","3×3"],["Plank","2×30s"] ] },
+    ]},
+  ]
+};
+function renderStrength(){
+  const card = r => `
+    <div class="s-card">
+      <div class="s-card-head"><h3>${esc(r.name)}</h3><span class="pill">${r.mins} min</span></div>
+      <p class="s-focus">${esc(r.focus)}</p>
+      <div class="s-ex">${r.ex.map(e=>`<div class="ex-row"><span class="name">${esc(e[0])}</span><span class="dose">${esc(e[1])}</span></div>`).join("")}</div>
+    </div>`;
+  const sections = STRENGTH.sections.map(s=>`
+    <div class="s-section">
+      <div class="s-section-head"><h2>${esc(s.title)}</h2><span>${esc(s.sub)}</span></div>
+      <div class="s-grid">${s.routines.map(card).join("")}</div>
+    </div>`).join("");
+  $("#strengthView").innerHTML = `
+    <div class="s-intro"><h2>Strength for runners</h2><p>${esc(STRENGTH.intro)}</p></div>
+    <div class="s-card s-principles"><h3>How to use it</h3><ul>${STRENGTH.principles.map(p=>`<li>${p}</li>`).join("")}</ul></div>
+    ${sections}
+    <p class="legend-foot">These are the strength sessions referenced on the 💪 days of your plan. "Reduced" / "light" variants in the plan simply trim ~30% of the sets.</p>`;
+}
+function applyTab(){
+  const t = state.tab==="strength" ? "strength" : "plan";
+  const pv=$("#planView"), sv=$("#strengthView");
+  if(pv) pv.hidden = t!=="plan";
+  if(sv) sv.hidden = t!=="strength";
+  $$(".tab").forEach(b=>b.setAttribute("aria-pressed", b.dataset.tab===t));
+  if(t==="strength" && sv && !sv.dataset.rendered){ renderStrength(); sv.dataset.rendered="1"; }
+}
+
+function renderCountdown(){
+  const mondays = weekMondays(), nWeeks = mondays.length;
+  $("#planTitle").textContent = (state.planName||"Training Plan") + (nWeeks?` · ${nWeeks}-Week Plan`:"");
+  document.title = (state.planName||"Training Plan") + " · Tracker";
+  const t = todayISO();
+  const clean = n => (n||"Race").replace(/^\s*RACE\s*[—–-]\s*/i,"").trim();
+  const races = allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race")
+                  .sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
+  const parts = [];
+  if(races.length){
+    const upcoming = races.filter(r=>daysBetween(t,r.date)>=0);
+    if(upcoming.length) upcoming.slice(0,2).forEach(r=>{ const dd=daysBetween(t,r.date); parts.push(dd===0?`${clean(r.n)} today 🏁`:`${dd}d to ${clean(r.n)}`); });
+    else parts.push("Plan complete 🏁");
+  }else if(nWeeks){
+    const firstD=mondays[0], lastD=addDays(mondays[nWeeks-1],6), start=daysBetween(t,firstD);
+    if(start>0) parts.push(`Starts in ${start}d`);
+    else if(daysBetween(t,lastD)>=0) parts.push(`Week ${Math.min(Math.max(Math.floor(daysBetween(firstD,t)/7)+1,1),nWeeks)} of ${nWeeks}`);
+    else parts.push("Plan complete");
+  }
+  $("#countdown").textContent = parts.join("  ·  ");
+}
+
+function renderDash(){
+  const ids = Object.keys(woMap());
+  const T = totals(ids);
+  const pct = T.total? Math.round(T.done/T.total*100):0;
+  const ftUnit = state.unit==="mi"?"ft":"m";
+  $("#dash").innerHTML = `
+    <div class="stat"><div class="lab">Run · distance</div>
+      <div class="val">${fmtDist(T.runDist,false)} <small>${state.unit}</small></div>
+      <div class="sub">${fmtDist(T.runDoneDist,false)} ${state.unit} logged</div></div>
+    <div class="stat"><div class="lab">Run · time</div>
+      <div class="val">${fmtDur(T.runDur)}</div>
+      <div class="sub">${fmtDur(T.runDoneDur)} logged</div></div>
+    <div class="stat" style="--c:var(--t-bike)"><div class="lab" style="color:var(--t-bike)">Bike · time</div>
+      <div class="val">${fmtDur(T.bikeDur)}</div>
+      <div class="sub">${T.bikeDist?fmtDist(T.bikeDist)+" · ":""}${fmtDur(T.bikeDoneDur)} logged</div></div>
+    <div class="stat"><div class="lab">Total vert</div>
+      <div class="val">${fmtVert(T.vert,false)} <small>${ftUnit}</small></div>
+      <div class="sub">${fmtVert(T.dVert,false)} ${ftUnit} logged</div></div>
+    <div class="stat progress"><div class="lab">Sessions completed</div>
+      <div class="val">${T.done}<small> / ${T.total}</small></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="prow"><span>${pct}% of the plan done</span><b>${T.total-T.done} to go</b></div></div>
+  `;
+}
+
+function renderChips(){
+  const ids = Object.keys(woMap());
+  const counts = {}; TYPE_ORDER.forEach(t=>counts[t]=0);
+  ids.forEach(id=>{ const w=getWO(id); if(w) counts[w.t]=(counts[w.t]||0)+1; });
+  $("#typeChips").innerHTML = TYPE_ORDER.map(t=>{
+    const on = state.filters.types.includes(t);
+    return `<button class="chip" data-type="${t}" aria-pressed="${on}" style="--c:${TYPES[t].c}">
+      <span class="dot"></span>${TYPES[t].label}<span class="n">${counts[t]||0}</span></button>`;
+  }).join("");
+}
+
+function renderToolbarState(){
+  const rb=$("#restBtn"); if(rb){ rb.setAttribute("aria-pressed", state.filters.rest); rb.textContent = state.filters.rest? "Hide rest days" : "Show rest days"; }
+  $$("#visSeg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.vis===state.filters.vis));
+  $("#search").value = state.filters.q;
+  updateFilterBtn();
+}
+function updateFilterBtn(){
+  const n = TYPE_ORDER.filter(t=>!state.filters.types.includes(t)).length + (state.filters.rest?0:1);
+  const lab=$("#filterLabel"), btn=$("#filterBtn");
+  if(lab) lab.textContent = n? `Filters · ${n} off` : "Filters";
+  if(btn) btn.classList.toggle("active", n>0);
+}
+
+function passesFilter(w){
+  const f = state.filters;
+  if(!f.types.includes(w.t)) return false;
+  if(!f.rest && w.t==="Rest") return false;
+  if(f.vis==="done" && !state.done[w.id]) return false;
+  if(f.vis==="todo" && state.done[w.id]) return false;
+  if(f.q){ const q=f.q.toLowerCase(); if(!((w.n||"").toLowerCase().includes(q) || (w.note||"").toLowerCase().includes(q) || w.t.toLowerCase().includes(q))) return false; }
+  return true;
+}
+
+function cardHTML(id){
+  const w = getWO(id); if(!w) return "";
+  const ty = TYPES[w.t]||TYPES.Rest;
+  const meta = [];
+  if(w.d) meta.push(`<span class="pill">${fmtDur(w.d)}</span>`);
+  if(w.k!=null) meta.push(`<span class="pill">${fmtDist(w.k)}</span>`);
+  if(w.v!=null) meta.push(`<span class="pill">↗ ${fmtVert(w.v)}</span>`);
+  if(w.z && w.z!=="—") meta.push(`<span class="pill zone">${esc(w.z)}</span>`);
+  const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
+  return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
+      <button class="check" data-check="${id}" title="Mark complete"></button>
+      <div class="ctype">${esc(ty.label)}</div>
+      <div class="cname">${esc(w.n)}</div>
+      ${meta.length?`<div class="cmeta">${meta.join("")}</div>`:""}
+    </div>`;
+}
+
+function renderWeeks(){
+  const mondays = weekMondays();
+  let html = "";
+  mondays.forEach((mon,wi)=>{
+    const blk = state.blocks && state.blocks[mon];
+    const collapsed = !!state.collapsed[mon];
+    const weekIds = [];
+    let cells = "";
+    for(let di=0; di<7; di++){
+      const date = addDays(mon, di);
+      const ids = (state.board[date]||[]);
+      ids.forEach(id=>weekIds.push(id));
+      const visible = ids.filter(id=>{ const w=getWO(id); return w && passesFilter(w); });
+      const isToday = date===todayISO();
+      const cardsHTML = visible.map(cardHTML).join("");
+      cells += `<div class="day-cell ${isToday?'is-today':''}" data-date="${date}">
+          <div class="day-head ${isToday?'today':''}">
+            <span><span class="dnum">${dayShort(date)}</span></span>
+            <button class="addbtn" data-add="${date}" title="Add session">＋</button>
+          </div>
+          ${cardsHTML || (ids.length? "" : `<div class="empty">—</div>`)}
+        </div>`;
+    }
+    const T = totals(weekIds);
+    const wstats = `
+      <div class="wstat"><b>${fmtDist(T.runDist)}</b>${T.bikeDist?` <span style="color:var(--t-bike)">+${fmtDist(T.bikeDist)}</span>`:""}</div>
+      <div class="wstat"><b>${fmtDur(T.runDur)}</b>${T.bikeDur?` <span style="color:var(--t-bike)">+${fmtDur(T.bikeDur)} bike</span>`:""}</div>
+      ${T.vert? `<div class="wstat">↗ <b>${fmtVert(T.vert)}</b></div>`:""}
+      <div class="wstat"><b>${T.done}/${T.total}</b> done</div>`;
+    const phaseBadge = blk && blk.phase
+      ? `<span class="phasebadge ${(''+blk.phase).indexOf('2')>=0?'phase2':'phase1'}">${typeof blk.phase==='number'?('Phase '+blk.phase):esc(blk.phase)}</span>`
+      : "";
+    const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : "";
+    html += `<div class="week ${collapsed?'collapsed':''}" data-mon="${mon}">
+        <div class="week-head" data-toggle="${mon}">
+          <span class="caret">▼</span>
+          <span class="wn">Week ${wi+1}</span>
+          ${phaseBadge}
+          <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
+          <span class="wstats">${wstats}</span>
+        </div>
+        <div class="week-body"><div class="week-grid">${cells}</div></div>
+      </div>`;
+  });
+  weeksEl.innerHTML = html || `<p style="color:var(--faint);text-align:center;padding:46px 0">No sessions yet — drop a CSV anywhere to load a plan, or use the ⋯ menu.</p>`;
+}
+
+function renderFoot(){
+  const ids = Object.keys(woMap());
+  const T = totals(ids);
+  $("#footTotals").textContent =
+    `Run ${fmtDist(T.runDist)} · ${fmtDur(T.runDur)}  ·  Bike ${fmtDist(T.bikeDist)} · ${fmtDur(T.bikeDur)}  ·  ${fmtVert(T.vert)} climb · ${T.total} sessions`;
+  // mini header stats — run vs bike hours side by side
+  const pct = T.total? Math.round(T.done/T.total*100):0;
+  $("#miniStats").innerHTML = `
+    <div class="m"><b>${fmtDur(T.runDur)}</b><span>run</span></div>
+    <div class="m"><b>${fmtDur(T.bikeDur)}</b><span>bike</span></div>
+    <div class="m"><b>${pct}%</b><span>done</span></div>`;
+}
+
+function $$(s,el=document){ return [...el.querySelectorAll(s)]; }
+
+/* -------- Undo / redo (in-memory, per session) -------- */
+let undoStack=[], redoStack=[];
+function pushUndo(){ try{ undoStack.push(JSON.stringify(state)); if(undoStack.length>60) undoStack.shift(); redoStack.length=0; }catch(e){} }
+function undo(){ if(!undoStack.length) return; try{ redoStack.push(JSON.stringify(state)); state=JSON.parse(undoStack.pop()); save(); render(); }catch(e){} }
+function redo(){ if(!redoStack.length) return; try{ undoStack.push(JSON.stringify(state)); state=JSON.parse(redoStack.pop()); save(); render(); }catch(e){} }
+function updateUndoUI(){ const b=$("#undoBtn"); if(b) b.disabled = undoStack.length===0; }
+// Never let an edit hide a session behind an inactive type filter.
+function ensureTypeVisible(t){ if(!t) return; if(!state.seenTypes.includes(t)) state.seenTypes.push(t); if(!state.filters.types.includes(t)) state.filters.types.push(t); }
+
+/* ============================ EVENTS ============================ */
+// Header buttons
+$("#themeBtn").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"; save(); render(); };
+$("#unitBtn").onclick  = ()=>{ state.unit  = state.unit==="km"?"mi":"km"; save(); render(); };
+$("#undoBtn").onclick  = undo;
+document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; state.tab=b.dataset.tab; save(); applyTab(); });
+document.addEventListener("keydown", e=>{
+  const mod=e.metaKey||e.ctrlKey; if(!(mod && (e.key==='z'||e.key==='Z'))) return;
+  const el=e.target; if(el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.isContentEditable)) return; // let fields handle their own undo
+  e.preventDefault(); e.shiftKey? redo() : undo();
+});
+
+// Filters
+$("#typeChips").addEventListener("click", e=>{
+  const b=e.target.closest(".chip"); if(!b) return;
+  const t=b.dataset.type, arr=state.filters.types;
+  state.filters.types = arr.includes(t)? arr.filter(x=>x!==t) : [...arr,t];
+  save(); renderChips(); renderWeeks(); updateFilterBtn();
+});
+$("#restBtn").onclick = ()=>{ state.filters.rest=!state.filters.rest; save(); renderToolbarState(); renderWeeks(); };
+$("#allTypesBtn").onclick = ()=>{ state.filters.types=[...TYPE_ORDER]; save(); renderChips(); renderToolbarState(); renderWeeks(); };
+
+// Filter dropdown open/close
+const filterMenu=$("#filterMenu");
+$("#filterBtn").onclick = e=>{ e.stopPropagation(); const m=$("#menu"); if(m) m.hidden=true; filterMenu.hidden=!filterMenu.hidden; };
+document.addEventListener("click", e=>{ if(!filterMenu.hidden && !e.target.closest(".menuwrap")) filterMenu.hidden=true; });
+$("#visSeg").addEventListener("click", e=>{ const b=e.target.closest("button"); if(!b)return; state.filters.vis=b.dataset.vis; save(); renderToolbarState(); renderWeeks(); });
+$("#search").addEventListener("input", e=>{ state.filters.q=e.target.value; save(); renderWeeks(); });
+$("#collapseBtn").onclick = ()=>{
+  const anyOpen = $$(".week").some(w=>!w.classList.contains("collapsed"));
+  weekMondays().forEach(m=>{ state.collapsed[m] = anyOpen; });
+  save(); renderWeeks();
+};
+
+// Week collapse + card click + checkbox + add
+weeksEl.addEventListener("click", e=>{
+  const tog = e.target.closest("[data-toggle]");
+  if(tog){ const m=tog.dataset.toggle; state.collapsed[m]=!state.collapsed[m]; save(); renderWeeks(); return; }
+  const chk = e.target.closest("[data-check]");
+  if(chk){ pushUndo(); const id=chk.dataset.check; state.done[id]=!state.done[id]; save(); render(); return; }
+  const add = e.target.closest("[data-add]");
+  if(add){ openNew(add.dataset.add); return; }
+  const card = e.target.closest(".card");
+  if(card){ if(Date.now()-lastDragEnd<250) return; openModal(card.dataset.id); }
+});
+
+/* -------- Drag & drop -------- */
+let dragId=null, lastDragEnd=0, ph=null;
+function getPlaceholder(){ if(!ph){ ph=document.createElement("div"); ph.className="empty"; ph.style.borderColor="var(--accent)"; ph.style.color="var(--accent2)"; ph.textContent="drop here"; } return ph; }
+function clearPH(){ if(ph&&ph.parentNode) ph.parentNode.removeChild(ph); }
+function afterEl(container,y){
+  const cards=[...container.querySelectorAll('.card:not(.dragging)')];
+  let best=null,bestOff=-Infinity;
+  for(const c of cards){ const r=c.getBoundingClientRect(); const off=y-r.top-r.height/2; if(off<0&&off>bestOff){bestOff=off;best=c;} }
+  return best;
+}
+weeksEl.addEventListener("dragstart", e=>{
+  const card=e.target.closest(".card"); if(!card) return;
+  dragId=card.dataset.id; e.dataTransfer.effectAllowed="move";
+  try{ e.dataTransfer.setData("text/plain", dragId); }catch(_){}
+  setTimeout(()=>card.classList.add("dragging"),0);
+});
+weeksEl.addEventListener("dragend", e=>{
+  const card=e.target.closest(".card"); if(card) card.classList.remove("dragging");
+  $$(".day-cell.drag-over").forEach(c=>c.classList.remove("drag-over"));
+  clearPH(); lastDragEnd=Date.now(); dragId=null;
+});
+weeksEl.addEventListener("dragover", e=>{
+  const cell=e.target.closest(".day-cell"); if(!cell||!dragId) return;
+  e.preventDefault(); e.dataTransfer.dropEffect="move";
+  $$(".day-cell.drag-over").forEach(c=>{ if(c!==cell) c.classList.remove("drag-over"); });
+  cell.classList.add("drag-over");
+  const emptyEl = cell.querySelector(".empty:not(.dropph)"); // remove placeholder marker if real empty
+  const after=afterEl(cell,e.clientY); const p=getPlaceholder();
+  if(after) cell.insertBefore(p, after); else cell.appendChild(p);
+});
+weeksEl.addEventListener("drop", e=>{
+  const cell=e.target.closest(".day-cell"); if(!cell||!dragId) return;
+  e.preventDefault();
+  const date=cell.dataset.date; const after=afterEl(cell,e.clientY);
+  moveWorkout(dragId, date, after?after.dataset.id:null);
+});
+function moveWorkout(id,date,beforeId){
+  pushUndo();
+  removeFromBoard(id);
+  const arr = state.board[date] = state.board[date]||[];
+  let idx = arr.length;
+  if(beforeId){ const i=arr.indexOf(beforeId); if(i>=0) idx=i; }
+  arr.splice(idx,0,id);
+  clearPH(); save(); render();
+}
+
+/* ============================ MODAL ============================ */
+const backdrop=$("#backdrop"); let editingId=null, isNew=false;
+
+function openModal(id){
+  const w=getWO(id); if(!w) return;
+  editingId=id; isNew=false;
+  $("#mDate").textContent = dayLong(w.date);
+  $("#mTitleHead").textContent = w.n;
+  $("#mDelete").style.display = "inline-flex";
+  const lg = state.log[id]||{};
+  $("#mBody").innerHTML = `
+    <div class="field"><label>Session</label><input id="f_n" value="${esc(w.n)}"></div>
+    <div class="grid2">
+      <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t===w.t?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
+      <div class="field"><label>HR zone / effort</label><input id="f_z" value="${esc(w.z||"")}"></div>
+    </div>
+    <div class="sectlabel">Planned target</div>
+    <div class="grid3">
+      <div class="field"><label>Duration (min)</label><input id="f_d" type="number" min="0" value="${w.d??""}"></div>
+      <div class="field"><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value="${w.k??""}"></div>
+      <div class="field"><label>Vert (m)</label><input id="f_v" type="number" min="0" value="${w.v??""}"></div>
+    </div>
+    ${w.note? `<div><div class="sectlabel" style="margin-bottom:6px">Coach notes</div><div class="coach">${esc(w.note)}</div></div>`:""}
+    <div class="sectlabel">Your log</div>
+    <div class="donerow">
+      <button class="toggle" id="f_done" aria-pressed="${!!state.done[id]}"></button>
+      <div><b>Mark as completed</b><div style="font-size:12px;color:var(--muted)">Counts toward your totals & progress.</div></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Actual time (min)</label><input id="f_ld" type="number" min="0" placeholder="${w.d??""}" value="${lg.d??""}"></div>
+      <div class="field"><label>Actual dist (km)</label><input id="f_lk" type="number" min="0" step="0.1" placeholder="${w.k??""}" value="${lg.k??""}"></div>
+      <div class="field"><label>Actual vert (m)</label><input id="f_lv" type="number" min="0" placeholder="${w.v??""}" value="${lg.v??""}"></div>
+    </div>
+    <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
+  `;
+  $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); };
+  backdrop.classList.add("open");
+}
+
+function openNew(date){
+  editingId="c"+Date.now(); isNew=true;
+  $("#mDate").textContent = dayLong(date);
+  $("#mTitleHead").textContent = "New session";
+  $("#mDelete").style.display="none";
+  $("#mBody").dataset.date = date;
+  $("#mBody").innerHTML = `
+    <div class="field"><label>Session</label><input id="f_n" value="" placeholder="e.g. Easy shakeout"></div>
+    <div class="grid2">
+      <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t==="Easy"?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
+      <div class="field"><label>HR zone / effort</label><input id="f_z" value="" placeholder="Z2"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Duration (min)</label><input id="f_d" type="number" min="0" value=""></div>
+      <div class="field"><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value=""></div>
+      <div class="field"><label>Vert (m)</label><input id="f_v" type="number" min="0" value=""></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="f_note" placeholder="Session details…"></textarea></div>
+  `;
+  backdrop.classList.add("open");
+}
+
+function numOrNull(v){ v=(v||"").toString().trim(); return v===""? null : +v; }
+$("#mSave").onclick = ()=>{
+  const get=id=>{ const el=$("#"+id); return el? el.value : undefined; };
+  pushUndo();
+  if(isNew){
+    const date=$("#mBody").dataset.date;
+    const t=get("f_t")||"Easy";
+    const w={ id:editingId, date, t, n:(get("f_n")||"Untitled").trim(),
+      d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v")),
+      z:(get("f_z")||"—").trim()||"—", s:0, sa:0, note:(get("f_note")||"").trim() };
+    state.custom.push(w);
+    (state.board[date]=state.board[date]||[]).push(w.id);
+    ensureTypeVisible(t);
+  }else{
+    const id=editingId, t=get("f_t");
+    state.edits[id]=Object.assign({}, state.edits[id], {
+      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(),
+      d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
+    });
+    state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
+    const lg={ d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), c:(get("f_lc")||"").trim() };
+    if(lg.d==null&&lg.k==null&&lg.v==null&&!lg.c) delete state.log[id]; else state.log[id]=lg;
+    ensureTypeVisible(t);   // never hide the session you just edited behind an off filter
+  }
+  closeModal(); save(); render();
+};
+$("#mDelete").onclick = ()=>{
+  if(!confirm("Delete this session? Undo (⌘Z) brings it straight back, or re-import / reset the plan.")) return;
+  pushUndo();
+  const id=editingId;
+  if((state.custom||[]).some(c=>c.id===id)) state.custom=state.custom.filter(c=>c.id!==id);
+  else state.deleted[id]=true;                 // plan sessions are soft-deleted
+  removeFromBoard(id); delete state.done[id]; delete state.log[id]; delete state.edits[id];
+  closeModal(); save(); render();
+};
+function closeModal(){ backdrop.classList.remove("open"); editingId=null; }
+$("#mClose").onclick=closeModal; $("#mCancel").onclick=closeModal;
+backdrop.addEventListener("click", e=>{ if(e.target===backdrop) closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"&&backdrop.classList.contains("open")) closeModal(); });
+
+/* ============================ CSV PLAN IMPORT / EXPORT ============================ */
+// Schema: date,session,type,duration_min,distance_km,vert_m,zone,phase,block,notes
+function parseCSV(text){
+  text = text.replace(/^﻿/,"").replace(/\r\n?/g,"\n");
+  const rows=[]; let row=[], field="", q=false;
+  for(let i=0;i<text.length;i++){ const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else q=false; } else field+=c; }
+    else { if(c==='"') q=true; else if(c===','){ row.push(field); field=""; }
+           else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; } else field+=c; }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>!(r.length===1 && r[0].trim()===""));
+}
+function csvCell(v){ v=(v==null?"":String(v)); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+function normType(s){
+  s=(s||"").trim().toLowerCase(); if(!s) return "Easy";
+  for(const k of TYPE_ORDER){ if(k.toLowerCase()===s || TYPES[k].label.toLowerCase()===s) return k; }
+  if(/bike|cycle|ride|spin|turbo/.test(s)) return "Bike";
+  if(/recover/.test(s)) return "Recovery";
+  if(/threshold|tempo|cruise/.test(s)) return "Threshold";
+  if(/hill|vo2|interval|\brep/.test(s)) return "Hills";
+  if(/descen|downhill/.test(s)) return "Descent";
+  if(/sim|up.?down/.test(s)) return "Simulation";
+  if(/long|mountain|recce/.test(s)) return "Long";
+  if(/race/.test(s)) return "Race";
+  if(/rest|off|walk/.test(s)) return "Rest";
+  return "Easy";
+}
+function parsePlanDate(s){
+  s=(s||"").trim(); if(!s) return null;
+  if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){ const [y,m,dd]=s.split("-").map(Number); const dt=new Date(y,m-1,dd); return isNaN(dt)?null:iso(dt); }
+  const dt=new Date(s); return isNaN(dt)?null:iso(dt);   // fallback for "8 Jun 2026" etc.
+}
+function planToCSV(){
+  const head=["date","session","type","duration_min","distance_km","vert_m","zone","phase","block","notes"];
+  const lines=[head.join(",")];
+  weekMondays().forEach(mon=>{
+    const blk=(state.blocks&&state.blocks[mon])||{};
+    for(let di=0;di<7;di++){ const date=addDays(mon,di); (state.board[date]||[]).forEach(id=>{
+      const w=getWO(id); if(!w) return;
+      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
+    });}
+  });
+  return lines.join("\n");
+}
+function importCSV(text, name){
+  const rows=parseCSV(text);
+  if(rows.length<2){ alert("That CSV looks empty."); return; }
+  const head=rows[0].map(h=>h.trim().toLowerCase());
+  const idx=(...names)=>{ for(const n of names){ const i=head.indexOf(n); if(i>=0) return i; } return -1; };
+  const iDate=idx("date"), iName=idx("session","name","workout","title"), iType=idx("type","activity"),
+        iDur=idx("duration_min","duration","minutes","min","time"), iDist=idx("distance_km","distance","km"),
+        iVert=idx("vert_m","vert","elevation","climb","ascent"), iZone=idx("zone","effort","intensity"),
+        iPhase=idx("phase"), iBlock=idx("block","week","label"), iNote=idx("notes","note","why","description","details");
+  if(iDate<0 || iName<0){
+    alert("CSV needs at least a 'date' and 'session' column.\n\nExpected header:\ndate, session, type, duration_min, distance_km, vert_m, zone, phase, block, notes");
+    return;
+  }
+  if(!confirm("Load this plan?\n\nThis replaces the current plan and its layout. Completions on matching days are kept; everything else for this plan resets.\n\n(Tip: export a JSON backup first if you're unsure.)")) return;
+  pushUndo();
+  const sessions=[], blocks={}, perDate={};
+  for(let r=1;r<rows.length;r++){
+    const row=rows[r]; const date=parsePlanDate(row[iDate]); if(!date) continue;
+    const k=(perDate[date]||0); perDate[date]=k+1;
+    const id=`${date}#${k}`;
+    sessions.push({ id, date,
+      n:(row[iName]||"").trim()||"Session",
+      t: iType>=0?normType(row[iType]):"Easy",
+      d: iDur>=0?numOrNull(row[iDur]):null, k: iDist>=0?numOrNull(row[iDist]):null,
+      v: iVert>=0?numOrNull(row[iVert]):null,
+      z:(iZone>=0?(row[iZone]||"").trim():"")||"—",
+      note:(iNote>=0?(row[iNote]||"").trim():"") });
+    const mon=mondayOf(date);
+    if(!blocks[mon]){ const ph=iPhase>=0?(row[iPhase]||"").trim():"", lb=iBlock>=0?(row[iBlock]||"").trim():"";
+      if(ph||lb) blocks[mon]={ phase:/^\d+$/.test(ph)?+ph:(ph||null), label:lb||"" }; }
+  }
+  if(!sessions.length){ alert("No valid rows found — each row needs a real date (YYYY-MM-DD)."); return; }
+  const ids=new Set(sessions.map(s=>s.id));
+  const keep=o=>{ const n={}; for(const key in o){ if(ids.has(key)) n[key]=o[key]; } return n; };
+  state.plan=sessions; state.blocks=blocks; state.custom=[]; state.board={}; state.deleted={}; state.edits={};
+  state.done=keep(state.done); state.log=keep(state.log);
+  state.planName = name || "Imported plan";
+  save(); render();
+  alert(`Loaded "${state.planName}" — ${sessions.length} sessions across ${weekMondays().length} weeks.`);
+}
+function fileBaseName(fn){ return (fn||"plan").replace(/\.[^.]+$/,"").replace(/[_-]+/g," ").trim() || "Imported plan"; }
+function download(filename, text, type){
+  const b=new Blob([text],{type:type||"text/plain"}); const a=document.createElement("a");
+  a.href=URL.createObjectURL(b); a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ============================ MENU ============================ */
+const menu=$("#menu");
+function toggleMenu(show){ menu.hidden = (show===undefined)? !menu.hidden : !show; }
+$("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true; toggleMenu(); };
+document.addEventListener("click", e=>{ if(!menu.hidden && !e.target.closest(".menuwrap")) toggleMenu(false); });
+menu.addEventListener("click", e=>{
+  const b=e.target.closest("button[data-act]"); if(!b) return;
+  toggleMenu(false);
+  switch(b.dataset.act){
+    case "exportCsv":  download((state.planName||"plan").replace(/\s+/g,"-").toLowerCase()+".csv", planToCSV(), "text/csv"); break;
+    case "importCsv":  $("#importCsvFile").click(); break;
+    case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;
+    case "importJson": $("#importJsonFile").click(); break;
+    case "clear":      if(confirm("Clear all completions and logs (keep the plan & layout)?")){ pushUndo(); state.done={}; state.log={}; save(); render(); } break;
+    case "reset":      if(confirm("Reset to the original Grisedale seed plan? This wipes the current plan, layout, logs and edits.")){ pushUndo(); state=defaultState(); save(); render(); } break;
+  }
+});
+$("#importJsonFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{ const next=migrate(JSON.parse(r.result)); pushUndo(); state=next; save(); render(); alert("Backup restored."); }catch(err){ alert("Could not read that JSON file."); } };
+  r.readAsText(f); e.target.value=""; });
+$("#importCsvFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ try{ importCSV(r.result, fileBaseName(f.name)); }catch(err){ alert("Could not read that CSV."); } };
+  r.readAsText(f); e.target.value=""; });
+
+/* ============================ DRAG-AND-DROP FILE IMPORT ============================ */
+const dz=$("#dropzone"); let dzDepth=0;
+function isFileDrag(e){ const ts=e.dataTransfer? Array.from(e.dataTransfer.types||[]):[]; return ts.includes("Files")||ts.some(t=>/file/i.test(t)); }
+function handleFile(f){
+  const r=new FileReader(); const isJson=/\.json$/i.test(f.name);
+  r.onload=()=>{ try{ if(isJson){ const next=migrate(JSON.parse(r.result)); pushUndo(); state=next; save(); render(); alert("Backup restored."); }
+                       else importCSV(r.result, fileBaseName(f.name)); }
+                 catch(err){ alert("Could not read that file."); } };
+  r.readAsText(f);
+}
+window.addEventListener("dragenter", e=>{ if(!isFileDrag(e))return; e.preventDefault(); dzDepth++; dz.classList.add("show"); });
+window.addEventListener("dragover",  e=>{ if(!isFileDrag(e))return; e.preventDefault(); try{e.dataTransfer.dropEffect="copy";}catch(_){} });
+window.addEventListener("dragleave", e=>{ if(!isFileDrag(e))return; dzDepth--; if(dzDepth<=0){ dzDepth=0; dz.classList.remove("show"); } });
+window.addEventListener("drop",      e=>{ if(!isFileDrag(e))return; e.preventDefault(); dzDepth=0; dz.classList.remove("show");
+  const f=e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
+
+/* ============================ GO ============================ */
+let _rendered=false;
+function firstRender(){ if(_rendered) return; _rendered=true; render(); }
+hydrate().then(firstRender).catch(firstRender);
+setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
+</script>
+</body>
+</html>
