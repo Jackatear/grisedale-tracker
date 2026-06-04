@@ -78,18 +78,17 @@
   .wrap{max-width:1400px;margin:0 auto;padding:24px}
 
   /* ---------- Dashboard ---------- */
-  .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px}
+  .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
   .stat{
     background:var(--panel);
-    border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;position:relative;overflow:hidden;
   }
-  .stat .lab{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
-  .stat .val{font-size:25px;font-weight:600;margin-top:7px;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
-  .stat .val small{font-size:13px;color:var(--muted);font-weight:500}
-  .stat .sub{font-size:12px;color:var(--muted);margin-top:4px}
+  .stat .lab{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .stat .val{font-size:21px;font-weight:600;margin-top:5px;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+  .stat .val small{font-size:12px;color:var(--muted);font-weight:500}
+  .stat .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
   .stat .spark{display:none}
   .stat.progress{grid-column:span 2}
-  @media(max-width:640px){.stat.progress{grid-column:span 1}}
   .bar{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:14px}
   .bar>i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
   .prow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:9px}
@@ -280,6 +279,43 @@
   #syncBody a{color:var(--accent)}
   #syncBody ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.7}
   #syncBody .row{display:flex;gap:10px}
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:700px){
+    .wrap{padding:13px}
+    .topbar{padding:10px 13px;gap:9px}
+    .mini{display:none}                 /* dashboard already shows these; declutter the header */
+    .brand{gap:9px}
+    .brand h1{font-size:13px}
+    .brand p{font-size:10.5px}
+    .iconbtn{padding:7px 9px}
+    .dash{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+    .stat{padding:11px 12px;border-radius:11px}
+    .stat .lab{font-size:9px;letter-spacing:.4px}
+    .stat .val{font-size:18px;margin-top:2px}
+    .stat .val small{font-size:10.5px}
+    .stat .sub{font-size:10px;margin-top:2px}
+    .bar{margin-top:9px;height:5px}
+    .prow{font-size:10.5px;margin-top:7px}
+    .tabs{margin-bottom:14px;width:100%}
+    .tab{flex:1;text-align:center}
+    .toolbar{gap:7px;margin-bottom:14px}
+    .search{flex:1 1 100%;order:-1}     /* search gets its own full-width row */
+    /* weekly calendar → vertical agenda (no sideways scrolling, much nicer to tap) */
+    .week-head{flex-wrap:wrap;row-gap:5px;padding:11px 13px}
+    .week-head .wstats{gap:12px}
+    .wstat{font-size:11px}
+    .wn{font-size:11px}
+    .wtitle b{font-size:12.5px}
+    .week-grid{grid-template-columns:1fr;overflow-x:visible}
+    .day-cell{border-right:0;border-bottom:1px solid var(--line);min-height:0;padding:9px 11px}
+    .day-cell:last-child{border-bottom:0}
+    .day-cell .empty{display:none}
+    .day-head .addbtn{opacity:.45}      /* visible/tappable without hover on touch */
+    .card{padding:10px 11px}
+    .modal-body{padding:16px;gap:13px}
+    .grid3{gap:8px}
+  }
   ::-webkit-scrollbar{height:9px;width:9px}
   ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
   ::-webkit-scrollbar-thumb:hover{background:var(--faint)}
