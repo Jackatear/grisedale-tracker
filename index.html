@@ -750,6 +750,12 @@ function weekMondays(){
   while(m<=last && g++<1040){ out.push(m); m=addDays(m,7); }
   return out;
 }
+// Monday of the plan's first *planned* session (ignores imported extras), so week numbers anchor to the plan.
+function planStartMonday(){
+  const dates=(state.plan||[]).filter(w=>!(state.deleted&&state.deleted[w.id])).map(w=>w.date).filter(Boolean).sort();
+  if(dates.length) return mondayOf(dates[0]);
+  const ms=weekMondays(); return ms.length? ms[0] : mondayOf(todayISO());
+}
 
 function unitDist(km){
   if(km==null) return null;
@@ -954,7 +960,9 @@ function applyTab(){
 
 function renderCountdown(){
   const mondays = weekMondays(), nWeeks = mondays.length;
-  $("#planTitle").textContent = (state.planName||"Training Plan") + (nWeeks?` · ${nWeeks}-Week Plan`:"");
+  const _pd=(state.plan||[]).filter(w=>!(state.deleted&&state.deleted[w.id])).map(w=>w.date).filter(Boolean).sort();
+  const planWeeks = _pd.length ? Math.round((d(mondayOf(_pd[_pd.length-1]))-d(planStartMonday()))/(7*86400000))+1 : nWeeks;
+  $("#planTitle").textContent = (state.planName||"Training Plan") + (planWeeks?` · ${planWeeks}-Week Plan`:"");
   document.title = (state.planName||"Training Plan") + " · Tracker";
   const t = todayISO();
   const clean = n => (n||"Race").replace(/^\s*RACE\s*[—–-]\s*/i,"").trim();
@@ -1052,8 +1060,10 @@ function cardHTML(id){
 
 function renderWeeks(){
   const mondays = weekMondays();
+  const psm = planStartMonday();
   let html = "";
   mondays.forEach((mon,wi)=>{
+    const weekNum = Math.round((d(mon)-d(psm))/(7*86400000)) + 1;   // 1 = plan start; 0/−1 = before the plan
     const blk = state.blocks && state.blocks[mon];
     const collapsed = !!state.collapsed[mon];
     const weekIds = [];
@@ -1082,11 +1092,11 @@ function renderWeeks(){
     const phaseBadge = blk && blk.phase
       ? `<span class="phasebadge ${(''+blk.phase).indexOf('2')>=0?'phase2':'phase1'}">${typeof blk.phase==='number'?('Phase '+blk.phase):esc(blk.phase)}</span>`
       : "";
-    const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : "";
+    const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
     html += `<div class="week ${collapsed?'collapsed':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
-          <span class="wn">Week ${wi+1}</span>
+          <span class="wn">Week ${weekNum}</span>
           ${phaseBadge}
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
@@ -1600,42 +1610,55 @@ async function stravaSync(){
   if(!stravaConnected()){ stravaConnect(); return; }
   if(strava.busy) return; strava.busy=true;
   try{
-    let after = Math.floor((Date.now()-120*86400000)/1000);
-    const ms=weekMondays(); if(ms.length){ after=Math.min(after, Math.floor(d(ms[0]).getTime()/1000)); }
+    // pull from the week BEFORE the plan starts onward (captures pre-plan "Week 0" activities)
+    const after = Math.floor((d(planStartMonday()).getTime() - 7*86400000)/1000);
     const res=await fetch(STRAVA_PROXY+"/activities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, after})});
     const data=await res.json();
     if(data.error){ alert("Couldn't reach Strava ("+data.error+").\nIf you just changed the callback domain in Strava settings, give it a minute and retry."); return; }
     if(data.refresh_token && data.refresh_token!==strava.refresh) stravaSaveTokens(data.refresh_token, strava.name);
     const acts=data.activities||[];
     const m=matchActivities(acts);
-    if(m.matched) { save(); render(); }
-    alert(`Strava: pulled ${acts.length} recent activit${acts.length===1?"y":"ies"} · matched ${m.matched} to plan day${m.matched===1?"":"s"}${m.unmatched?` · ${m.unmatched} had no session on that date`:""}.`);
+    if(m.matched||m.added){ save(); render(); }
+    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} · ${m.matched} matched to plan days · ${m.added} added as logged extras${(m.matched||m.added)?"":" (nothing new)"}.`);
   }catch(e){ alert("Strava sync failed — check your connection and try again."); }
   finally{ strava.busy=false; }
 }
 function matchActivities(acts){
-  if(!state.activeId || !acts.length) return {matched:0,unmatched:0};
+  if(!state.activeId || !acts.length) return {matched:0,added:0};
   pushUndo();
-  let matched=0, unmatched=0; const used=new Set();
+  // Strava ids already imported (so re-syncing never duplicates)
+  const have=new Set();
+  (state.custom||[]).forEach(c=>{ if(c.sid!=null) have.add(String(c.sid)); });
+  for(const id in state.log){ const sid=state.log[id]&&state.log[id].sid; if(sid!=null) have.add(String(sid)); }
+  let matched=0, added=0; const used=new Set();
   acts.forEach(a=>{
+    if(have.has(String(a.id))) return;                       // already imported
     const date=(a.start||"").slice(0,10); if(!date) return;
     const isBike=/ride|cycl|bike|virtual/i.test(a.type||"");
+    const km  = a.distance ? Math.round(a.distance/100)/10 : null;
+    const min = a.moving_time ? Math.round(a.moving_time/60) : null;
+    const vert= a.elev!=null ? Math.round(a.elev) : null;
+    const nm  = a.name || a.type || "Activity";
     const cands=(state.board[date]||[]).filter(id=>!used.has(id)).map(id=>({id,w:getWO(id)}))
                   .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
-    if(!cands.length){ unmatched++; return; }
     const pref=cands.filter(x=> isBike ? x.w.t==="Bike" : x.w.t!=="Bike");
-    const pick=pref[0]||cands[0]; used.add(pick.id);
-    state.done[pick.id]=true;
-    const prev=state.log[pick.id]||{};
-    state.log[pick.id]=Object.assign({}, prev, {
-      k: a.distance? Math.round(a.distance/100)/10 : prev.k,
-      d: a.moving_time? Math.round(a.moving_time/60) : prev.d,
-      v: a.elev!=null? Math.round(a.elev) : prev.v,
-      c: (prev.c? prev.c+" · " : "") + "Strava: "+(a.name||a.type||"activity")
-    });
-    matched++;
+    const pick=pref[0]||cands[0];
+    if(pick){                                                // fill a planned session
+      used.add(pick.id); state.done[pick.id]=true;
+      const prev=state.log[pick.id]||{};
+      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, sid:a.id,
+        c:(prev.c?prev.c+" · ":"")+"Strava: "+nm });
+      matched++;
+    } else {                                                 // no planned session that day → log it as a completed extra
+      const id="sv"+a.id;
+      const rec={ id, date, t:(isBike?"Bike":"Easy"), n:nm, d:min, k:km, v:vert, z:"—", note:"Imported from Strava.", sid:a.id };
+      (state.custom=state.custom||[]).push(rec);
+      (state.board[date]=state.board[date]||[]).push(id);
+      state.done[id]=true;
+      added++;
+    }
   });
-  return {matched,unmatched};
+  return {matched,added};
 }
 
 /* ============================ GO ============================ */
