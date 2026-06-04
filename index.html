@@ -295,7 +295,10 @@
   .zlegend .zll{text-transform:uppercase;letter-spacing:.6px;font-size:10px;color:var(--faint)}
   .zlegend span{display:inline-flex;align-items:center;gap:5px}
   .zlegend i{width:9px;height:9px;border-radius:2px;display:inline-block}
-  .zonestrip{display:flex;flex-direction:column;gap:5px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .zonestrip{display:flex;flex-direction:column;gap:5px;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+  .zbreak{display:none;flex-wrap:wrap;gap:3px 18px;font-size:10.5px;color:var(--muted);padding-top:2px}
+  .zbreak b{color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.4px;font-size:9.5px;margin-right:3px}
+  .zonestrip:hover .zbreak, .zonestrip.open .zbreak{display:flex}
   .zrow{display:flex;align-items:center;gap:9px}
   .zlab{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);width:34px;flex:0 0 auto}
   .zbar{flex:1;display:flex;height:7px;border-radius:999px;overflow:hidden;background:var(--bg2)}
@@ -1078,6 +1081,8 @@ function hrToZoneIdx(h){ if(h==null) return null; for(let i=0;i<HR_THRESH.length
 function zoneTextToIdx(z){ if(!z) return null; const m=/z\s*([1-5])/i.exec(z); if(m) return (+m[1])-1; if(/race|cat/i.test(z)) return 3; return null; }
 function zoneBar(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
   return `<div class="zbar">`+arr.map((v,i)=> v>0?`<i style="width:${(v/tot*100).toFixed(1)}%;background:${ZONES[i].c}" title="${ZONES[i].k}: ${Math.round(v/tot*100)}%"></i>`:"").join("")+`</div>`; }
+function zbreakText(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
+  return arr.map((v,i)=> v>0?`${ZONES[i].k} ${Math.round(v/tot*100)}%`:null).filter(Boolean).join(" · "); }
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
   weekIds.forEach(id=>{ const w=getWO(id); if(!w||w.t==="Rest") return;
@@ -1126,9 +1131,11 @@ function renderWeeks(){
       : "";
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
     const Z = weekZones(weekIds);
+    const planTxt = zbreakText(Z.plan), doneTxt = Z.hasAct ? zbreakText(Z.act) : "";
     const zonestrip = (Z.planTot||Z.hasAct) ? `<div class="zonestrip">
         ${Z.planTot? `<div class="zrow"><span class="zlab">Plan</span>${zoneBar(Z.plan)}</div>`:""}
         ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
+        <div class="zbreak">${Z.planTot?`<span><b>Plan</b> ${planTxt}</span>`:""}${Z.hasAct?`<span><b>Done</b> ${doneTxt}</span>`:""}</div>
       </div>` : "";
     html += `<div class="week ${collapsed?'collapsed':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
@@ -1205,6 +1212,8 @@ $("#collapseBtn").onclick = ()=>{
 
 // Week collapse + card click + checkbox + add
 weeksEl.addEventListener("click", e=>{
+  const zs = e.target.closest(".zonestrip");
+  if(zs){ zs.classList.toggle("open"); return; }   // tap the intensity bars to reveal the % breakdown
   const tog = e.target.closest("[data-toggle]");
   if(tog){ const m=tog.dataset.toggle; state.collapsed[m]=!state.collapsed[m]; save(); renderWeeks(); return; }
   const chk = e.target.closest("[data-check]");
@@ -1666,21 +1675,21 @@ async function stravaSync(){
         if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
       }catch(_){}
     }
-    if(m.matched||m.added){ save(); render(); }
-    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} · ${m.matched} matched to plan days · ${m.added} added as logged extras${(m.matched||m.added)?"":" (nothing new)"}.`);
+    if(m.matched||m.added||m.updated||imp.length){ save(); render(); }
+    const bits=[`${m.matched} matched`,`${m.added} added`]; if(m.updated) bits.push(`${m.updated} updated`);
+    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} · ${bits.join(" · ")}${(m.matched||m.added||m.updated)?"":" (nothing new)"}.`);
   }catch(e){ alert("Strava sync failed — check your connection and try again."); }
   finally{ strava.busy=false; }
 }
 function matchActivities(acts){
-  if(!state.activeId || !acts.length) return {matched:0,added:0};
+  if(!state.activeId || !acts.length) return {matched:0,added:0,updated:0,imported:[]};
   pushUndo();
-  // Strava ids already imported (so re-syncing never duplicates)
-  const have=new Set();
-  (state.custom||[]).forEach(c=>{ if(c.sid!=null) have.add(String(c.sid)); });
-  for(const id in state.log){ const sid=state.log[id]&&state.log[id].sid; if(sid!=null) have.add(String(sid)); }
-  let matched=0, added=0; const used=new Set(), imported=[];
+  // map already-imported Strava id → session id (so re-sync UPDATES/backfills instead of duplicating)
+  const bySid={};
+  (state.custom||[]).forEach(c=>{ if(c.sid!=null) bySid[String(c.sid)]=c.id; });
+  for(const id in state.log){ const sid=state.log[id]&&state.log[id].sid; if(sid!=null) bySid[String(sid)]=id; }
+  let matched=0, added=0, updated=0; const used=new Set(), imported=[];
   acts.forEach(a=>{
-    if(have.has(String(a.id))) return;                       // already imported
     const date=(a.start||"").slice(0,10); if(!date) return;
     const isBike=/ride|cycl|bike|virtual/i.test(a.type||"");
     const km  = a.distance ? Math.round(a.distance/100)/10 : null;
@@ -1688,6 +1697,16 @@ function matchActivities(acts){
     const vert= a.elev!=null ? Math.round(a.elev) : null;
     const hr  = a.hr!=null ? Math.round(a.hr) : null;
     const nm  = a.name || a.type || "Activity";
+    const existing = bySid[String(a.id)];
+    if(existing){                                            // already imported → backfill any missing data
+      const lg=state.log[existing]||{}; let ch=false;
+      if(lg.hr==null && hr!=null){ lg.hr=hr; ch=true; }
+      if(lg.sid==null) lg.sid=a.id;
+      state.log[existing]=lg;
+      if(!Array.isArray(lg.zones)) imported.push({id:existing, sid:a.id});  // (re)fetch zone breakdown
+      if(ch) updated++;
+      return;
+    }
     const cands=(state.board[date]||[]).filter(id=>!used.has(id)).map(id=>({id,w:getWO(id)}))
                   .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
     const pref=cands.filter(x=> isBike ? x.w.t==="Bike" : x.w.t!=="Bike");
@@ -1704,11 +1723,11 @@ function matchActivities(acts){
       (state.custom=state.custom||[]).push(rec);
       (state.board[date]=state.board[date]||[]).push(id);
       state.done[id]=true;
-      if(hr!=null) state.log[id]={hr};
+      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, {sid:a.id});
       imported.push({id, sid:a.id}); added++;
     }
   });
-  return {matched,added,imported};
+  return {matched,added,updated,imported};
 }
 
 /* ============================ GO ============================ */
