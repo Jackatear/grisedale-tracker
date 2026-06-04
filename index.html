@@ -268,6 +268,18 @@
   .s-ex .ex-row:first-child{border-top:0}
   .s-ex .name{color:var(--txt)}
   .s-ex .dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* cloud sync */
+  .cloud-pip{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:0 0 auto}
+  .cloud-pip.synced{background:var(--good)}
+  .cloud-pip.saving,.cloud-pip.checking{background:var(--accent)}
+  .cloud-pip.error,.cloud-pip.bad-token{background:#d9685f}
+  #cloudBtn.on{border-color:color-mix(in srgb,var(--good) 50%,var(--line2));color:var(--good)}
+  #cloudBtn[data-state="error"],#cloudBtn[data-state="bad-token"]{border-color:#d9685f;color:#d9685f}
+  #syncBody code{background:var(--bg2);padding:1px 5px;border-radius:5px;font-size:12px}
+  #syncBody a{color:var(--accent)}
+  #syncBody ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.7}
+  #syncBody .row{display:flex;gap:10px}
   ::-webkit-scrollbar{height:9px;width:9px}
   ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
   ::-webkit-scrollbar-thumb:hover{background:var(--faint)}
@@ -284,6 +296,7 @@
       </div>
     </div>
     <div class="mini" id="miniStats"></div>
+    <button class="iconbtn" id="cloudBtn" title="Cloud sync">☁</button>
     <button class="iconbtn" id="unitBtn" title="Toggle distance unit">km</button>
     <button class="iconbtn" id="themeBtn" title="Toggle theme">🌙</button>
     <div class="menuwrap">
@@ -359,6 +372,17 @@
         <button class="btn" id="mCancel">Cancel</button>
         <button class="btn primary" id="mSave">Save</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Cloud sync dialog -->
+  <div class="backdrop" id="syncBackdrop">
+    <div class="modal" style="width:min(460px,100%)" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div><div class="mdate">Cloud sync</div><h3>Sync across devices</h3></div>
+        <button class="x" id="syncClose">×</button>
+      </div>
+      <div class="modal-body" id="syncBody"></div>
     </div>
   </div>
 
@@ -520,7 +544,7 @@ const KM_TO_MI = 0.621371, M_TO_FT = 3.28084;
 const defaultState = () => ({
   plan: SEED_PLAN.map(s=>({...s})), blocks: seedBlocks(), planName: "Grisedale Horseshoe",
   board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{},
-  collapsed:{}, unit:"km", theme:"dark", tab:"plan", seenTypes:[...TYPE_ORDER],
+  collapsed:{}, unit:"km", theme:"dark", tab:"plan", touched:false, updatedAt:0, seenTypes:[...TYPE_ORDER],
   filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""}
 });
 let state = defaultState();   // in-memory source of truth; hydrated from IndexedDB on startup
@@ -563,12 +587,20 @@ async function hydrate(){
   if(raw!=null) state = migrate(raw);
 }
 
-let _saveTimer=null;
+let _saveTimer=null, _lastDataSer=null;
+// Plan DATA (synced to the cloud); view prefs (theme/unit/tab/filters/collapsed) stay per-device.
+const DATA_KEYS=["plan","blocks","planName","board","done","log","edits","custom","deleted","seenTypes","touched","updatedAt"];
+function dataSig(){ const o={}; for(const k of DATA_KEYS){ if(k!=="updatedAt") o[k]=state[k]; } return JSON.stringify(o); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
+function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
 function persist(){
   _saveTimer=null;
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){}  // fast backup, survives unload
-  idbSet(STATE_KEY, state).catch(()=>{});                                // primary database
+  const sig=dataSig();
+  const changed = _lastDataSer!==null && sig!==_lastDataSer;
+  if(changed) state.updatedAt=Date.now();
+  if(_lastDataSer===null || changed) _lastDataSer=sig;
+  writeLocal();                              // localStorage backup + IndexedDB (always)
+  if(changed && typeof cloudPush==="function") cloudPush();   // push real data changes to the gist
 }
 
 /* ============================ HELPERS ============================ */
@@ -694,6 +726,7 @@ function render(){
   renderFoot();
   updateUndoUI();
   applyTab();
+  if(typeof renderCloud==="function") renderCloud();
 }
 
 /* ============================ STRENGTH TAB ============================ */
@@ -920,7 +953,7 @@ function $$(s,el=document){ return [...el.querySelectorAll(s)]; }
 
 /* -------- Undo / redo (in-memory, per session) -------- */
 let undoStack=[], redoStack=[];
-function pushUndo(){ try{ undoStack.push(JSON.stringify(state)); if(undoStack.length>60) undoStack.shift(); redoStack.length=0; }catch(e){} }
+function pushUndo(){ state.touched=true; try{ undoStack.push(JSON.stringify(state)); if(undoStack.length>60) undoStack.shift(); redoStack.length=0; }catch(e){} }
 function undo(){ if(!undoStack.length) return; try{ redoStack.push(JSON.stringify(state)); state=JSON.parse(undoStack.pop()); save(); render(); }catch(e){} }
 function redo(){ if(!redoStack.length) return; try{ undoStack.push(JSON.stringify(state)); state=JSON.parse(redoStack.pop()); save(); render(); }catch(e){} }
 function updateUndoUI(){ const b=$("#undoBtn"); if(b) b.disabled = undoStack.length===0; }
@@ -1251,10 +1284,127 @@ window.addEventListener("dragleave", e=>{ if(!isFileDrag(e))return; dzDepth--; i
 window.addEventListener("drop",      e=>{ if(!isFileDrag(e))return; e.preventDefault(); dzDepth=0; dz.classList.remove("show");
   const f=e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
 
+/* ============================ CLOUD SYNC (private GitHub Gist) ============================ */
+const GH_API="https://api.github.com", GIST_MARKER="grisedale-tracker-sync", GIST_FILE="tracker-state.json";
+const cloud={ token:null, gistId:null, login:null, status:"off", busy:false };
+try{ cloud.token=localStorage.getItem("gh.token")||null; cloud.gistId=localStorage.getItem("gh.gistId")||null; cloud.login=localStorage.getItem("gh.login")||null; }catch(_){}
+const cloudOn=()=>!!cloud.token;
+function ghHeaders(){ return {"Authorization":"Bearer "+cloud.token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"}; }
+async function gh(path,opts){ const r=await fetch(GH_API+path,Object.assign({headers:ghHeaders()},opts)); if(!r.ok){ const e=new Error("GitHub "+r.status); e.status=r.status; throw e; } return r.status===204?null:r.json(); }
+function pick(keys){ const o={}; keys.forEach(k=>{ if(k in state) o[k]=state[k]; }); return o; }
+function setStatus(s){ cloud.status=s; renderCloud(); }
+
+async function cloudConnect(token,{silent}={}){
+  token=(token||"").trim(); if(!token) return;
+  cloud.token=token; setStatus("checking");
+  try{
+    try{ const me=await gh("/user"); if(me&&me.login){ cloud.login=me.login; localStorage.setItem("gh.login",me.login); } }
+    catch(e){ if(e.status===401) throw e; }
+    localStorage.setItem("gh.token",token);
+    await cloudFindGist();
+    await cloudInitialSync();
+    setStatus("synced");
+  }catch(e){
+    if(e.status===401){ cloud.token=null; try{localStorage.removeItem("gh.token");}catch(_){} setStatus("bad-token"); if(!silent) renderSyncBody(); }
+    else setStatus("error");
+  }
+}
+async function cloudFindGist(){
+  if(cloud.gistId){ try{ await gh("/gists/"+cloud.gistId); return; }catch(e){ if(e.status===404) cloud.gistId=null; else throw e; } }
+  const list=await gh("/gists?per_page=100");
+  const found=(list||[]).find(g=> g.description===GIST_MARKER || (g.files && g.files[GIST_FILE]));
+  cloud.gistId=found?found.id:null;
+  if(cloud.gistId) localStorage.setItem("gh.gistId",cloud.gistId);
+}
+async function cloudReadRemote(){
+  if(!cloud.gistId) return null;
+  const g=await gh("/gists/"+cloud.gistId); const f=g.files&&g.files[GIST_FILE]; if(!f) return null;
+  let c=f.content; if(f.truncated&&f.raw_url){ c=await (await fetch(f.raw_url)).text(); }
+  try{ return JSON.parse(c); }catch(_){ return null; }
+}
+function adoptRemote(remote){
+  DATA_KEYS.forEach(k=>{ if(k in remote) state[k]=remote[k]; });
+  state=migrate(state); _lastDataSer=dataSig(); writeLocal(); render();
+}
+async function cloudInitialSync(){
+  const remote=await cloudReadRemote();
+  if(!remote){ await cloudPushNow(); return; }                       // cloud empty → upload this device
+  const rT=remote.updatedAt||0, lT=state.updatedAt||0;
+  if(!state.touched || rT>lT){ adoptRemote(remote); return; }        // fresh device, or cloud newer → take cloud
+  if(lT>rT){
+    const useCloud=confirm("The cloud already has a saved plan, and this device also has unsaved changes.\n\nOK = use the CLOUD copy here.\nCancel = upload THIS device's version (replaces cloud).");
+    if(useCloud) adoptRemote(remote); else await cloudPushNow();
+  }
+}
+async function cloudPull(){
+  if(!cloudOn()||cloud.busy) return; cloud.busy=true;
+  try{ if(!cloud.gistId) await cloudFindGist(); const remote=await cloudReadRemote();
+    if(remote && (remote.updatedAt||0)>(state.updatedAt||0)) adoptRemote(remote);
+    if(cloud.status==="error"||cloud.status==="checking") setStatus("synced");
+  }catch(e){}
+  finally{ cloud.busy=false; }
+}
+let _pushTimer=null;
+function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTimer); _pushTimer=setTimeout(cloudPushNow,1200); }
+async function cloudPushNow(){
+  _pushTimer=null; if(!cloudOn()) return;
+  const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:JSON.stringify(pick(DATA_KEYS)) } } });
+  try{ setStatus("saving");
+    if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
+    else await gh("/gists/"+cloud.gistId,{method:"PATCH",body});
+    setStatus("synced");
+  }catch(e){ if(e.status===404){ cloud.gistId=null; try{localStorage.removeItem("gh.gistId");}catch(_){} return cloudPushNow(); } setStatus("error"); }
+}
+function cloudDisconnect(){
+  cloud.token=null; cloud.gistId=null; cloud.login=null; setStatus("off");
+  try{ localStorage.removeItem("gh.token"); localStorage.removeItem("gh.gistId"); localStorage.removeItem("gh.login"); }catch(_){}
+}
+
+/* ---- cloud UI ---- */
+function renderCloud(){
+  const b=$("#cloudBtn"); if(b){ const tick={synced:" ✓",saving:" …",checking:" …",error:" !","bad-token":" !"}[cloud.status]||"";
+    b.textContent="☁"+tick; b.dataset.state=cloud.status; b.classList.toggle("on", cloud.status==="synced"||cloud.status==="saving"); }
+  const sb=$("#syncBackdrop"); if(sb && sb.classList.contains("open")) renderSyncBody();
+}
+function renderSyncBody(){
+  const host=$("#syncBody"); if(!host) return;
+  if(cloudOn() && cloud.status!=="bad-token"){
+    const label={synced:"Synced",saving:"Saving…",checking:"Connecting…",error:"Can't reach GitHub right now"}[cloud.status]||"Connected";
+    host.innerHTML=`
+      <div class="donerow"><span class="cloud-pip ${cloud.status}"></span><div><b>${esc(label)}</b><div style="font-size:12px;color:var(--muted)">${cloud.login?("Signed in as "+esc(cloud.login)+" · "):""}private gist</div></div></div>
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin:0">Your plan & progress sync to a private GitHub gist. Open the app on your other device, connect with the <b>same token</b>, and they'll stay in step. Changes pull in when you switch back to the app.</p>
+      <div class="row"><button class="btn" id="syncNow">Sync now</button><button class="btn danger" id="syncOff">Disconnect this device</button></div>`;
+    $("#syncNow").onclick=async()=>{ await cloudPushNow(); await cloudPull(); };
+    $("#syncOff").onclick=()=>{ if(confirm("Stop syncing on this device? Your data stays here and in the gist — it just won't sync from this browser anymore.")) cloudDisconnect(); };
+  } else {
+    host.innerHTML=`
+      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin:0">Sync your phone & laptop using your GitHub account — your data lives in a <b>private gist</b>, nothing public. The token is stored only in this browser.</p>
+      <ol>
+        <li>Create a token (it pre-selects the <b>gist</b> scope): <a href="https://github.com/settings/tokens/new?scopes=gist&description=Grisedale%20Tracker%20Sync" target="_blank" rel="noopener">github.com/settings/tokens</a> → <b>Generate token</b>.</li>
+        <li>Copy it (starts with <code>ghp_</code>) and paste it below.</li>
+        <li>Repeat on your other device with the <b>same token</b>.</li>
+      </ol>
+      ${cloud.status==="bad-token"?`<div style="color:#d9685f;font-size:12px">That token didn't work — it must be a <b>classic</b> token with the <b>gist</b> scope.</div>`:""}
+      <div class="field"><label>GitHub token</label><input id="syncToken" type="password" placeholder="ghp_…" autocomplete="off" spellcheck="false"></div>
+      <button class="btn primary" id="syncConnect">Connect & sync</button>`;
+    const go=()=>{ const t=$("#syncToken").value; if(t.trim()) cloudConnect(t); };
+    $("#syncConnect").onclick=go;
+    $("#syncToken").addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
+  }
+}
+function openSync(){ $("#syncBackdrop").classList.add("open"); renderSyncBody(); }
+function closeSync(){ $("#syncBackdrop").classList.remove("open"); }
+$("#cloudBtn").onclick=openSync;
+$("#syncClose").onclick=closeSync;
+$("#syncBackdrop").addEventListener("click",e=>{ if(e.target.id==="syncBackdrop") closeSync(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSync(); });
+window.addEventListener("focus", ()=>cloudPull());
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) cloudPull(); });
+
 /* ============================ GO ============================ */
 let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); }
-hydrate().then(firstRender).catch(firstRender);
+hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); renderCloud(); if(cloudOn()) cloudConnect(cloud.token,{silent:true}); }).catch(firstRender);
 setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
 </script>
 </body>
