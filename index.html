@@ -1049,6 +1049,8 @@ function cardHTML(id){
   if(w.k!=null) meta.push(`<span class="pill">${fmtDist(w.k)}</span>`);
   if(w.v!=null) meta.push(`<span class="pill">↗ ${fmtVert(w.v)}</span>`);
   if(w.z && w.z!=="—") meta.push(`<span class="pill zone">${esc(w.z)}</span>`);
+  const lg = state.log[id]||{};
+  if(lg.hr) meta.push(`<span class="pill">${lg.hr} bpm</span>`);
   const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
   return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
       <button class="check" data-check="${id}" title="Mark complete"></button>
@@ -1256,6 +1258,7 @@ function openModal(id){
       <div class="field"><label>Actual dist (km)</label><input id="f_lk" type="number" min="0" step="0.1" placeholder="${w.k??""}" value="${lg.k??""}"></div>
       <div class="field"><label>Actual vert (m)</label><input id="f_lv" type="number" min="0" placeholder="${w.v??""}" value="${lg.v??""}"></div>
     </div>
+    <div class="field"><label>Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
     <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
   `;
   $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); };
@@ -1304,8 +1307,8 @@ $("#mSave").onclick = ()=>{
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
-    const lg={ d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), c:(get("f_lc")||"").trim() };
-    if(lg.d==null&&lg.k==null&&lg.v==null&&!lg.c) delete state.log[id]; else state.log[id]=lg;
+    const lg={ d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), c:(get("f_lc")||"").trim() };
+    if(lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&!lg.c) delete state.log[id]; else state.log[id]=lg;
     ensureTypeVisible(t);   // never hide the session you just edited behind an off filter
   }
   closeModal(); save(); render();
@@ -1638,6 +1641,7 @@ function matchActivities(acts){
     const km  = a.distance ? Math.round(a.distance/100)/10 : null;
     const min = a.moving_time ? Math.round(a.moving_time/60) : null;
     const vert= a.elev!=null ? Math.round(a.elev) : null;
+    const hr  = a.hr!=null ? Math.round(a.hr) : null;
     const nm  = a.name || a.type || "Activity";
     const cands=(state.board[date]||[]).filter(id=>!used.has(id)).map(id=>({id,w:getWO(id)}))
                   .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
@@ -1646,7 +1650,7 @@ function matchActivities(acts){
     if(pick){                                                // fill a planned session
       used.add(pick.id); state.done[pick.id]=true;
       const prev=state.log[pick.id]||{};
-      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, sid:a.id,
+      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, sid:a.id,
         c:(prev.c?prev.c+" · ":"")+"Strava: "+nm });
       matched++;
     } else {                                                 // no planned session that day → log it as a completed extra
@@ -1655,6 +1659,7 @@ function matchActivities(acts){
       (state.custom=state.custom||[]).push(rec);
       (state.board[date]=state.board[date]||[]).push(id);
       state.done[id]=true;
+      if(hr!=null) state.log[id]={hr};
       added++;
     }
   });
