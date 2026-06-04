@@ -373,6 +373,10 @@
         <div class="sep"></div>
         <button data-act="clear">Clear this plan's progress</button>
         <button data-act="deletePlan">Delete this plan</button>
+        <div class="sep"></div>
+        <button data-act="strava">Connect Strava (auto-log)</button>
+        <button data-act="stravaSync">Sync activities from Strava</button>
+        <button data-act="stravaOff">Disconnect Strava</button>
       </div>
     </div>
   </div>
@@ -1400,7 +1404,11 @@ function download(filename, text, type){
 /* ============================ MENU ============================ */
 const menu=$("#menu");
 function toggleMenu(show){ menu.hidden = (show===undefined)? !menu.hidden : !show; }
-$("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true; toggleMenu(); };
+$("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true;
+  const c=(typeof stravaConnected==="function") && stravaConnected();
+  const sc=menu.querySelector('[data-act="strava"]'), ss=menu.querySelector('[data-act="stravaSync"]'), so=menu.querySelector('[data-act="stravaOff"]');
+  if(sc) sc.style.display=c?"none":""; if(ss) ss.style.display=c?"":"none"; if(so) so.style.display=c?"":"none";
+  toggleMenu(); };
 document.addEventListener("click", e=>{ if(!menu.hidden && !e.target.closest(".menuwrap")) toggleMenu(false); });
 menu.addEventListener("click", e=>{
   const b=e.target.closest("button[data-act]"); if(!b) return;
@@ -1414,6 +1422,9 @@ menu.addEventListener("click", e=>{
     case "importJson": $("#importJsonFile").click(); break;
     case "clear":      if(state.activeId && confirm("Clear all completions and logs for this plan (keep the plan & layout)?")){ pushUndo(); state.done={}; state.log={}; save(); render(); } break;
     case "deletePlan": if(state.activeId) deletePlan(state.activeId); break;
+    case "strava":     stravaConnect(); break;
+    case "stravaSync": stravaSync(); break;
+    case "stravaOff":  stravaDisconnect(); render(); break;
   }
 });
 $("#importJsonFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
@@ -1568,6 +1579,64 @@ window.addEventListener("focus", ()=>cloudPull());
 window.addEventListener("pageshow", ()=>cloudPull());
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) cloudPull(); });
 setInterval(()=>{ if(cloudOn() && document.visibilityState==="visible") cloudPull(); }, 15000);  // poll so changes arrive without a focus event
+
+/* ============================ STRAVA / COROS ACTIVITIES ============================ */
+const STRAVA_PROXY = "https://grisedale-strava.jack-mcatear.workers.dev";
+const strava = { refresh:null, name:null, busy:false };
+try{ strava.refresh=localStorage.getItem("strava.refresh")||null; strava.name=localStorage.getItem("strava.name")||null; }catch(_){}
+function stravaConnected(){ return !!strava.refresh; }
+function stravaSaveTokens(rt,name){ strava.refresh=rt; if(name) strava.name=name; try{ localStorage.setItem("strava.refresh",rt); if(name) localStorage.setItem("strava.name",name); }catch(_){} }
+function stravaConnect(){ location.href = STRAVA_PROXY+"/login?redirect="+encodeURIComponent(location.href.split('#')[0]); }
+function stravaDisconnect(){ strava.refresh=null; strava.name=null; try{ localStorage.removeItem("strava.refresh"); localStorage.removeItem("strava.name"); }catch(_){} alert("Strava disconnected on this device."); }
+// Capture the OAuth return (#strava=<refresh>&name=<n>) the Worker sends back.
+(function captureStrava(){
+  if(location.hash && location.hash.indexOf("strava=")>=0){
+    const h=new URLSearchParams(location.hash.slice(1)); const rt=h.get("strava"), nm=h.get("name");
+    if(rt){ stravaSaveTokens(rt, nm||""); history.replaceState(null,"",location.pathname+location.search);
+      setTimeout(()=>alert("Strava connected"+(nm?(" as "+nm):"")+".\n\nNow open ⋯ → \"Sync activities from Strava\" to pull your workouts onto matching days."), 350); }
+  }
+})();
+async function stravaSync(){
+  if(!stravaConnected()){ stravaConnect(); return; }
+  if(strava.busy) return; strava.busy=true;
+  try{
+    let after = Math.floor((Date.now()-120*86400000)/1000);
+    const ms=weekMondays(); if(ms.length){ after=Math.min(after, Math.floor(d(ms[0]).getTime()/1000)); }
+    const res=await fetch(STRAVA_PROXY+"/activities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, after})});
+    const data=await res.json();
+    if(data.error){ alert("Couldn't reach Strava ("+data.error+").\nIf you just changed the callback domain in Strava settings, give it a minute and retry."); return; }
+    if(data.refresh_token && data.refresh_token!==strava.refresh) stravaSaveTokens(data.refresh_token, strava.name);
+    const acts=data.activities||[];
+    const m=matchActivities(acts);
+    if(m.matched) { save(); render(); }
+    alert(`Strava: pulled ${acts.length} recent activit${acts.length===1?"y":"ies"} · matched ${m.matched} to plan day${m.matched===1?"":"s"}${m.unmatched?` · ${m.unmatched} had no session on that date`:""}.`);
+  }catch(e){ alert("Strava sync failed — check your connection and try again."); }
+  finally{ strava.busy=false; }
+}
+function matchActivities(acts){
+  if(!state.activeId || !acts.length) return {matched:0,unmatched:0};
+  pushUndo();
+  let matched=0, unmatched=0; const used=new Set();
+  acts.forEach(a=>{
+    const date=(a.start||"").slice(0,10); if(!date) return;
+    const isBike=/ride|cycl|bike|virtual/i.test(a.type||"");
+    const cands=(state.board[date]||[]).filter(id=>!used.has(id)).map(id=>({id,w:getWO(id)}))
+                  .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
+    if(!cands.length){ unmatched++; return; }
+    const pref=cands.filter(x=> isBike ? x.w.t==="Bike" : x.w.t!=="Bike");
+    const pick=pref[0]||cands[0]; used.add(pick.id);
+    state.done[pick.id]=true;
+    const prev=state.log[pick.id]||{};
+    state.log[pick.id]=Object.assign({}, prev, {
+      k: a.distance? Math.round(a.distance/100)/10 : prev.k,
+      d: a.moving_time? Math.round(a.moving_time/60) : prev.d,
+      v: a.elev!=null? Math.round(a.elev) : prev.v,
+      c: (prev.c? prev.c+" · " : "") + "Strava: "+(a.name||a.type||"activity")
+    });
+    matched++;
+  });
+  return {matched,unmatched};
+}
 
 /* ============================ GO ============================ */
 let _rendered=false;
