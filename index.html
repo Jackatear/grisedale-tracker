@@ -1445,7 +1445,7 @@ const cloud={ token:null, gistId:null, login:null, status:"off", busy:false };
 try{ cloud.token=localStorage.getItem("gh.token")||null; cloud.gistId=localStorage.getItem("gh.gistId")||null; cloud.login=localStorage.getItem("gh.login")||null; }catch(_){}
 const cloudOn=()=>!!cloud.token;
 function ghHeaders(){ return {"Authorization":"Bearer "+cloud.token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"}; }
-async function gh(path,opts){ const r=await fetch(GH_API+path,Object.assign({headers:ghHeaders()},opts)); if(!r.ok){ const e=new Error("GitHub "+r.status); e.status=r.status; throw e; } return r.status===204?null:r.json(); }
+async function gh(path,opts){ const r=await fetch(GH_API+path,Object.assign({cache:"no-store",headers:ghHeaders()},opts)); if(!r.ok){ const e=new Error("GitHub "+r.status); e.status=r.status; throw e; } return r.status===204?null:r.json(); }
 function pick(keys){ const o={}; keys.forEach(k=>{ if(k in state) o[k]=state[k]; }); return o; }
 function setStatus(s){ cloud.status=s; renderCloud(); }
 
@@ -1474,7 +1474,7 @@ async function cloudFindGist(){
 async function cloudReadRemote(){
   if(!cloud.gistId) return null;
   const g=await gh("/gists/"+cloud.gistId); const f=g.files&&g.files[GIST_FILE]; if(!f) return null;
-  let c=f.content; if(f.truncated&&f.raw_url){ c=await (await fetch(f.raw_url)).text(); }
+  let c=f.content; if(f.truncated&&f.raw_url){ c=await (await fetch(f.raw_url,{cache:"no-store"})).text(); }
   try{ return JSON.parse(c); }catch(_){ return null; }
 }
 function migrateRemote(remote){          // accept new {plans,…} or a legacy single-plan gist blob
@@ -1565,7 +1565,9 @@ $("#syncClose").onclick=closeSync;
 $("#syncBackdrop").addEventListener("click",e=>{ if(e.target.id==="syncBackdrop") closeSync(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSync(); });
 window.addEventListener("focus", ()=>cloudPull());
+window.addEventListener("pageshow", ()=>cloudPull());
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) cloudPull(); });
+setInterval(()=>{ if(cloudOn() && document.visibilityState==="visible") cloudPull(); }, 15000);  // poll so changes arrive without a focus event
 
 /* ============================ GO ============================ */
 let _rendered=false;
