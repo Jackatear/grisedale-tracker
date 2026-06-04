@@ -290,6 +290,17 @@
   .s-ex .name{color:var(--txt)}
   .s-ex .dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 
+  /* HR-zone intensity strips */
+  .zlegend{display:flex;gap:13px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:0 2px 12px}
+  .zlegend .zll{text-transform:uppercase;letter-spacing:.6px;font-size:10px;color:var(--faint)}
+  .zlegend span{display:inline-flex;align-items:center;gap:5px}
+  .zlegend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+  .zonestrip{display:flex;flex-direction:column;gap:5px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .zrow{display:flex;align-items:center;gap:9px}
+  .zlab{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);width:34px;flex:0 0 auto}
+  .zbar{flex:1;display:flex;height:7px;border-radius:999px;overflow:hidden;background:var(--bg2)}
+  .zbar i{display:block;height:100%}
+
   /* cloud sync */
   .cloud-pip{width:9px;height:9px;border-radius:50%;background:var(--faint);flex:0 0 auto}
   .cloud-pip.synced{background:var(--good)}
@@ -1060,6 +1071,25 @@ function cardHTML(id){
     </div>`;
 }
 
+/* ---- HR-zone distribution (planned from target zones; actual from Strava / avg HR) ---- */
+const ZONES=[{k:"Z1",c:"#5aa6d4"},{k:"Z2",c:"#5bb38a"},{k:"Z3",c:"#cfa23e"},{k:"Z4",c:"#e0833a"},{k:"Z5",c:"#d56e7a"}];
+const HR_THRESH=[120,146,160,170];   // upper bounds Z1..Z4; ≥170 = Z5 (Jack's zones)
+function hrToZoneIdx(h){ if(h==null) return null; for(let i=0;i<HR_THRESH.length;i++){ if(h<HR_THRESH[i]) return i; } return 4; }
+function zoneTextToIdx(z){ if(!z) return null; const m=/z\s*([1-5])/i.exec(z); if(m) return (+m[1])-1; if(/race|cat/i.test(z)) return 3; return null; }
+function zoneBar(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
+  return `<div class="zbar">`+arr.map((v,i)=> v>0?`<i style="width:${(v/tot*100).toFixed(1)}%;background:${ZONES[i].c}" title="${ZONES[i].k}: ${Math.round(v/tot*100)}%"></i>`:"").join("")+`</div>`; }
+function weekZones(weekIds){
+  const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
+  weekIds.forEach(id=>{ const w=getWO(id); if(!w||w.t==="Rest") return;
+    const zi=zoneTextToIdx(w.z); if(zi!=null && w.d) plan[zi]+=w.d;
+    if(state.done[id]){ const lg=state.log[id]||{};
+      if(Array.isArray(lg.zones)){ lg.zones.forEach((s,i)=>{ if(i<5){ act[i]+=(s||0); hasAct=true; } }); }
+      else if(lg.hr!=null){ const ai=hrToZoneIdx(lg.hr); const dur=(lg.d!=null?lg.d:w.d)||0; if(ai!=null&&dur){ act[ai]+=dur*60; hasAct=true; } }
+    }
+  });
+  return {plan, act, hasAct, planTot:plan.reduce((a,b)=>a+b,0)};
+}
+
 function renderWeeks(){
   const mondays = weekMondays();
   const psm = planStartMonday();
@@ -1095,6 +1125,11 @@ function renderWeeks(){
       ? `<span class="phasebadge ${(''+blk.phase).indexOf('2')>=0?'phase2':'phase1'}">${typeof blk.phase==='number'?('Phase '+blk.phase):esc(blk.phase)}</span>`
       : "";
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
+    const Z = weekZones(weekIds);
+    const zonestrip = (Z.planTot||Z.hasAct) ? `<div class="zonestrip">
+        ${Z.planTot? `<div class="zrow"><span class="zlab">Plan</span>${zoneBar(Z.plan)}</div>`:""}
+        ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
+      </div>` : "";
     html += `<div class="week ${collapsed?'collapsed':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
@@ -1103,10 +1138,11 @@ function renderWeeks(){
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
         </div>
-        <div class="week-body"><div class="week-grid">${cells}</div></div>
+        <div class="week-body">${zonestrip}<div class="week-grid">${cells}</div></div>
       </div>`;
   });
-  weeksEl.innerHTML = html || `<p style="color:var(--faint);text-align:center;padding:46px 0">No sessions yet — drop a CSV anywhere to load a plan, or use the ⋯ menu.</p>`;
+  const legend = `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>`;
+  weeksEl.innerHTML = html ? (legend+html) : `<p style="color:var(--faint);text-align:center;padding:46px 0">No sessions yet — drop a CSV anywhere to load a plan, or use the ⋯ menu.</p>`;
 }
 
 function renderFoot(){
@@ -1621,6 +1657,15 @@ async function stravaSync(){
     if(data.refresh_token && data.refresh_token!==strava.refresh) stravaSaveTokens(data.refresh_token, strava.name);
     const acts=data.activities||[];
     const m=matchActivities(acts);
+    const imp=m.imported||[];
+    if(imp.length){                                   // pull real time-in-zone for what we just imported
+      try{
+        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:imp.map(x=>x.sid)})});
+        const zd=await zr.json();
+        if(zd && zd.zones){ imp.forEach(x=>{ const arr=zd.zones[String(x.sid)]; if(Array.isArray(arr)&&arr.length){ state.log[x.id]=Object.assign({}, state.log[x.id]||{}, {zones:arr.slice(0,5)}); } }); }
+        if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
+      }catch(_){}
+    }
     if(m.matched||m.added){ save(); render(); }
     alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} · ${m.matched} matched to plan days · ${m.added} added as logged extras${(m.matched||m.added)?"":" (nothing new)"}.`);
   }catch(e){ alert("Strava sync failed — check your connection and try again."); }
@@ -1633,7 +1678,7 @@ function matchActivities(acts){
   const have=new Set();
   (state.custom||[]).forEach(c=>{ if(c.sid!=null) have.add(String(c.sid)); });
   for(const id in state.log){ const sid=state.log[id]&&state.log[id].sid; if(sid!=null) have.add(String(sid)); }
-  let matched=0, added=0; const used=new Set();
+  let matched=0, added=0; const used=new Set(), imported=[];
   acts.forEach(a=>{
     if(have.has(String(a.id))) return;                       // already imported
     const date=(a.start||"").slice(0,10); if(!date) return;
@@ -1652,7 +1697,7 @@ function matchActivities(acts){
       const prev=state.log[pick.id]||{};
       state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, sid:a.id,
         c:(prev.c?prev.c+" · ":"")+"Strava: "+nm });
-      matched++;
+      imported.push({id:pick.id, sid:a.id}); matched++;
     } else {                                                 // no planned session that day → log it as a completed extra
       const id="sv"+a.id;
       const rec={ id, date, t:(isBike?"Bike":"Easy"), n:nm, d:min, k:km, v:vert, z:"—", note:"Imported from Strava.", sid:a.id };
@@ -1660,10 +1705,10 @@ function matchActivities(acts){
       (state.board[date]=state.board[date]||[]).push(id);
       state.done[id]=true;
       if(hr!=null) state.log[id]={hr};
-      added++;
+      imported.push({id, sid:a.id}); added++;
     }
   });
-  return {matched,added};
+  return {matched,added,imported};
 }
 
 /* ============================ GO ============================ */
