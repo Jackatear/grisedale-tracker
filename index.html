@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05i" />
+<meta name="app-build" content="2026-06-05j" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -206,6 +206,7 @@
   .pill.exec.good{background:var(--good)}
   .pill.exec.warn{background:var(--warn)}
   .pill.exec.bad{background:var(--bad)}
+  .pill.load{color:var(--muted);background:var(--bg2);border-color:var(--line);font-variant-numeric:tabular-nums}
   .tc-doneflag.warn{color:var(--warn)} .tc-doneflag.bad{color:var(--bad)}
   .exec-read{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;margin:0 0 10px;border:1px solid var(--line)}
   .exec-read .exec-pct{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
@@ -585,7 +586,6 @@
     <div id="todayCard"></div>
     <div class="section-label">Overview</div>
     <div class="dash" id="dash"></div>
-    <div id="coachStrip"></div>
 
     <div class="toolbar">
       <div class="menuwrap">
@@ -1067,7 +1067,7 @@ function render(){
     $("#countdown").textContent = n+" plan"+(n===1?"":"s");
     $("#miniStats").innerHTML = "";
     document.title = "Training Tracker";
-    renderHome(); save();
+    renderHome(); renderCoach(); save();
     if(typeof renderCloud==="function") renderCloud();
     return;
   }
@@ -1075,7 +1075,6 @@ function render(){
   renderCountdown();
   renderToday();
   renderDash();
-  renderCoach();
   renderChips();
   renderToolbarState();
   renderWeeks();
@@ -1155,6 +1154,7 @@ function renderHome(){
   $("#homeView").innerHTML = `
     <div class="home-head"><h2>Your plans</h2>
       <div class="home-actions"><button class="btn primary" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New blank plan</button></div></div>
+    <div id="coachStrip"></div>
     <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>
     ${zonesCard}
     <p class="legend-foot">Each plan keeps its own progress, and your whole library syncs across devices. Tip: drop a <b>.csv</b> anywhere to add a plan.</p>`;
@@ -1424,18 +1424,26 @@ function renderDash(){
 
 /* ===== COACH: training load (objective) + readiness (subjective) ===== */
 const LOAD_W=[1,2,3,4,5];                         // per-minute weight for Z1..Z5 (TRIMP-style)
-function sessionLoad(id){                          // load units for one completed session
-  const w=getWO(id); if(!w||w.t==="Rest"||!state.done[id]) return 0;
-  const lg=state.log[id]||{};
+function loadFrom(w, lg){                          // unified estimator: precise time-in-zone if we have it, else minutes × intensity
+  if(!w||w.t==="Rest") return 0; lg=lg||{};
   if(Array.isArray(lg.zones)){ const tot=lg.zones.reduce((a,b)=>a+b,0);
-    if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }   // precise: time-in-zone
+    if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }   // precise (Strava HR stream)
   const min = lg.d!=null ? lg.d : (w.d||0); if(!min) return 0;
-  let zi = lg.hr!=null ? hrToZoneIdx(lg.hr) : zoneTextToIdx(w.z); if(zi==null) zi=1;   // fallback: minutes × zone weight
+  let zi = zoneTextToIdx(w.z);                                                         // intent first (so intervals aren't undercounted by avg HR)
+  if(zi==null) zi = (lg.hr!=null ? hrToZoneIdx(lg.hr) : 1); if(zi==null) zi=1;
   return min*(LOAD_W[zi]||1);
 }
-function dayLoad(date){ let s=0; (state.board[date]||[]).forEach(id=>{ s+=sessionLoad(id); }); return s; }
+function sessionLoad(id){ return state.done[id] ? loadFrom(getWO(id), state.log[id]) : 0; }   // completed session (active plan, for cards)
+function plannedLoad(w){ return loadFrom(w, null); }                                            // planned estimate (not-yet-done cards)
+// record-scoped load so the home page can total load across ALL plans (no active mirror there)
+function recWO(rec,id){ const base=(rec.plan||[]).find(w=>w.id===id)||(rec.custom||[]).find(w=>w.id===id); return base?Object.assign({},base,(rec.edits&&rec.edits[id])||{}):null; }
+function recSessionLoad(rec,id){
+  if(rec.deleted&&rec.deleted[id]) return 0;
+  if(!(rec.done&&rec.done[id])) return 0;
+  return loadFrom(recWO(rec,id), rec.log&&rec.log[id]);
+}
+function dayLoad(date){ let s=0; (state.plans||[]).forEach(rec=>{ ((rec.board&&rec.board[date])||[]).forEach(id=>{ s+=recSessionLoad(rec,id); }); }); return s; }
 function rollingLoad(end, days){ let s=0; for(let i=0;i<days;i++) s+=dayLoad(addDays(end,-i)); return s; }
-function loadByWeek(){ return weekMondays().map(mon=>{ let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); return {mon, load:Math.round(l)}; }); }
 function loadBand(acwr, c28){
   if(c28<60 || acwr==null) return {lvl:"neutral", label:"Building baseline", note:"A few weeks of logged sessions unlock the ramp guardrail."};
   if(acwr>1.5) return {lvl:"bad",  label:"Spike · "+acwr.toFixed(2), note:"Sharp jump in load — elevated injury risk. Add easy days or cut a hard session."};
@@ -1459,8 +1467,8 @@ function renderCoach(){
   const acwr = chronic>0 ? acute/chronic : null;
   const trend = prev>0 ? Math.round((acute-prev)/prev*100) : null;
   const band = loadBand(acwr, c28);
-  const wk=loadByWeek().slice(-6), curMon=mondayOf(today);
-  const loadSpark = sparkBars(wk.map(w=>w.load), Math.max(...wk.map(w=>w.load),1), wk.findIndex(w=>w.mon===curMon));
+  const wkLoads=[]; for(let i=5;i>=0;i--){ const mon=addDays(mondayOf(today),-7*i); let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); wkLoads.push(Math.round(l)); }
+  const loadSpark = sparkBars(wkLoads, Math.max(...wkLoads,1), 5);
   const trendHTML = trend==null?"":`<span class="cc-trend">${trend>=0?"▲":"▼"} ${Math.abs(trend)}% vs prev 7d</span>`;
   const loadCard=`<div class="coach-card">
     <h4>Training load · last 7 days</h4>
@@ -1494,7 +1502,7 @@ function renderCoach(){
   }
   host.innerHTML=`<div class="coach-strip">${loadCard}${readyCard}</div>`;
 }
-$("#coachStrip").addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
+document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
 function openCheckin(){
   closeCheckin();
   const today=todayISO(), cur=(state.readiness&&state.readiness[today])||{};
@@ -1571,6 +1579,8 @@ function cardHTML(id){
   const lg = state.log[id]||{};
   if(lg.hr) meta.push(`<span class="pill">${lg.hr} bpm</span>`);
   if(state.done[id]){ const es=execScore(w,lg); if(es) meta.push(`<span class="pill exec ${es.level}" title="${execLabel(es)} — ${(es.basis==="time"?fmtDur(es.actual):fmtDist(es.actual))} done vs ${(es.basis==="time"?fmtDur(es.planned):fmtDist(es.planned))} planned">${es.pct}%</span>`); }
+  const ld = state.done[id] ? sessionLoad(id) : plannedLoad(w);
+  if(ld) meta.push(`<span class="pill load" title="${state.done[id]?"Training load (from your session)":"Estimated training load"}">⚡ ${Math.round(ld/5)*5}</span>`);
   const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
   return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
       <button class="check" data-check="${id}" title="Mark complete"></button>
