@@ -336,8 +336,12 @@
   .s-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .s-card-head h3{font-size:14.5px;margin:0;font-weight:600}
   .s-focus{color:var(--muted);font-size:12.5px;margin:5px 0 10px;line-height:1.45}
-  .s-ex .ex-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+  .s-ex .ex-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
   .s-ex .ex-row:first-child{border-top:0}
+  .s-ex .name{flex:1;min-width:0}
+  .ex-w{width:74px;flex:0 0 auto;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:7px;padding:5px 8px;font:inherit;font-size:12.5px;text-align:center}
+  .ex-w:focus{outline:none;border-color:var(--accent)}
+  .ex-w::placeholder{color:var(--faint)}
   .s-ex .name{color:var(--txt)}
   .s-ex .dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 
@@ -729,6 +733,7 @@ function migrate(raw){
     collapsed:raw.collapsed||{}, seenTypes:raw.seenTypes||[],
     hrZones: (Array.isArray(raw.hrZones)&&raw.hrZones.length===5)? raw.hrZones : defaultHrZones(),
     paceZones: (Array.isArray(raw.paceZones)&&raw.paceZones.length===5)? raw.paceZones : defaultPaceZones(),
+    strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -758,7 +763,7 @@ let _saveTimer=null, _lastDataSer=null;
 // The whole plan LIBRARY syncs to the cloud; view prefs (theme/unit/tab/filters/collapsed) stay per-device.
 function defaultHrZones(){ return [[100,135],[135,155],[155,165],[165,175],[175,185]]; }
 function defaultPaceZones(){ return [["",""],["",""],["",""],["",""],["",""]]; }
-function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones}); }
+function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
 function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
@@ -1040,11 +1045,14 @@ const STRENGTH = {
   ]
 };
 function renderStrength(){
+  const log = state.strengthLog||{};
   const card = r => `
     <div class="s-card">
       <div class="s-card-head"><h3>${esc(r.name)}</h3><span class="pill">${r.mins} min</span></div>
       <p class="s-focus">${esc(r.focus)}</p>
-      <div class="s-ex">${r.ex.map(e=>`<div class="ex-row"><span class="name">${esc(e[0])}</span><span class="dose">${esc(e[1])}</span></div>`).join("")}</div>
+      <div class="s-ex">${r.ex.map(e=>{ const k=r.name+"::"+e[0];
+        return `<div class="ex-row"><span class="name">${esc(e[0])}</span><span class="dose">${esc(e[1])}</span><input class="ex-w" data-sx="${esc(k)}" placeholder="log" value="${esc(log[k]||"")}"></div>`;
+      }).join("")}</div>
     </div>`;
   const sections = STRENGTH.sections.map(s=>`
     <div class="s-section">
@@ -1063,8 +1071,14 @@ function applyTab(){
   if(pv) pv.hidden = t!=="plan";
   if(sv) sv.hidden = t!=="strength";
   $$(".tab").forEach(b=>b.setAttribute("aria-pressed", b.dataset.tab===t));
-  if(t==="strength" && sv && !sv.dataset.rendered){ renderStrength(); sv.dataset.rendered="1"; }
+  if(t==="strength" && sv) renderStrength();   // re-render each show so logged weights & synced changes appear
 }
+$("#strengthView").addEventListener("change", e=>{
+  const el=e.target; if(!el.matches(".ex-w")) return;
+  const k=el.getAttribute("data-sx"); state.strengthLog=state.strengthLog||{};
+  const v=el.value.trim(); if(v) state.strengthLog[k]=v; else delete state.strengthLog[k];
+  save();   // no re-render → keeps focus; syncs via planSig
+});
 
 function renderCountdown(){
   const mondays = weekMondays(), nWeeks = mondays.length;
@@ -1220,11 +1234,12 @@ function zbreakText(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return ""
   return arr.map((v,i)=> v>0?`${ZONES[i].k} ${Math.round(v/tot*100)}%`:null).filter(Boolean).join(" · "); }
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
+  const ztNow=hrThresholds().join(",");
   weekIds.forEach(id=>{ const w=getWO(id); if(!w||w.t==="Rest") return;
     const zi=zoneTextToIdx(w.z); if(zi!=null && w.d) plan[zi]+=w.d;
     if(state.done[id]){ const lg=state.log[id]||{};
-      if(Array.isArray(lg.zones)){ lg.zones.forEach((s,i)=>{ if(i<5){ act[i]+=(s||0); hasAct=true; } }); }
-      else if(lg.hr!=null){ const ai=hrToZoneIdx(lg.hr); const dur=(lg.d!=null?lg.d:w.d)||0; if(ai!=null&&dur){ act[ai]+=dur*60; hasAct=true; } }
+      if(Array.isArray(lg.zones) && lg.zt===ztNow){ lg.zones.forEach((s,i)=>{ if(i<5){ act[i]+=(s||0); hasAct=true; } }); }  // precise, computed with current zones
+      else if(lg.hr!=null){ const ai=hrToZoneIdx(lg.hr); const dur=(lg.d!=null?lg.d:w.d)||0; if(ai!=null&&dur){ act[ai]+=dur*60; hasAct=true; } }  // fallback until next sync recomputes
     }
   });
   return {plan, act, hasAct, planTot:plan.reduce((a,b)=>a+b,0)};
@@ -1695,6 +1710,7 @@ function adoptRemote(remote){
   state.updatedAt = remote.updatedAt||0;
   if(Array.isArray(remote.hrZones)&&remote.hrZones.length===5) state.hrZones=remote.hrZones;
   if(Array.isArray(remote.paceZones)&&remote.paceZones.length===5) state.paceZones=remote.paceZones;
+  if(remote.strengthLog && typeof remote.strengthLog==="object") state.strengthLog=remote.strengthLog;
   if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
   if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
   activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
@@ -1722,7 +1738,7 @@ function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTi
 async function cloudPushNow(){
   _pushTimer=null; if(!cloudOn()) return;
   syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, updatedAt: state.updatedAt });
+  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, updatedAt: state.updatedAt });
   const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
   try{ setStatus("saving");
     if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
@@ -1807,15 +1823,21 @@ async function stravaSync(){
     const acts=data.activities||[];
     const m=matchActivities(acts);
     const imp=m.imported||[];
-    if(imp.length){                                   // pull real time-in-zone for what we just imported
+    // Compute time-in-zone from the HR stream using OUR zones (home-page thresholds), ignoring Strava's config.
+    // Recompute for: freshly imported activities + any logged activity whose stored buckets predate the current zones.
+    const ztNow=hrThresholds().join(",");
+    const zmap={}; imp.forEach(x=>{ if(x.sid!=null) zmap[x.id]={id:x.id, sid:x.sid}; });
+    for(const id in state.log){ const lg=state.log[id]; if(lg && lg.sid!=null && lg.zt!==ztNow) zmap[id]={id, sid:lg.sid}; }
+    const zlist=Object.values(zmap).slice(0,30);
+    if(zlist.length){
       try{
-        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:imp.map(x=>x.sid)})});
+        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:zlist.map(x=>x.sid), thresholds:hrThresholds()})});
         const zd=await zr.json();
-        if(zd && zd.zones){ imp.forEach(x=>{ const arr=zd.zones[String(x.sid)]; if(Array.isArray(arr)&&arr.length){ state.log[x.id]=Object.assign({}, state.log[x.id]||{}, {zones:arr.slice(0,5)}); } }); }
+        if(zd && zd.zones){ zlist.forEach(x=>{ const arr=zd.zones[String(x.sid)]; if(Array.isArray(arr)&&arr.length){ state.log[x.id]=Object.assign({}, state.log[x.id]||{}, {zones:arr.slice(0,5), zt:ztNow}); } }); }
         if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
       }catch(_){}
     }
-    if(m.matched||m.added||m.updated||imp.length){ save(); render(); }
+    if(m.matched||m.added||m.updated||zlist.length){ save(); render(); }
     const withHr=acts.filter(a=>a.hr!=null).length;
     const bits=[`${m.matched} matched`,`${m.added} added`]; if(m.updated) bits.push(`${m.updated} updated`);
     alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} (${withHr} with heart rate) · ${bits.join(" · ")}.`);
