@@ -302,6 +302,23 @@
   .pc-actions{display:flex;gap:8px;border-top:1px solid var(--line);padding-top:9px}
   .pc-actions button{flex:1;background:transparent;border:1px solid var(--line2);color:var(--muted);border-radius:8px;padding:6px;font-size:12px;cursor:pointer}
   .pc-actions button:hover{border-color:var(--faint);color:var(--txt)}
+  /* your zones */
+  .zones-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-top:14px;overflow:hidden}
+  .zc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;cursor:pointer}
+  .zc-head b{font-size:14px} .zc-sum{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+  .zc-head .caret{color:var(--faint);transition:.2s}
+  .zones-card.open .zc-head .caret{transform:rotate(180deg)}
+  .zc-body{display:none;padding:2px 16px 16px;border-top:1px solid var(--line)}
+  .zones-card.open .zc-body{display:block}
+  .zc-sec{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);font-weight:600;margin:13px 0 8px}
+  .zc-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .zc-dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .zc-zl{width:22px;font-size:12.5px;color:var(--muted);font-weight:600;flex:0 0 auto}
+  .zc-in{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 9px;font:inherit;font-size:13px;text-align:center}
+  .zc-in:focus{outline:none;border-color:var(--faint)}
+  .zc-dash{color:var(--faint)}
+  .zc-unit{font-size:11px;color:var(--faint);width:28px;flex:0 0 auto}
+  .zc-note{font-size:11.5px;color:var(--faint);line-height:1.5;margin-top:10px}
   .s-intro{max-width:780px;margin-bottom:18px}
   .s-intro h2{font-size:20px;margin:0 0 6px;letter-spacing:-.2px}
   .s-intro p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
@@ -383,8 +400,11 @@
     .day-cell .empty{display:none}
     .day-head .addbtn{opacity:.45}      /* visible/tappable without hover on touch */
     .card{padding:10px 11px}
-    .modal-body{padding:16px;gap:13px}
-    .grid3{gap:8px}
+    .modal-body{padding:16px;gap:14px}
+    .grid2{grid-template-columns:1fr}        /* stack so labels don't wrap on a phone */
+    .grid3{gap:10px;grid-template-columns:1fr 1fr}
+    .field>label{white-space:nowrap}
+    .modal-head h3{font-size:16px;line-height:1.3}
     .tabsrow{margin-bottom:14px}
     .home-head h2{font-size:17px}
     .plan-grid{grid-template-columns:1fr}
@@ -671,7 +691,7 @@ function newId(){ return "p"+Date.now().toString(36)+Math.random().toString(36).
 function seedRecord(){ return { id:"seed-grisedale", planName:"Grisedale Horseshoe", plan:SEED_PLAN.map(s=>({...s})), blocks:seedBlocks(), board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{} }; }
 function blankRecord(name){ return { id:newId(), planName:(name||"Untitled plan"), plan:[], blocks:{}, board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{} }; }
 function normalizeRec(r){ return Object.assign(blankRecord("Untitled plan"), r||{}, { id:(r&&r.id)||newId() }); }
-const defaultPrefs = () => ({ collapsed:{}, unit:"km", theme:"light", themeV:2, showZones:false, tab:"plan", seenTypes:[...TYPE_ORDER], filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""} });
+const defaultPrefs = () => ({ collapsed:{}, unit:"km", theme:"light", themeV:2, showZones:false, zonesOpen:false, tab:"plan", seenTypes:[...TYPE_ORDER], filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""} });
 // Copy the active plan record onto top-level `state` (the working mirror the UI reads/writes).
 function activateMirror(s){ const rec = s.activeId ? (s.plans||[]).find(p=>p.id===s.activeId) : null; const src = rec || blankRecord(""); PLAN_FIELDS.forEach(k=> s[k]=src[k]); return s; }
 // Fold the working mirror back into its library record before saving.
@@ -705,8 +725,10 @@ function migrate(raw){
   let theme, themeV;
   if((raw.themeV||0) < 2){ theme="light"; themeV=2; } else { theme=raw.theme||"light"; themeV=raw.themeV; }
   const s = Object.assign(defaultPrefs(), {
-    unit:raw.unit||"km", theme, themeV, showZones:!!raw.showZones, tab:raw.tab||"plan",
+    unit:raw.unit||"km", theme, themeV, showZones:!!raw.showZones, zonesOpen:!!raw.zonesOpen, tab:raw.tab||"plan",
     collapsed:raw.collapsed||{}, seenTypes:raw.seenTypes||[],
+    hrZones: (Array.isArray(raw.hrZones)&&raw.hrZones.length===5)? raw.hrZones : defaultHrZones(),
+    paceZones: (Array.isArray(raw.paceZones)&&raw.paceZones.length===5)? raw.paceZones : defaultPaceZones(),
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -734,7 +756,9 @@ async function hydrate(){
 
 let _saveTimer=null, _lastDataSer=null;
 // The whole plan LIBRARY syncs to the cloud; view prefs (theme/unit/tab/filters/collapsed) stay per-device.
-function planSig(){ return JSON.stringify(state.plans||[]); }
+function defaultHrZones(){ return [[100,135],[135,155],[155,165],[165,175],[175,185]]; }
+function defaultPaceZones(){ return [["",""],["",""],["",""],["",""],["",""]]; }
+function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
 function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
@@ -941,20 +965,43 @@ function renderHome(){
         <div class="pc-actions"><button data-rename="${rec.id}">Rename</button><button data-exp="${rec.id}">Export CSV</button></div>
       </div>`;
   }).join("");
+  const hz=state.hrZones||defaultHrZones(), pz=state.paceZones||defaultPaceZones();
+  const hrRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
+      <input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.0" value="${hz[i][0]??""}"><span class="zc-dash">–</span><input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.1" value="${hz[i][1]??""}"><span class="zc-unit">bpm</span></div>`;
+  const paceRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
+      <input class="zc-in" data-pz="${i}.0" placeholder="—" value="${esc(pz[i][0]||"")}"><span class="zc-dash">–</span><input class="zc-in" data-pz="${i}.1" placeholder="—" value="${esc(pz[i][1]||"")}"><span class="zc-unit">/km</span></div>`;
+  const zonesCard=`<div class="zones-card ${state.zonesOpen?'open':''}">
+      <div class="zc-head" data-zonestoggle><div><b>Your zones</b><span class="zc-sum">HR ${hz[0][0]}–${hz[4][1]} bpm · tap to edit pace &amp; HR</span></div><span class="caret">▾</span></div>
+      <div class="zc-body">
+        <div class="zc-sec">Heart rate (bpm)</div>${ZONES.map((z,i)=>hrRow(i)).join("")}
+        <div class="zc-sec">Pace (min/km)</div>${ZONES.map((z,i)=>paceRow(i)).join("")}
+        <div class="zc-note">Used to bucket your runs into zones. For Strava "Done" bars to match exactly, set the same HR zones in your Strava settings too.</div>
+      </div>
+    </div>`;
   $("#homeView").innerHTML = `
     <div class="home-head"><h2>Your plans</h2>
       <div class="home-actions"><button class="btn primary" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New blank plan</button></div></div>
     <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>
+    ${zonesCard}
     <p class="legend-foot">Each plan keeps its own progress, and your whole library syncs across devices. Tip: drop a <b>.csv</b> anywhere to add a plan.</p>`;
 }
 $("#homeBtn").onclick = goHome;
 $("#homeView").addEventListener("click", e=>{
+  const zt=e.target.closest("[data-zonestoggle]");
+  if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
   if(e.target.id==="homeImport"){ $("#importCsvFile").click(); return; }
   if(e.target.id==="homeNew"){ newBlankPlan(); return; }
   const del=e.target.closest("[data-del]"); if(del){ e.stopPropagation(); deletePlan(del.dataset.del); return; }
   const ren=e.target.closest("[data-rename]"); if(ren){ e.stopPropagation(); renamePlan(ren.dataset.rename); return; }
   const exp=e.target.closest("[data-exp]"); if(exp){ e.stopPropagation(); exportPlanCSV(exp.dataset.exp); return; }
   const open=e.target.closest("[data-open]"); if(open){ loadPlan(open.dataset.open); return; }
+});
+$("#homeView").addEventListener("change", e=>{
+  const el=e.target; if(!el.matches(".zc-in")) return;
+  const hz=el.getAttribute("data-hz"), pz=el.getAttribute("data-pz");
+  if(hz){ const [i,j]=hz.split(".").map(Number); state.hrZones=(state.hrZones||defaultHrZones()).map(a=>a.slice()); const v=parseInt(el.value,10); state.hrZones[i][j]=isNaN(v)?null:v; }
+  else if(pz){ const [i,j]=pz.split(".").map(Number); state.paceZones=(state.paceZones||defaultPaceZones()).map(a=>a.slice()); state.paceZones[i][j]=el.value.trim(); }
+  save();   // no full re-render → keeps input focus; zone classification updates next time a plan renders
 });
 
 /* ============================ STRENGTH TAB ============================ */
@@ -1164,8 +1211,8 @@ function cardHTML(id){
 
 /* ---- HR-zone distribution (planned from target zones; actual from Strava / avg HR) ---- */
 const ZONES=[{k:"Z1",c:"#5aa6d4"},{k:"Z2",c:"#5bb38a"},{k:"Z3",c:"#cfa23e"},{k:"Z4",c:"#e0833a"},{k:"Z5",c:"#d56e7a"}];
-const HR_THRESH=[120,146,160,170];   // upper bounds Z1..Z4; ≥170 = Z5 (Jack's zones)
-function hrToZoneIdx(h){ if(h==null) return null; for(let i=0;i<HR_THRESH.length;i++){ if(h<HR_THRESH[i]) return i; } return 4; }
+function hrThresholds(){ const z=(state.hrZones&&state.hrZones.length===5)?state.hrZones:defaultHrZones(); return [z[0][1],z[1][1],z[2][1],z[3][1]].map(Number); }
+function hrToZoneIdx(h){ if(h==null) return null; const th=hrThresholds(); for(let i=0;i<4;i++){ if(h<th[i]) return i; } return 4; }
 function zoneTextToIdx(z){ if(!z) return null; const m=/z\s*([1-5])/i.exec(z); if(m) return (+m[1])-1; if(/race|cat/i.test(z)) return 3; return null; }
 function zoneBar(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
   return `<div class="zbar">`+arr.map((v,i)=> v>0?`<i style="width:${(v/tot*100).toFixed(1)}%;background:${ZONES[i].c}" title="${ZONES[i].k}: ${Math.round(v/tot*100)}%"></i>`:"").join("")+`</div>`; }
@@ -1646,6 +1693,8 @@ function adoptRemote(remote){
   remote = migrateRemote(remote);
   state.plans = (remote.plans||[]).map(normalizeRec);
   state.updatedAt = remote.updatedAt||0;
+  if(Array.isArray(remote.hrZones)&&remote.hrZones.length===5) state.hrZones=remote.hrZones;
+  if(Array.isArray(remote.paceZones)&&remote.paceZones.length===5) state.paceZones=remote.paceZones;
   if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
   if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
   activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
@@ -1673,7 +1722,7 @@ function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTi
 async function cloudPushNow(){
   _pushTimer=null; if(!cloudOn()) return;
   syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, updatedAt: state.updatedAt });
+  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, updatedAt: state.updatedAt });
   const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
   try{ setStatus("saving");
     if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
