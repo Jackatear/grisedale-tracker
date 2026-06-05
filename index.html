@@ -158,10 +158,10 @@
   }
   .day-cell:last-child{border-right:0}
   .day-cell.drag-over{background:color-mix(in srgb,var(--accent) 8%,transparent)}
-  .day-cell.is-today{background:color-mix(in srgb,var(--accent) 5%,transparent)}
+  .day-cell.is-today{background:color-mix(in srgb,var(--accent) 9%,transparent);box-shadow:inset 2px 0 0 var(--accent)}
   .day-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px}
   .day-head .dnum{font-weight:600;color:var(--txt)}
-  .day-head.today .dnum{color:var(--accent)}
+  .day-head.today .dnum{background:var(--accent);color:#fff;padding:1px 8px;border-radius:999px}
   .day-head .addbtn{opacity:0;border:0;background:transparent;color:var(--faint);font-size:16px;line-height:1;padding:0 4px;transition:.15s}
   .day-cell:hover .addbtn{opacity:1}
   .day-head .addbtn:hover{color:var(--txt)}
@@ -777,7 +777,11 @@ function planDateSet(){
 function weekMondays(){
   const set=planDateSet(); if(!set.size) return [];
   let min=null,max=null; set.forEach(dt=>{ if(min===null||dt<min)min=dt; if(max===null||dt>max)max=dt; });
-  const out=[]; let m=mondayOf(min); const last=mondayOf(max); let g=0;
+  let first=mondayOf(min), last=mondayOf(max);
+  const tw=mondayOf(todayISO());                       // always show the current week if it's near the plan
+  if(tw<first && daysBetween(tw,first)<=21) first=tw;
+  if(tw>last  && daysBetween(last,tw)<=21) last=tw;
+  const out=[]; let m=first; let g=0;
   while(m<=last && g++<1040){ out.push(m); m=addDays(m,7); }
   return out;
 }
@@ -1696,8 +1700,9 @@ async function stravaSync(){
       }catch(_){}
     }
     if(m.matched||m.added||m.updated||imp.length){ save(); render(); }
+    const withHr=acts.filter(a=>a.hr!=null).length;
     const bits=[`${m.matched} matched`,`${m.added} added`]; if(m.updated) bits.push(`${m.updated} updated`);
-    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} · ${bits.join(" · ")}${(m.matched||m.added||m.updated)?"":" (nothing new)"}.`);
+    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} (${withHr} with heart rate) · ${bits.join(" · ")}.`);
   }catch(e){ alert("Strava sync failed — check your connection and try again."); }
   finally{ strava.busy=false; }
 }
