@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05j" />
+<meta name="app-build" content="2026-06-05k" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -96,6 +96,34 @@
   /* ---------- Section structure ---------- */
   .section-label{display:flex;align-items:center;gap:11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--faint);font-weight:600;margin:4px 2px 12px}
   .section-label::after{content:"";flex:1;height:1px;background:var(--line)}
+  /* collapsible section header (Overview) — looks like a section-label but toggles */
+  .section-toggle{display:flex;align-items:center;gap:11px;width:100%;background:none;border:0;cursor:pointer;font:inherit;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--faint);font-weight:600;margin:4px 2px 12px;padding:0}
+  .section-toggle::after{content:"";flex:1;height:1px;background:var(--line)}
+  .section-toggle .caret{transition:.2s;font-size:11px}
+  .section-toggle[aria-expanded="false"] .caret{transform:rotate(-90deg)}
+  .dash.collapsed{display:none}
+  /* Calendar grid */
+  .cal-top{display:flex;align-items:center;gap:8px;margin:2px 2px 14px;flex-wrap:wrap}
+  .cal-top h3{font-size:16px;margin:0;font-weight:700;min-width:104px}
+  .cal-nav{display:flex;gap:6px;margin-left:auto}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-wd{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);text-align:center;padding:2px 0 4px;font-weight:600}
+  .cal-cell{min-height:88px;border:1px solid var(--line);border-radius:9px;padding:5px 5px 6px;background:var(--panel);display:flex;flex-direction:column;gap:3px;overflow:hidden;cursor:pointer}
+  .cal-cell.out{background:var(--bg2);opacity:.5}
+  .cal-cell.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .cal-dnum{font-size:11.5px;font-weight:600;color:var(--muted);flex:0 0 auto}
+  .cal-cell.today .cal-dnum{color:var(--accent)}
+  .cal-evts{display:flex;flex-direction:column;gap:3px;min-height:0}
+  .cal-evt{font-size:10.5px;line-height:1.3;padding:2px 5px;border-radius:5px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--txt);border-left:2.5px solid var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cal-evt.done{opacity:.5;text-decoration:line-through;text-decoration-color:var(--faint)}
+  .cal-more{font-size:10px;color:var(--muted);padding-left:2px}
+  @media (max-width:700px){
+    .cal-grid{gap:3px}
+    .cal-cell{min-height:62px;border-radius:7px;padding:3px 3px 4px;gap:2px}
+    .cal-dnum{font-size:11px}
+    .cal-evt{font-size:0;padding:0;height:6px;border-radius:3px;border-left:0;background:var(--c)}  /* compact colour bars on phones */
+    .cal-more{font-size:9px}
+  }
   .phase-head{display:flex;align-items:center;gap:11px;margin:22px 2px 13px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent)}
   .phase-head::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--accent)}
   .phase-head::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--accent) 30%,var(--line))}
@@ -577,14 +605,15 @@
     <div id="tabsRow" class="tabsrow">
       <button class="iconbtn back" id="homeBtn" title="All plans">‹ Plans</button>
       <div class="tabs">
-        <button class="tab" data-tab="plan" aria-pressed="true">Training plan</button>
+        <button class="tab" data-tab="plan" aria-pressed="true">Plan</button>
+        <button class="tab" data-tab="calendar">Calendar</button>
         <button class="tab" data-tab="strength">Strength</button>
       </div>
     </div>
 
     <div id="planView">
     <div id="todayCard"></div>
-    <div class="section-label">Overview</div>
+    <button class="section-toggle" id="dashToggle" aria-expanded="true">Overview<span class="caret">▾</span></button>
     <div class="dash" id="dash"></div>
 
     <div class="toolbar">
@@ -619,6 +648,7 @@
     </div><!-- /planView -->
 
     <div id="strengthView" hidden></div>
+    <div id="calendarView" hidden></div>
   </div>
 
   <!-- Modal -->
@@ -849,6 +879,7 @@ function migrate(raw){
   if((raw.themeV||0) < 2){ theme="light"; themeV=2; } else { theme=raw.theme||"light"; themeV=raw.themeV; }
   const s = Object.assign(defaultPrefs(), {
     unit:raw.unit||"km", theme, themeV, showZones:!!raw.showZones, zonesOpen:!!raw.zonesOpen, tab:raw.tab||"plan",
+    dashOpen: raw.dashOpen!==false, calMonth: raw.calMonth||"",
     collapsed:raw.collapsed||{}, seenTypes:raw.seenTypes||[],
     hrZones: (Array.isArray(raw.hrZones)&&raw.hrZones.length===5)? raw.hrZones : defaultHrZones(),
     paceZones: paceZonesOrDefault(raw.paceZones),
@@ -1301,12 +1332,13 @@ function openSdPicker(){
 }
 function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); }
 function applyTab(){
-  const t = state.tab==="strength" ? "strength" : "plan";
-  const pv=$("#planView"), sv=$("#strengthView");
-  if(pv) pv.hidden = t!=="plan";
-  if(sv) sv.hidden = t!=="strength";
+  const t = ["plan","strength","calendar"].includes(state.tab) ? state.tab : "plan";
+  $("#planView").hidden = t!=="plan";
+  $("#strengthView").hidden = t!=="strength";
+  $("#calendarView").hidden = t!=="calendar";
   $$(".tab").forEach(b=>b.setAttribute("aria-pressed", b.dataset.tab===t));
-  if(t==="strength" && sv) renderStrength();   // re-render each show so logged weights & synced changes appear
+  if(t==="strength") renderStrength();   // re-render each show so logged weights & synced changes appear
+  if(t==="calendar") renderCalendar();
 }
 // Click actions on strength cards (add / done / edit / delete / add-row)
 $("#strengthView").addEventListener("click", e=>{
@@ -1398,6 +1430,9 @@ $("#todayCard").addEventListener("click", e=>{
 });
 
 function renderDash(){
+  const open = state.dashOpen!==false;
+  const dt=$("#dashToggle"); if(dt) dt.setAttribute("aria-expanded", open);
+  $("#dash").classList.toggle("collapsed", !open);
   const ids = Object.keys(woMap());
   const T = totals(ids);
   const pct = T.total? Math.round(T.done/T.total*100):0;
@@ -1806,6 +1841,52 @@ $("#themeBtn").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"
 $("#unitBtn").onclick  = ()=>{ state.unit  = state.unit==="km"?"mi":"km"; save(); render(); };
 $("#undoBtn").onclick  = undo;
 document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; state.tab=b.dataset.tab; save(); applyTab(); });
+$("#dashToggle").addEventListener("click", ()=>{ state.dashOpen = !(state.dashOpen!==false); save(); renderDash(); });
+
+/* ===== Calendar (month grid) view ===== */
+const MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function shiftMonth(ym, delta){ let [y,m]=ym.split("-").map(Number); m=m-1+delta; y+=Math.floor(m/12); m=((m%12)+12)%12; return y+"-"+String(m+1).padStart(2,"0"); }
+function renderCalendar(){
+  const host=$("#calendarView"); if(!host) return;
+  if(!state.calMonth) state.calMonth = (planStartMonday()? planStartMonday().slice(0,7) : todayISO().slice(0,7));
+  const [y,mo]=state.calMonth.split("-").map(Number);
+  const firstDow=((new Date(y,mo-1,1)).getDay()+6)%7;        // Monday = 0
+  const today=todayISO();
+  const phone = !!(window.matchMedia && window.matchMedia("(max-width:700px)").matches);
+  const MAX = phone ? 4 : 3;
+  let cells="";
+  for(let i=0;i<42;i++){
+    const dtc=new Date(y, mo-1, 1 - firstDow + i);
+    const isoD=iso(dtc), inMonth = dtc.getMonth()===(mo-1);
+    const ids=(state.board[isoD]||[]).filter(id=>getWO(id));
+    const evts=ids.slice(0,MAX).map(id=>{ const w=getWO(id), ty=TYPES[w.t]||TYPES.Rest;
+      return `<div class="cal-evt ${state.done[id]?'done':''}" data-id="${id}" style="--c:${ty.c}" title="${esc(w.n)}">${esc(w.n)}</div>`; }).join("");
+    const more = ids.length>MAX ? `<div class="cal-more">+${ids.length-MAX}</div>` : "";
+    cells += `<div class="cal-cell ${inMonth?'':'out'} ${isoD===today?'today':''}" data-date="${isoD}" data-in="${inMonth?1:0}">
+        <div class="cal-dnum">${dtc.getDate()}</div><div class="cal-evts">${evts}${more}</div></div>`;
+  }
+  const wd=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  host.innerHTML = `
+    <div class="cal-top">
+      <h3>${MONTHS_FULL[mo-1]} ${y}</h3>
+      <div class="cal-nav">
+        <button class="iconbtn" data-cal="today">Today</button>
+        <button class="iconbtn" data-cal="prev" title="Previous month">‹</button>
+        <button class="iconbtn" data-cal="next" title="Next month">›</button>
+      </div>
+    </div>
+    <div class="cal-grid">${wd.map(x=>`<div class="cal-wd">${x}</div>`).join("")}${cells}</div>`;
+}
+$("#calendarView").addEventListener("click", e=>{
+  const nav=e.target.closest("[data-cal]");
+  if(nav){ const a=nav.dataset.cal;
+    state.calMonth = a==="today" ? todayISO().slice(0,7) : shiftMonth(state.calMonth||todayISO().slice(0,7), a==="next"?1:-1);
+    save(); renderCalendar(); return; }
+  const evt=e.target.closest(".cal-evt");
+  if(evt){ openModal(evt.dataset.id); return; }
+  const cell=e.target.closest(".cal-cell");
+  if(cell && cell.dataset.in==="1" && !(state.board[cell.dataset.date]||[]).some(id=>getWO(id))) openNew(cell.dataset.date);
+});
 document.addEventListener("keydown", e=>{
   const mod=e.metaKey||e.ctrlKey; if(!(mod && (e.key==='z'||e.key==='Z'))) return;
   const el=e.target; if(el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.isContentEditable)) return; // let fields handle their own undo
