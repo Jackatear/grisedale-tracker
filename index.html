@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
+<meta name="app-build" content="2026-06-05d" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Plan Tracker" />
@@ -485,6 +486,7 @@
         <button data-act="home">‹ All plans</button>
         <button data-act="rename">Rename this plan</button>
         <button data-act="exportCsv">Export this plan (CSV)</button>
+        <button data-act="templateCsv">Blank template (CSV)</button>
         <div class="sep"></div>
         <button data-act="importCsv">Import plan (CSV…)</button>
         <button data-act="exportJson">Back up everything (JSON)</button>
@@ -1006,6 +1008,18 @@ function planToCSVfor(rec){
   return lines.join("\n");
 }
 function exportPlanCSV(id){ syncActiveToLibrary(); const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; download((rec.planName||"plan").replace(/\s+/g,"-").toLowerCase()+".csv", planToCSVfor(rec), "text/csv"); }
+// Blank starter template: header + a few worked example rows so a person (or an AI) can see exactly how to fill it.
+function csvTemplate(){
+  const head=["date","session","type","duration_min","distance_km","vert_m","zone","phase","block","notes"];
+  const ex=[
+    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Conversational, easy effort."],
+    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"Z4",1,"Base — week 1","15 min warm-up, 4×8 min @ threshold w/ 2 min jog, 10 min cool-down. Notes may contain commas."],
+    ["2026-01-07","Rest day","Rest","","","","",1,"Base — week 1","Leave duration/distance/vert/zone blank when they don't apply (e.g. rest)."],
+    ["2026-01-10","Long run","Long",90,18,400,"Z2",1,"Base — week 1","Time on feet on rolling terrain; steady aerobic effort."],
+    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","Z1",1,"Base — week 1","Use the Bike type to swap a run for a ride. type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest."]
+  ];
+  return [head.join(",")].concat(ex.map(r=>r.map(csvCell).join(","))).join("\n");
+}
 function renderHome(){
   const cards=(state.plans||[]).map(rec=>{
     const st=planStats(rec);
@@ -1799,6 +1813,7 @@ menu.addEventListener("click", e=>{
     case "home":       goHome(); break;
     case "rename":     if(state.activeId) renamePlan(state.activeId); break;
     case "exportCsv":  if(state.activeId) exportPlanCSV(state.activeId); break;
+    case "templateCsv": download("plan-template.csv", csvTemplate(), "text/csv"); break;
     case "importCsv":  $("#importCsvFile").click(); break;
     case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;
     case "importJson": $("#importJsonFile").click(); break;
@@ -1965,6 +1980,34 @@ window.addEventListener("focus", ()=>cloudPull());
 window.addEventListener("pageshow", ()=>cloudPull());
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) cloudPull(); });
 setInterval(()=>{ if(cloudOn() && document.visibilityState==="visible") cloudPull(); }, 15000);  // poll so changes arrive without a focus event
+
+/* ---- Self-update: pull a newer deployed build so every device runs the same code (without it, a
+       device on an old cached page can't read new fields like strengthDays and looks "out of sync"). ---- */
+const BUILD = (document.querySelector('meta[name="app-build"]')||{}).content || "";
+let _updCheckedAt=0, _pendingReload=false;
+function reloadSafe(){
+  if($("#sdPickBack")) return false;                                                   // strength picker open
+  if($("#backdrop") && $("#backdrop").classList.contains("open")) return false;        // session modal open
+  if($("#syncBackdrop") && $("#syncBackdrop").classList.contains("open")) return false;// sync modal open
+  const ae=document.activeElement;
+  if(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return false;                 // mid-typing
+  if(strava && strava.busy) return false;                                              // Strava sync running
+  return true;
+}
+async function checkForUpdate(){
+  if(!BUILD) return;
+  if(Date.now()-_updCheckedAt < 20000) { if(_pendingReload && reloadSafe()) location.reload(); return; }
+  _updCheckedAt=Date.now();
+  try{
+    const html=await (await fetch(location.pathname+"?_b="+Date.now(), {cache:"no-store"})).text();
+    const m=html.match(/name="app-build"\s+content="([^"]+)"/);
+    if(m && m[1] && m[1]!==BUILD){ _pendingReload=true; if(reloadSafe()) location.reload(); }
+  }catch(_){}
+}
+window.addEventListener("focus", checkForUpdate);
+window.addEventListener("pageshow", checkForUpdate);
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) checkForUpdate(); });
+setInterval(()=>{ if(document.visibilityState==="visible") checkForUpdate(); }, 20000);
 
 /* ============================ STRAVA / COROS ACTIVITIES ============================ */
 const STRAVA_PROXY = "https://grisedale-strava.jack-mcatear.workers.dev";
