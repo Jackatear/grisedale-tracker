@@ -91,6 +91,20 @@
 
   .wrap{max-width:1400px;margin:0 auto;padding:24px}
 
+  /* ---------- Today brief ---------- */
+  .today-card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:14px;padding:15px 17px;margin-bottom:14px;cursor:pointer;transition:box-shadow .12s,border-color .12s}
+  .today-card:hover{box-shadow:var(--shadow)}
+  .today-card.done{opacity:.7}
+  .tc-eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600}
+  .tc-title{font-size:18px;font-weight:600;margin:5px 0 0;letter-spacing:-.2px}
+  .tc-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .tc-why{font-size:13px;color:var(--muted);line-height:1.5;margin-top:10px}
+  .tc-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;flex-wrap:wrap}
+  .tc-prog{font-size:12px;color:var(--muted)}
+  .tc-doneflag{color:var(--good);font-weight:600;font-size:13px}
+  .tc-rest,.tc-view{color:var(--muted);font-size:13px}
+  .today-card .btn.tc-do{padding:7px 15px}
+
   /* ---------- Dashboard ---------- */
   .dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
   .stat{
@@ -420,6 +434,7 @@
     </div>
 
     <div id="planView">
+    <div id="todayCard"></div>
     <div class="dash" id="dash"></div>
 
     <div class="toolbar">
@@ -864,6 +879,7 @@ function render(){
   }
   ensureBoard(); save();
   renderCountdown();
+  renderToday();
   renderDash();
   renderChips();
   renderToolbarState();
@@ -1017,6 +1033,46 @@ function renderCountdown(){
   }
   $("#countdown").textContent = parts.join("  ·  ");
 }
+
+/* "Today" coach brief — what to run now, the why, the target zone, one-tap done. */
+function renderToday(){
+  const host=$("#todayCard"); if(!host) return;
+  const t=todayISO();
+  const on=date=>(state.board[date]||[]).map(id=>({id,w:getWO(id)})).filter(x=>x.w);
+  let focus=null, mode="today", fdate=t;
+  const today=on(t);
+  focus = today.find(x=>x.w.t!=="Rest" && !state.done[x.id]) || today.find(x=>x.w.t!=="Rest") || today.find(x=>x.w.t==="Rest");
+  if(!focus){                                  // nothing today → show the next upcoming session
+    const ms=weekMondays(); let found=null;
+    for(const mon of ms){ if(found) break; for(let di=0;di<7;di++){ const date=addDays(mon,di); if(date<=t) continue;
+      const ss=on(date).filter(x=>x.w.t!=="Rest"); if(ss.length){ found={f:ss.find(x=>!state.done[x.id])||ss[0], date}; break; } } }
+    if(found){ focus=found.f; mode="next"; fdate=found.date; }
+  }
+  if(!focus){ host.hidden=true; host.innerHTML=""; return; }
+  host.hidden=false;
+  const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!state.done[focus.id], isRest=w.t==="Rest";
+  const dd=daysBetween(t,fdate);
+  const eyebrow = mode==="today" ? "Today" : (dd===1?"Tomorrow":`In ${dd} days · ${WD[d(fdate).getDay()]} ${d(fdate).getDate()} ${MO[d(fdate).getMonth()]}`);
+  const meta=[]; if(w.d)meta.push(fmtDur(w.d)); if(w.k!=null)meta.push(fmtDist(w.k)); if(w.v!=null)meta.push("↗ "+fmtVert(w.v)); if(w.z&&w.z!=="—")meta.push(w.z);
+  const why=((w.note||"").split("\n")[0]||"").trim();
+  const mon=mondayOf(fdate); const wids=[]; for(let di=0;di<7;di++)(state.board[addDays(mon,di)]||[]).forEach(id=>wids.push(id));
+  const T=totals(wids);
+  const right = isRest ? `<span class="tc-rest">Recovery is training too.</span>`
+    : done ? `<span class="tc-doneflag">✓ Done</span>`
+    : mode==="today" ? `<button class="btn primary tc-do" data-done="${focus.id}">Mark done</button>`
+    : `<span class="tc-view">View ›</span>`;
+  host.innerHTML = `<div class="today-card ${done?'done':''}" style="--c:${ty.c}" data-open="${focus.id}">
+      <div class="tc-eyebrow">${eyebrow}${isRest?"":` · <span style="color:var(--c)">${esc(ty.label)}</span>`}${w.s?` · + strength`:""}</div>
+      <div class="tc-title">${esc(w.n)}</div>
+      ${meta.length?`<div class="tc-meta">${meta.map(x=>`<span class="pill">${esc(x)}</span>`).join("")}</div>`:""}
+      ${why?`<div class="tc-why">${esc(why)}</div>`:""}
+      <div class="tc-foot"><span class="tc-prog">${T.total?`This week · ${T.done}/${T.total} done`:""}</span>${right}</div>
+    </div>`;
+}
+$("#todayCard").addEventListener("click", e=>{
+  const dn=e.target.closest("[data-done]"); if(dn){ e.stopPropagation(); pushUndo(); state.done[dn.dataset.done]=!state.done[dn.dataset.done]; save(); render(); return; }
+  const op=e.target.closest("[data-open]"); if(op) openModal(op.dataset.open);
+});
 
 function renderDash(){
   const ids = Object.keys(woMap());
