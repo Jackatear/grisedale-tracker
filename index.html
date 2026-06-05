@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05f" />
+<meta name="app-build" content="2026-06-05g" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -278,6 +278,14 @@
   .mv-stat b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
   .mv-note{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5;color:var(--txt);white-space:pre-wrap}
   .mv-empty{color:var(--muted);font-size:13px;line-height:1.5;background:var(--bg2);border:1px dashed var(--line2);border-radius:10px;padding:14px}
+  .mv-plan{display:flex;flex-direction:column;gap:7px}
+  .pseg{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2)}
+  .pseg.work{border-left:3px solid var(--line2)}
+  .pseg-h{font-size:13px;font-weight:600;display:flex;flex-wrap:wrap;gap:5px 9px;align-items:baseline}
+  .pseg-z{font-size:11px;font-weight:600;white-space:nowrap}
+  .pseg-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .pseg-metrics .pill{font-size:11.5px;padding:2px 8px;font-variant-numeric:tabular-nums}
+  .pseg-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
 
   .legend-foot{margin:28px 0 50px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
   .legend-foot b{color:var(--muted)}
@@ -813,7 +821,7 @@ function migrate(raw){
     unit:raw.unit||"km", theme, themeV, showZones:!!raw.showZones, zonesOpen:!!raw.zonesOpen, tab:raw.tab||"plan",
     collapsed:raw.collapsed||{}, seenTypes:raw.seenTypes||[],
     hrZones: (Array.isArray(raw.hrZones)&&raw.hrZones.length===5)? raw.hrZones : defaultHrZones(),
-    paceZones: (Array.isArray(raw.paceZones)&&raw.paceZones.length===5)? raw.paceZones : defaultPaceZones(),
+    paceZones: paceZonesOrDefault(raw.paceZones),
     strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
     strengthDays: Array.isArray(raw.strengthDays) ? raw.strengthDays.map(normStrengthDay) : synthStrengthDays(raw.strengthLog),
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
@@ -844,7 +852,11 @@ async function hydrate(){
 let _saveTimer=null, _lastDataSer=null;
 // The whole plan LIBRARY syncs to the cloud; view prefs (theme/unit/tab/filters/collapsed) stay per-device.
 function defaultHrZones(){ return [[100,135],[135,155],[155,165],[165,175],[175,185]]; }
-function defaultPaceZones(){ return [["",""],["",""],["",""],["",""],["",""]]; }
+function defaultPaceZones(){ return [["","5:00"],["5:00","4:20"],["4:20","3:50"],["3:50","3:30"],["3:30","3:10"]]; } // min/km, slower–faster; Z3=M, Z4=HM, Z5=5–10K
+function paceZonesOrDefault(pz){   // keep the user's paces if they've entered any, otherwise seed the defaults
+  if(Array.isArray(pz)&&pz.length===5 && pz.some(p=>Array.isArray(p)&&((p[0]&&String(p[0]).trim())||(p[1]&&String(p[1]).trim())))) return pz;
+  return defaultPaceZones();
+}
 function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
@@ -1437,6 +1449,77 @@ function execReadoutHTML(es, w){
   return `<div class="exec-read ${es.level}"><span class="exec-pct">${es.pct}%</span>`
     + `<span class="exec-cap"><b>${execLabel(es)}</b> · ${fmt(es.actual)} done vs ${fmt(es.planned)} planned</span></div>${zline}`;
 }
+
+/* ---- Structured interval breakdown: parse a session's name + notes into warm-up / work sets / cool-down,
+       each tagged with target pace (your pace zones) and HR (your HR zones). ---- */
+const ZONE_DESC=["Recovery","Easy aerobic","Marathon","Threshold / HM","VO2 · 5–10K"];
+function paceRangeLabel(idx){
+  const pz=(state.paceZones&&state.paceZones[idx])||["",""];
+  const a=String(pz[0]||"").trim(), b=String(pz[1]||"").trim();
+  if(a&&b) return a+"–"+b+"/km";
+  if(b) return b+"/km or quicker";
+  if(a) return a+"/km or easier";
+  return "";
+}
+function hrRangeLabel(idx){ const hz=(state.hrZones&&state.hrZones[idx]); return hz?`${hz[0]}–${hz[1]} bpm`:""; }
+function blockZoneIdx(tag, fb){
+  if(!tag) return fb; tag=String(tag).toUpperCase();
+  if(/^I$|VO2|^5K$|^3K$|^R$|REP/.test(tag)) return 4;
+  if(/^HM$/.test(tag)) return 3;
+  if(/^M$/.test(tag)) return 2;
+  if(/^T$|THRESH/.test(tag)) return Math.max(fb,3);
+  return fb;
+}
+function sessionPlan(w){
+  if(!w || w.t==="Rest") return null;
+  const name=w.n||"", note=w.note||"";
+  const fb = (zoneTextToIdx(w.z)==null) ? 3 : zoneTextToIdx(w.z);
+  const wu = /(\d+)\s*(?:min\s*)?(?:WU|w\/u|warm[\s-]?up)/i.exec(note);
+  const cd = /(\d+)\s*(?:min\s*)?(?:CD|c\/d|cool[\s-]?down)/i.exec(note);
+  let rec=""; const rm=/(\d+)\s*(s|sec|secs|min|mins)?\s*(jog|float|walk|easy)/i.exec(note);
+  if(rm){ const u=rm[2]?(/min/i.test(rm[2])?" min":"s"):"s"; rec=rm[1]+u+" "+rm[3].toLowerCase(); }
+  else if(/jog\s*down|walk\s*back|jog\/walk|walk\s*up|jog\s*back/i.test(note)) rec="jog/walk-down";
+  // repeated work sets "N × M min|s" (allow an optional "(" as in "4×(8 min …)")
+  const workRe=/(\d+)\s*[×x]\s*\(?\s*(\d+)\s*(min|mins|s|sec|secs)\b/gi;
+  const works=[]; let mm;
+  while((mm=workRe.exec(name))){
+    const after=name.slice(mm.index+mm[0].length, mm.index+mm[0].length+20);
+    const tag=/@\s*([A-Za-z0-9]+)/.exec(after);
+    works.push({reps:+mm[1], each:+mm[2], unit:/^s/i.test(mm[3])?"s":"min", idx:blockZoneIdx(tag?tag[1]:null, fb)});
+  }
+  // a leading continuous block "NN min @ X" that isn't part of an N×M
+  const conts=[]; const stripped=name.replace(workRe,"·"); let cm;
+  const contRe=/(\d+)\s*(?:min|mins)\s*@\s*([A-Za-z0-9]+)/gi;
+  while((cm=contRe.exec(stripped))) conts.push({each:+cm[1], idx:blockZoneIdx(cm[2], fb)});
+  if(!works.length && !conts.length) return null;            // steady run → no interval breakdown
+  const segs=[];
+  if(wu) segs.push({kind:"wu", dur:+wu[1]});
+  conts.forEach(c=> segs.push({kind:"work", reps:1, each:c.each, unit:"min", idx:c.idx, rec:""}));
+  works.forEach(wk=> segs.push({kind:"work", reps:wk.reps, each:wk.each, unit:wk.unit, idx:wk.idx, rec:(wk.reps>1?rec:"")}));
+  if(cd) segs.push({kind:"cd", dur:+cd[1]});
+  return {segs};
+}
+function segMetrics(idx){
+  const p=paceRangeLabel(idx), h=hrRangeLabel(idx);
+  return (p?`<span class="pill">⏱ ${esc(p)}</span>`:"")+(h?`<span class="pill">♥ ${esc(h)}</span>`:"");
+}
+function sessionPlanHTML(w){
+  const plan=sessionPlan(w); if(!plan) return "";
+  const body=plan.segs.map(seg=>{
+    if(seg.kind==="work"){
+      const each = seg.unit==="s" ? seg.each+"s" : seg.each+" min";
+      const title = seg.reps>1 ? `${seg.reps} × ${each}` : `${each} continuous`;
+      return `<div class="pseg work" style="border-left-color:${ZONES[seg.idx].c}">
+        <div class="pseg-h">${esc(title)}<span class="pseg-z" style="color:${ZONES[seg.idx].c}">${ZONES[seg.idx].k} · ${ZONE_DESC[seg.idx]}</span></div>
+        <div class="pseg-metrics">${segMetrics(seg.idx)}</div>
+        ${seg.rec?`<div class="pseg-sub">${esc(seg.rec)} recovery between reps</div>`:""}
+      </div>`;
+    }
+    const pr=paceRangeLabel(1);
+    return `<div class="pseg"><div class="pseg-h">${seg.kind==="wu"?"Warm-up":"Cool-down"} · ${seg.dur} min<span class="pseg-z" style="color:${ZONES[1].c}">${ZONES[1].k} easy</span></div>${pr?`<div class="pseg-metrics"><span class="pill">⏱ ${esc(pr)}</span></div>`:""}</div>`;
+  }).join("");
+  return `<div><div class="mv-sect" style="margin-bottom:8px">Session plan</div><div class="mv-plan">${body}</div></div>`;
+}
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
   const ztNow=hrThresholds().join(",");
@@ -1652,6 +1735,7 @@ function modalViewHTML(w){
   return `<div class="mv">
     <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
     ${plan.length?`<div><div class="mv-sect" style="margin-bottom:8px">Planned target</div><div class="mv-stats">${plan.map(stat).join("")}</div></div>`:""}
+    ${sessionPlanHTML(w)}
     ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
     ${done
       ? `<div><div class="mv-sect" style="margin-bottom:8px">Your log</div>${es?execReadoutHTML(es,w):""}${act.length?`<div class="mv-stats" style="margin-top:${es?"10px":"0"}">${act.map(stat).join("")}</div>`:""}${lg.c?`<div class="mv-note" style="margin-top:10px">${esc(lg.c)}</div>`:""}</div>`
