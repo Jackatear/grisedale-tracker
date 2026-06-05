@@ -334,31 +334,63 @@
   .zc-dash{color:var(--faint)}
   .zc-unit{font-size:11px;color:var(--faint);width:28px;flex:0 0 auto}
   .zc-note{font-size:11.5px;color:var(--faint);line-height:1.5;margin-top:10px}
-  .s-intro{max-width:780px;margin-bottom:18px}
-  .s-intro h2{font-size:20px;margin:0 0 6px;letter-spacing:-.2px}
-  .s-intro p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
-  .s-principles{max-width:780px;margin-bottom:26px}
-  .s-principles h3{font-size:13px;margin:0;font-weight:600}
-  .s-principles ul{margin:10px 0 0;padding-left:18px}
-  .s-principles li{margin:7px 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
-  .s-principles li b{color:var(--txt);font-weight:600}
-  .s-section{margin-bottom:24px}
-  .s-section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-  .s-section-head h2{font-size:14px;margin:0;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-  .s-section-head span{font-size:12.5px;color:var(--muted)}
-  .s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
-  .s-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
-  .s-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .s-card-head h3{font-size:14.5px;margin:0;font-weight:600}
-  .s-focus{color:var(--muted);font-size:12.5px;margin:5px 0 10px;line-height:1.45}
-  .s-ex .ex-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
-  .s-ex .ex-row:first-child{border-top:0}
-  .s-ex .name{flex:1;min-width:0}
-  .ex-w{width:74px;flex:0 0 auto;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:7px;padding:5px 8px;font:inherit;font-size:12.5px;text-align:center}
-  .ex-w:focus{outline:none;border-color:var(--accent)}
-  .ex-w::placeholder{color:var(--faint)}
-  .s-ex .name{color:var(--txt)}
-  .s-ex .dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* Strength log — horizontal carousel of day cards */
+  .sd-intro{margin:0 0 14px}
+  .sd-intro h2{font-size:20px;margin:0 0 5px;letter-spacing:-.2px}
+  .sd-intro p{color:var(--muted);font-size:13px;line-height:1.55;margin:0;max-width:620px}
+  .sd-intro p b{color:var(--txt);font-weight:600}
+  .sd-rail{display:flex;gap:14px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:4px 2px 16px;margin:0 -2px;scrollbar-width:thin}
+  .sd-rail::-webkit-scrollbar{height:8px}
+  .sd-rail::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+  .sd-card{flex:0 0 auto;width:min(86vw,338px);scroll-snap-align:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+  .sd-card.done{background:var(--panel2)}
+  .sd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:3px}
+  .sd-title{font-size:15px;font-weight:700;line-height:1.3;min-width:0}
+  .sd-titin{font-size:15px;font-weight:700;width:100%;border:1px solid var(--line2);background:var(--bg2);color:var(--txt);border-radius:8px;padding:7px 9px}
+  .sd-date{font-size:11.5px;color:var(--good);white-space:nowrap;display:flex;align-items:center;gap:5px;font-weight:600;flex:0 0 auto;margin-top:2px}
+  .sd-date .dot{width:7px;height:7px;border-radius:50%;background:var(--good)}
+  .sd-datein{font:inherit;font-size:12px;border:1px solid var(--line2);background:var(--bg2);color:var(--txt);border-radius:7px;padding:5px 7px;margin-top:8px;width:100%}
+  .sd-focus{color:var(--muted);font-size:12px;margin:7px 0 4px;line-height:1.4}
+  .sd-rows{display:flex;flex-direction:column;margin-top:6px}
+  .sd-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+  .sd-row:first-child{border-top:0}
+  .sd-name{flex:1;min-width:0;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sd-dose{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px}
+  .sd-log{font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+  .sd-log.empty{color:var(--faint);font-weight:400}
+  .sd-f{font:inherit;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:7px;padding:6px 7px}
+  .sd-f:focus{outline:none;border-color:var(--accent)}
+  .sd-f::placeholder{color:var(--faint)}
+  .sd-row .sd-f.nm{flex:1;min-width:0;font-size:12.5px}
+  .sd-row .sd-f.ds{width:54px;flex:0 0 auto;font-size:12px;text-align:center}
+  .sd-row .sd-f.lg{width:64px;flex:0 0 auto;font-size:12.5px;text-align:center;font-weight:600}
+  .sd-addrow{align-self:flex-start;margin:11px 0 0;background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:2px 0}
+  .sd-note{margin-top:11px;width:100%;min-height:36px;resize:vertical;font:inherit;font-size:12.5px;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 9px}
+  .sd-note:focus{outline:none;border-color:var(--accent)}
+  .sd-noteRO{margin-top:9px;font-size:12.5px;color:var(--muted);line-height:1.45;font-style:italic}
+  .sd-foot{display:flex;gap:8px;margin-top:auto;padding-top:13px;border-top:1px solid var(--line)}
+  .sd-btn{flex:1;border-radius:9px;padding:9px 8px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line2);background:var(--bg2);color:var(--txt)}
+  .sd-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;flex:2}
+  .sd-btn.ghost{flex:0 0 auto;color:var(--muted);background:none;border-color:transparent}
+  .sd-btn.ghost:hover{color:var(--bad);border-color:var(--line2)}
+  .sd-add{flex:0 0 auto;width:150px;scroll-snap-align:start;border:1.5px dashed var(--line2);border-radius:14px;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;font:inherit;align-self:stretch;min-height:180px}
+  .sd-add:hover{border-color:var(--accent);color:var(--accent)}
+  .sd-add .plus{font-size:30px;line-height:1;font-weight:300}
+  .sd-add .lab{font-size:12.5px;font-weight:600}
+  .sd-empty{color:var(--faint);font-size:12.5px;text-align:center;padding:14px 0}
+  .sd-pick-back{position:fixed;inset:0;background:rgba(15,22,32,.5);display:flex;align-items:flex-end;justify-content:center;z-index:60}
+  .sd-pick{background:var(--panel);width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:14px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:var(--shadow);max-height:85vh;overflow:auto}
+  @media(min-width:560px){ .sd-pick-back{align-items:center} .sd-pick{border-radius:16px} }
+  .sd-pick h3{margin:4px 0 13px;font-size:15.5px}
+  .sd-pick .opt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:11px 13px;margin-bottom:8px;font:inherit;cursor:pointer;color:var(--txt)}
+  .sd-pick .opt:hover{border-color:var(--accent)}
+  .sd-pick .opt b{font-size:13.5px;font-weight:600}
+  .sd-pick .opt small{color:var(--muted);font-size:11.5px}
+  .sd-ref{margin:6px 2px 50px;max-width:760px}
+  .sd-ref summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:600;padding:7px 0}
+  .sd-ref ul{margin:8px 0 0;padding-left:18px}
+  .sd-ref li{margin:7px 0;font-size:13px;line-height:1.5;color:var(--muted)}
+  .sd-ref li b{color:var(--txt);font-weight:600}
 
   /* HR-zone intensity strips */
   .zlegend{display:flex;gap:13px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:0 2px 12px}
@@ -749,6 +781,7 @@ function migrate(raw){
     hrZones: (Array.isArray(raw.hrZones)&&raw.hrZones.length===5)? raw.hrZones : defaultHrZones(),
     paceZones: (Array.isArray(raw.paceZones)&&raw.paceZones.length===5)? raw.paceZones : defaultPaceZones(),
     strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
+    strengthDays: Array.isArray(raw.strengthDays) ? raw.strengthDays.map(normStrengthDay) : synthStrengthDays(raw.strengthLog),
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -778,7 +811,7 @@ let _saveTimer=null, _lastDataSer=null;
 // The whole plan LIBRARY syncs to the cloud; view prefs (theme/unit/tab/filters/collapsed) stay per-device.
 function defaultHrZones(){ return [[100,135],[135,155],[155,165],[165,175],[175,185]]; }
 function defaultPaceZones(){ return [["",""],["",""],["",""],["",""],["",""]]; }
-function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog}); }
+function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
 function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
@@ -1059,27 +1092,93 @@ const STRENGTH = {
     ]},
   ]
 };
-function renderStrength(){
-  const log = state.strengthLog||{};
-  const card = r => `
-    <div class="s-card">
-      <div class="s-card-head"><h3>${esc(r.name)}</h3><span class="pill">${r.mins} min</span></div>
-      <p class="s-focus">${esc(r.focus)}</p>
-      <div class="s-ex">${r.ex.map(e=>{ const k=r.name+"::"+e[0];
-        return `<div class="ex-row"><span class="name">${esc(e[0])}</span><span class="dose">${esc(e[1])}</span><input class="ex-w" data-sx="${esc(k)}" placeholder="log" value="${esc(log[k]||"")}"></div>`;
-      }).join("")}</div>
-    </div>`;
-  const sections = STRENGTH.sections.map(s=>`
-    <div class="s-section">
-      <div class="s-section-head"><h2>${esc(s.title)}</h2><span>${esc(s.sub)}</span></div>
-      <div class="s-grid">${s.routines.map(card).join("")}</div>
-    </div>`).join("");
-  $("#strengthView").innerHTML = `
-    <div class="s-intro"><h2>Strength for runners</h2><p>${esc(STRENGTH.intro)}</p></div>
-    <div class="s-card s-principles"><h3>How to use it</h3><ul>${STRENGTH.principles.map(p=>`<li>${p}</li>`).join("")}</ul></div>
-    ${sections}
-    <p class="legend-foot">These are the strength sessions referenced on the 💪 days of your plan. "Reduced" / "light" variants in the plan simply trim ~30% of the sets.</p>`;
+/* ---- Strength LOG: per-day cards in a horizontal rail; Done locks + dates them ---- */
+function normStrengthDay(c){ c=c||{};
+  return { id: c.id || ("sd"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)),
+    title: typeof c.title==="string" && c.title ? c.title : "Strength session",
+    focus: typeof c.focus==="string" ? c.focus : "",
+    mins: c.mins!=null ? c.mins : null,
+    rows: Array.isArray(c.rows) ? c.rows.map(r=>({ name:(r&&r.name)||"", dose:(r&&r.dose)||"", log:(r&&r.log)||"" })) : [],
+    note: typeof c.note==="string" ? c.note : "",
+    done: !!c.done, date: c.date||null };
 }
+function strengthTemplates(){ const out=[]; STRENGTH.sections.forEach(s=>s.routines.forEach(r=>out.push(r))); return out; }
+// One-time: turn any earlier flat strengthLog ({"Routine::Exercise":"40kg"}) into day cards so nothing is lost.
+function synthStrengthDays(log){
+  if(!log || typeof log!=="object") return [];
+  const byR={}; Object.keys(log).forEach(k=>{ const i=k.indexOf("::"); if(i<0) return; const rn=k.slice(0,i), ex=k.slice(i+2); (byR[rn]=byR[rn]||{})[ex]=log[k]; });
+  const tmpl={}; strengthTemplates().forEach(r=>tmpl[r.name]=r);
+  return Object.keys(byR).map(rn=>{ const t=tmpl[rn];
+    const rows = t ? t.ex.map(e=>({name:e[0],dose:e[1],log:byR[rn][e[0]]||""}))
+                   : Object.keys(byR[rn]).map(ex=>({name:ex,dose:"",log:byR[rn][ex]}));
+    return normStrengthDay({ title:rn, focus:t?t.focus:"", mins:t?t.mins:null, rows }); });
+}
+function sdFmtDate(isoStr){ if(!isoStr) return ""; const dt=d(isoStr); return `${WD[dt.getDay()]} ${dt.getDate()} ${MO[dt.getMonth()]}`; }
+
+function renderStrength(){
+  const days = state.strengthDays || (state.strengthDays=[]);
+  const rowHTML = (r, done) => done
+    ? `<div class="sd-row"><span class="sd-name">${esc(r.name)}</span><span class="sd-dose">${esc(r.dose)}</span><span class="sd-log ${r.log?"":"empty"}">${esc(r.log||"—")}</span></div>`
+    : `<div class="sd-row"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="sets" value="${esc(r.dose)}"><input class="sd-f lg" data-f="log" placeholder="kg" value="${esc(r.log)}"></div>`;
+  const cardHTML = c => {
+    const done=!!c.done;
+    const head = done
+      ? `<div class="sd-title">${esc(c.title)}</div><div class="sd-date"><span class="dot"></span>${esc(sdFmtDate(c.date))}</div>`
+      : `<input class="sd-titin" data-f="title" value="${esc(c.title)}" placeholder="Session name">`;
+    const datein = done ? "" : `<input class="sd-datein" data-f="date" type="date" value="${esc(c.date||todayISO())}">`;
+    const focus = c.focus ? `<p class="sd-focus">${esc(c.focus)}</p>` : "";
+    const rows = (c.rows||[]).map(r=>rowHTML(r,done)).join("") || (done?`<div class="sd-empty">No exercises logged.</div>`:"");
+    const addrow = done ? "" : `<button class="sd-addrow" data-act="addrow">＋ exercise</button>`;
+    const note = done ? (c.note?`<div class="sd-noteRO">“${esc(c.note)}”</div>`:"")
+                      : `<textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea>`;
+    const foot = done
+      ? `<button class="sd-btn primary" data-act="edit">Edit</button><button class="sd-btn ghost" data-act="del">Delete</button>`
+      : `<button class="sd-btn primary" data-act="done">Mark done</button><button class="sd-btn ghost" data-act="del">Delete</button>`;
+    return `<div class="sd-card ${done?"done":""}" data-sd="${esc(c.id)}">
+      <div class="sd-head">${head}</div>${datein}${focus}
+      <div class="sd-rows">${rows}</div>${addrow}${note}
+      <div class="sd-foot">${foot}</div></div>`;
+  };
+  const addTile = `<button class="sd-add" data-act="add"><span class="plus">＋</span><span class="lab">Add session</span></button>`;
+  $("#strengthView").innerHTML = `
+    <div class="sd-intro"><h2>Strength log</h2><p>Log each strength day as a card — fill in your weights, then tap <b>Mark done</b> to stamp the date and lock it (re-open any time with <b>Edit</b>). Add a card with ＋ and swipe sideways through your history.</p></div>
+    <div class="sd-rail">${addTile}${days.map(cardHTML).join("")}</div>
+    <details class="sd-ref"><summary>Strength principles &amp; how to use it</summary><ul>${STRENGTH.principles.map(p=>`<li>${p}</li>`).join("")}</ul></details>`;
+}
+// Pull a card's editable DOM inputs back into its model (so edits aren't lost on done/add-row/save).
+function readStrengthCard(cardEl, c){
+  if(!cardEl||!c) return;
+  const t=cardEl.querySelector('[data-f="title"]'); if(t) c.title=t.value.trim()||c.title;
+  const dt=cardEl.querySelector('[data-f="date"]'); if(dt && dt.value) c.date=dt.value;
+  const nt=cardEl.querySelector('[data-f="note"]'); if(nt) c.note=nt.value;
+  const rowEls=[...cardEl.querySelectorAll('.sd-row')];
+  if(rowEls.length){ c.rows = rowEls.map(re=>({
+    name:(re.querySelector('[data-f="name"]')||{}).value?.trim()||"",
+    dose:(re.querySelector('[data-f="dose"]')||{}).value?.trim()||"",
+    log:(re.querySelector('[data-f="log"]')||{}).value?.trim()||"" })); }
+}
+function openSdPicker(){
+  closeSdPicker();
+  const opts=strengthTemplates();
+  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="sdPickBack";
+  back.innerHTML=`<div class="sd-pick"><h3>New strength session</h3>${
+    opts.map((o,i)=>`<button class="opt" data-ri="${i}"><span><b>${esc(o.name)}</b><br><small>${esc(o.focus)}</small></span><small>${o.mins} min</small></button>`).join("")
+  }<button class="opt" data-ri="blank"><span><b>Blank session</b><br><small>Start from scratch</small></span><small>＋</small></button></div>`;
+  back.addEventListener("click", ev=>{
+    if(ev.target===back){ closeSdPicker(); return; }
+    const o=ev.target.closest(".opt"); if(!o) return;
+    const ri=o.getAttribute("data-ri");
+    const card = ri==="blank"
+      ? normStrengthDay({ title:"Strength session", rows:[{name:"",dose:"",log:""},{name:"",dose:"",log:""}] })
+      : (r=>normStrengthDay({ title:r.name, focus:r.focus, mins:r.mins, rows:r.ex.map(e=>({name:e[0],dose:e[1],log:""})) }))(opts[+ri]);
+    card.date=todayISO();
+    state.strengthDays=state.strengthDays||[]; state.strengthDays.unshift(card);
+    closeSdPicker(); save(); renderStrength();
+    requestAnimationFrame(()=>{ const rail=$(".sd-rail"); if(rail) rail.scrollLeft=0; });
+  });
+  document.body.appendChild(back);
+}
+function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); }
 function applyTab(){
   const t = state.tab==="strength" ? "strength" : "plan";
   const pv=$("#planView"), sv=$("#strengthView");
@@ -1088,12 +1187,29 @@ function applyTab(){
   $$(".tab").forEach(b=>b.setAttribute("aria-pressed", b.dataset.tab===t));
   if(t==="strength" && sv) renderStrength();   // re-render each show so logged weights & synced changes appear
 }
-$("#strengthView").addEventListener("change", e=>{
-  const el=e.target; if(!el.matches(".ex-w")) return;
-  const k=el.getAttribute("data-sx"); state.strengthLog=state.strengthLog||{};
-  const v=el.value.trim(); if(v) state.strengthLog[k]=v; else delete state.strengthLog[k];
-  save();   // no re-render → keeps focus; syncs via planSig
+// Click actions on strength cards (add / done / edit / delete / add-row)
+$("#strengthView").addEventListener("click", e=>{
+  const btn=e.target.closest("[data-act]"); if(!btn) return;
+  const act=btn.getAttribute("data-act");
+  if(act==="add"){ openSdPicker(); return; }
+  const cardEl=btn.closest(".sd-card"); const id=cardEl&&cardEl.getAttribute("data-sd");
+  const c=(state.strengthDays||[]).find(x=>x.id===id); if(!c) return;
+  if(act==="addrow"){ readStrengthCard(cardEl,c); c.rows.push({name:"",dose:"",log:""}); save(); renderStrength();
+    requestAnimationFrame(()=>{ const ins=$$(`[data-sd="${id}"] .sd-row .sd-f.nm`); const el=ins[ins.length-1]; if(el) el.focus(); }); return; }
+  if(act==="done"){ readStrengthCard(cardEl,c); c.rows=c.rows.filter(r=>r.name||r.dose||r.log); c.done=true; if(!c.date) c.date=todayISO(); save(); renderStrength(); return; }
+  if(act==="edit"){ c.done=false; save(); renderStrength(); return; }
+  if(act==="del"){ if(confirm("Delete this strength card?")){ state.strengthDays=(state.strengthDays||[]).filter(x=>x.id!==id); save(); renderStrength(); } return; }
 });
+// Persist live edits (no re-render → keeps focus); syncs via planSig
+let _sdSaveT=null;
+function _sdLive(e){
+  const cardEl=e.target.closest(".sd-card"); if(!cardEl) return;
+  const id=cardEl.getAttribute("data-sd"); const c=(state.strengthDays||[]).find(x=>x.id===id); if(!c||c.done) return;
+  if(_sdSaveT) clearTimeout(_sdSaveT);
+  _sdSaveT=setTimeout(()=>{ readStrengthCard(cardEl,c); save(); }, 350);
+}
+$("#strengthView").addEventListener("input", _sdLive);
+$("#strengthView").addEventListener("change", _sdLive);
 
 function renderCountdown(){
   const mondays = weekMondays(), nWeeks = mondays.length;
@@ -1766,6 +1882,7 @@ function adoptRemote(remote){
   if(Array.isArray(remote.hrZones)&&remote.hrZones.length===5) state.hrZones=remote.hrZones;
   if(Array.isArray(remote.paceZones)&&remote.paceZones.length===5) state.paceZones=remote.paceZones;
   if(remote.strengthLog && typeof remote.strengthLog==="object") state.strengthLog=remote.strengthLog;
+  if(Array.isArray(remote.strengthDays)) state.strengthDays=remote.strengthDays.map(normStrengthDay);
   if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
   if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
   activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
@@ -1793,7 +1910,7 @@ function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTi
 async function cloudPushNow(){
   _pushTimer=null; if(!cloudOn()) return;
   syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, updatedAt: state.updatedAt });
+  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, updatedAt: state.updatedAt });
   const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
   try{ setStatus("saving");
     if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
