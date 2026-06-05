@@ -4,9 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05d" />
+<meta name="app-build" content="2026-06-05e" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Plan Tracker" />
 <title>Grisedale Horseshoe · 13-Week Plan</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
@@ -64,7 +65,7 @@
   .topbar{
     position:sticky;top:0;z-index:40;
     display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    padding:13px 24px;
+    padding:calc(13px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) 13px calc(24px + env(safe-area-inset-left));
     background:var(--bg);
     border-bottom:1px solid var(--line);
   }
@@ -90,7 +91,7 @@
   .iconbtn:disabled{opacity:.4;cursor:default}
   .iconbtn:disabled:hover{border-color:var(--line2);color:var(--muted)}
 
-  .wrap{max-width:1400px;margin:0 auto;padding:24px}
+  .wrap{max-width:1400px;margin:0 auto;padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
 
   /* ---------- Section structure ---------- */
   .section-label{display:flex;align-items:center;gap:11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--faint);font-weight:600;margin:4px 2px 12px}
@@ -263,6 +264,20 @@
   .btn.danger{color:#d9685f;border-color:color-mix(in srgb,#d9685f 35%,var(--line2))}
   .btn.danger:hover{border-color:#d9685f}
   .sectlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);margin:2px 0 -4px}
+  /* Read-only session view (opens before you choose to Edit) */
+  .mv{display:flex;flex-direction:column;gap:16px}
+  .mv-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  .mv-chips .pill{font-size:12px;padding:3px 9px}
+  .mv-chips .pill.type{color:#fff;border:0}
+  .mv-chips .mv-flag{font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+  .mv-chips .mv-flag.done{color:var(--good)}
+  .mv-sect{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:600}
+  .mv-stats{display:flex;flex-wrap:wrap;gap:9px}
+  .mv-stat{flex:1 1 0;min-width:84px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+  .mv-stat .lab{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .mv-stat b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+  .mv-note{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5;color:var(--txt);white-space:pre-wrap}
+  .mv-empty{color:var(--muted);font-size:13px;line-height:1.5;background:var(--bg2);border:1px dashed var(--line2);border-radius:10px;padding:14px}
 
   .legend-foot{margin:28px 0 50px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
   .legend-foot b{color:var(--muted)}
@@ -421,8 +436,8 @@
 
   /* ---------- Mobile ---------- */
   @media (max-width:700px){
-    .wrap{padding:13px}
-    .topbar{padding:10px 13px;gap:9px}
+    .wrap{padding:13px calc(13px + env(safe-area-inset-right)) calc(13px + env(safe-area-inset-bottom)) calc(13px + env(safe-area-inset-left))}
+    .topbar{padding:calc(10px + env(safe-area-inset-top)) calc(13px + env(safe-area-inset-right)) 10px calc(13px + env(safe-area-inset-left));gap:9px}
     .mini{display:none}                 /* dashboard already shows these; declutter the header */
     .brand{gap:9px}
     .brand h1{font-size:13px}
@@ -457,9 +472,25 @@
     .grid3{gap:10px;grid-template-columns:1fr 1fr}
     .field>label{white-space:nowrap}
     .modal-head h3{font-size:16px;line-height:1.3}
+    /* inputs at 16px stop iOS auto-zooming on focus, and give bigger tap targets */
+    .field input,.field select,.field textarea{font-size:16px;padding:11px 12px}
     .tabsrow{margin-bottom:14px}
     .home-head h2{font-size:17px}
     .plan-grid{grid-template-columns:1fr}
+    /* Strength cards: roomier, and edit rows restack (name on its own line, dose+weight below) */
+    .sd-card{width:min(89vw,360px);padding:16px 16px}
+    .sd-titin{font-size:16px;padding:9px 10px}
+    .sd-datein{font-size:16px;padding:8px 10px}
+    .sd-note{font-size:16px}
+    .sd-row{flex-wrap:wrap;gap:7px 8px}
+    .sd-row .sd-f{padding:10px 11px}
+    .sd-row .sd-f.nm{flex:1 1 100%;min-width:0;font-size:16px}
+    .sd-row .sd-f.ds{flex:1 1 0;width:auto;min-width:0;text-align:left;font-size:16px}
+    .sd-row .sd-f.lg{flex:1 1 0;width:auto;min-width:0;text-align:left;font-size:16px}
+    .sd-addrow{font-size:14px;padding:6px 0}
+    .sd-btn{padding:11px 8px;font-size:14px}
+    .sd-pick .opt{padding:13px}
+    .sd-pick .opt b{font-size:14.5px}
   }
   ::-webkit-scrollbar{height:9px;width:9px}
   ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
@@ -567,7 +598,8 @@
         <button class="btn danger" id="mDelete" style="display:none">Delete</button>
         <span style="flex:1"></span>
         <button class="btn" id="mCancel">Cancel</button>
-        <button class="btn primary" id="mSave">Save</button>
+        <button class="btn primary" id="mEdit" style="display:none">Edit</button>
+        <button class="btn primary" id="mSave" style="display:none">Save</button>
       </div>
     </div>
   </div>
@@ -1599,14 +1631,36 @@ function moveWorkout(id,date,beforeId){
 /* ============================ MODAL ============================ */
 const backdrop=$("#backdrop"); let editingId=null, isNew=false;
 
-function openModal(id){
-  const w=getWO(id); if(!w) return;
-  editingId=id; isNew=false;
-  $("#mDate").textContent = dayLong(w.date);
-  $("#mTitleHead").textContent = w.n;
-  $("#mDelete").style.display = "inline-flex";
-  const lg = state.log[id]||{};
-  $("#mBody").innerHTML = `
+let modalMode="view";   // "view" | "edit" | "new"
+function setModalFooter(){
+  const del=$("#mDelete"), save=$("#mSave"), edit=$("#mEdit"), cancel=$("#mCancel");
+  del.style.display  = modalMode==="new" ? "none" : "inline-flex";
+  save.style.display = (modalMode==="edit"||modalMode==="new") ? "inline-flex" : "none";
+  edit.style.display = modalMode==="view" ? "inline-flex" : "none";
+  cancel.textContent = modalMode==="view" ? "Close" : "Cancel";
+}
+// Read-only summary shown when you tap a session (you choose Edit to change anything).
+function modalViewHTML(w){
+  const lg=state.log[editingId]||{}, done=!!state.done[editingId];
+  const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null;
+  const stat=s=>`<div class="mv-stat"><span class="lab">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`;
+  const plan=[]; if(w.d)plan.push(["Duration",fmtDur(w.d)]); if(w.k!=null)plan.push(["Distance",fmtDist(w.k)]); if(w.v!=null)plan.push(["Vert",fmtVert(w.v)]);
+  const act=[]; if(done){ if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Vert",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); }
+  const flag = done
+    ? (es?`<span class="pill exec ${es.level}">${es.pct}%</span><span class="mv-flag done">✓ Completed</span>`:`<span class="mv-flag done">✓ Completed</span>`)
+    : `<span class="mv-flag">○ To do</span>`;
+  return `<div class="mv">
+    <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
+    ${plan.length?`<div><div class="mv-sect" style="margin-bottom:8px">Planned target</div><div class="mv-stats">${plan.map(stat).join("")}</div></div>`:""}
+    ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
+    ${done
+      ? `<div><div class="mv-sect" style="margin-bottom:8px">Your log</div>${es?execReadoutHTML(es,w):""}${act.length?`<div class="mv-stats" style="margin-top:${es?"10px":"0"}">${act.map(stat).join("")}</div>`:""}${lg.c?`<div class="mv-note" style="margin-top:10px">${esc(lg.c)}</div>`:""}</div>`
+      : `<div class="mv-empty">Not logged yet. Tap <b>Edit</b> to mark it done and record how it went.</div>`}
+  </div>`;
+}
+function modalEditHTML(w){
+  const lg=state.log[editingId]||{};
+  return `
     <div class="field"><label>Session</label><input id="f_n" value="${esc(w.n)}"></div>
     <div class="grid2">
       <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t===w.t?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
@@ -1621,7 +1675,7 @@ function openModal(id){
     ${w.note? `<div><div class="sectlabel" style="margin-bottom:6px">Coach notes</div><div class="coach">${esc(w.note)}</div></div>`:""}
     <div class="sectlabel">Your log</div>
     <div class="donerow">
-      <button class="toggle" id="f_done" aria-pressed="${!!state.done[id]}"></button>
+      <button class="toggle" id="f_done" aria-pressed="${!!state.done[editingId]}"></button>
       <div><b>Mark as completed</b><div style="font-size:12px;color:var(--muted)">Counts toward your totals & progress.</div></div>
     </div>
     <div id="f_exec" hidden></div>
@@ -1633,6 +1687,8 @@ function openModal(id){
     <div class="field"><label>Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
     <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
   `;
+}
+function wireModalEdit(w){
   const refreshExec = ()=>{
     const elx=$("#f_exec"); if(!elx) return;
     const isDone = $("#f_done").getAttribute("aria-pressed")==="true";
@@ -1643,14 +1699,30 @@ function openModal(id){
   $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); refreshExec(); };
   ["f_ld","f_lk"].forEach(idn=>{ const el=$("#"+idn); if(el) el.addEventListener("input", refreshExec); });
   refreshExec();
+}
+function openModal(id){
+  const w=getWO(id); if(!w) return;
+  editingId=id; isNew=false; modalMode="view";
+  $("#mDate").textContent = dayLong(w.date);
+  $("#mTitleHead").textContent = w.n;
+  $("#mBody").innerHTML = modalViewHTML(w);
+  setModalFooter();
+  $("#mBody").scrollTop=0;
   backdrop.classList.add("open");
 }
-
+function modalEnterEdit(){
+  if(!editingId || isNew) return;
+  const w=getWO(editingId); if(!w) return;
+  modalMode="edit";
+  $("#mBody").innerHTML = modalEditHTML(w);
+  wireModalEdit(w);
+  setModalFooter();
+  $("#mBody").scrollTop=0;
+}
 function openNew(date){
-  editingId="c"+Date.now(); isNew=true;
+  editingId="c"+Date.now(); isNew=true; modalMode="new";
   $("#mDate").textContent = dayLong(date);
   $("#mTitleHead").textContent = "New session";
-  $("#mDelete").style.display="none";
   $("#mBody").dataset.date = date;
   $("#mBody").innerHTML = `
     <div class="field"><label>Session</label><input id="f_n" value="" placeholder="e.g. Easy shakeout"></div>
@@ -1665,6 +1737,7 @@ function openNew(date){
     </div>
     <div class="field"><label>Notes</label><textarea id="f_note" placeholder="Session details…"></textarea></div>
   `;
+  setModalFooter();
   backdrop.classList.add("open");
 }
 
@@ -1694,8 +1767,17 @@ $("#mSave").onclick = ()=>{
     if(empty) delete state.log[id]; else state.log[id]=lg;
     ensureTypeVisible(t);   // never hide the session you just edited behind an off filter
   }
-  closeModal(); save(); render();
+  save(); render();
+  if(isNew){ closeModal(); return; }
+  const w2=getWO(editingId);                       // existing session → drop back to the read-only view so the result is visible
+  if(!w2){ closeModal(); return; }
+  modalMode="view";
+  $("#mTitleHead").textContent=w2.n;
+  $("#mBody").innerHTML=modalViewHTML(w2);
+  setModalFooter();
+  $("#mBody").scrollTop=0;
 };
+$("#mEdit").onclick = modalEnterEdit;
 $("#mDelete").onclick = ()=>{
   if(!confirm("Delete this session? Undo (⌘Z) brings it straight back, or re-import / reset the plan.")) return;
   pushUndo();
@@ -1705,7 +1787,7 @@ $("#mDelete").onclick = ()=>{
   removeFromBoard(id); delete state.done[id]; delete state.log[id]; delete state.edits[id];
   closeModal(); save(); render();
 };
-function closeModal(){ backdrop.classList.remove("open"); editingId=null; }
+function closeModal(){ backdrop.classList.remove("open"); editingId=null; modalMode="view"; }
 $("#mClose").onclick=closeModal; $("#mCancel").onclick=closeModal;
 backdrop.addEventListener("click", e=>{ if(e.target===backdrop) closeModal(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"&&backdrop.classList.contains("open")) closeModal(); });
