@@ -18,7 +18,7 @@
     --line:#dde3ea; --line2:#cbd3dd;
     --txt:#18222e; --muted:#586573; --faint:#8a96a4;
     --accent:#df531d; --accent2:#e86f3e;
-    --good:#2c9c67; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
+    --good:#2c9c67; --warn:#c1841b; --bad:#cf4b46; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
     --radius:12px;
     --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
     --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
@@ -31,7 +31,7 @@
     --line:#363d48; --line2:#454d5a;
     --txt:#eef1f6; --muted:#aab3c0; --faint:#76818f;
     --accent:#f2622e; --accent2:#f57f4e;
-    --good:#46b487; --shadow:0 10px 30px rgba(0,0,0,.38);
+    --good:#46b487; --warn:#d8a23f; --bad:#e26b6b; --shadow:0 10px 30px rgba(0,0,0,.38);
     --t-easy:#5cc497; --t-recovery:#5aacde; --t-threshold:#d7ad4c;
     --t-hills:#e07887; --t-descent:#54bccb; --t-simulation:#d57fb2;
     --t-long:#988fe0; --t-race:#d7b84e; --t-rest:#7f8a99; --t-bike:#6f97e0;
@@ -42,7 +42,7 @@
     --line:#dde3ea; --line2:#cbd3dd;
     --txt:#18222e; --muted:#586573; --faint:#8a96a4;
     --accent:#df531d; --accent2:#e86f3e;
-    --good:#2c9c67; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
+    --good:#2c9c67; --warn:#c1841b; --bad:#cf4b46; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
     --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
     --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
     --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8;
@@ -200,6 +200,21 @@
   .card .cmeta{display:flex;flex-wrap:wrap;gap:5px}
   .pill{font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .pill.zone{color:var(--muted);border-color:var(--line)}
+  .pill.exec{font-weight:800;border:0;color:#fff;letter-spacing:.2px}
+  .pill.exec.good{background:var(--good)}
+  .pill.exec.warn{background:var(--warn)}
+  .pill.exec.bad{background:var(--bad)}
+  .tc-doneflag.warn{color:var(--warn)} .tc-doneflag.bad{color:var(--bad)}
+  .exec-read{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;margin:0 0 10px;border:1px solid var(--line)}
+  .exec-read .exec-pct{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+  .exec-read .exec-cap{font-size:12.5px;color:var(--muted);line-height:1.35}
+  .exec-read.good{background:color-mix(in srgb,var(--good) 12%,transparent);border-color:color-mix(in srgb,var(--good) 30%,var(--line))}
+  .exec-read.good .exec-pct{color:var(--good)}
+  .exec-read.warn{background:color-mix(in srgb,var(--warn) 12%,transparent);border-color:color-mix(in srgb,var(--warn) 30%,var(--line))}
+  .exec-read.warn .exec-pct{color:var(--warn)}
+  .exec-read.bad{background:color-mix(in srgb,var(--bad) 13%,transparent);border-color:color-mix(in srgb,var(--bad) 32%,var(--line))}
+  .exec-read.bad .exec-pct{color:var(--bad)}
+  .exec-zone{font-size:12px;color:var(--muted);margin:-4px 0 10px;padding-left:2px}
   .check{
     position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);
     background:transparent;display:grid;place-items:center;color:transparent;font-size:11px;transition:.15s;
@@ -1127,8 +1142,9 @@ function renderToday(){
   const why=((w.note||"").split("\n")[0]||"").trim();
   const mon=mondayOf(fdate); const wids=[]; for(let di=0;di<7;di++)(state.board[addDays(mon,di)]||[]).forEach(id=>wids.push(id));
   const T=totals(wids);
+  const es = done ? execScore(w, state.log[focus.id]||{}) : null;
   const right = isRest ? `<span class="tc-rest">Recovery is training too.</span>`
-    : done ? `<span class="tc-doneflag">✓ Done</span>`
+    : done ? `<span class="tc-doneflag ${es?es.level:""}" title="${es?execLabel(es)+" vs your planned target":""}">${es?("✓ "+es.pct+"%"):"✓ Done"}</span>`
     : mode==="today" ? `<button class="btn primary tc-do" data-done="${focus.id}">Mark done</button>`
     : `<span class="tc-view">View ›</span>`;
   host.innerHTML = `<div class="today-card ${done?'done':''}" style="--c:${ty.c}" data-open="${focus.id}">
@@ -1214,6 +1230,7 @@ function cardHTML(id){
   if(w.z && w.z!=="—") meta.push(`<span class="pill zone">${esc(w.z)}</span>`);
   const lg = state.log[id]||{};
   if(lg.hr) meta.push(`<span class="pill">${lg.hr} bpm</span>`);
+  if(state.done[id]){ const es=execScore(w,lg); if(es) meta.push(`<span class="pill exec ${es.level}" title="${execLabel(es)} — ${(es.basis==="time"?fmtDur(es.actual):fmtDist(es.actual))} done vs ${(es.basis==="time"?fmtDur(es.planned):fmtDist(es.planned))} planned">${es.pct}%</span>`); }
   const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
   return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
       <button class="check" data-check="${id}" title="Mark complete"></button>
@@ -1232,6 +1249,32 @@ function zoneBar(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
   return `<div class="zbar">`+arr.map((v,i)=> v>0?`<i style="width:${(v/tot*100).toFixed(1)}%;background:${ZONES[i].c}" title="${ZONES[i].k}: ${Math.round(v/tot*100)}%"></i>`:"").join("")+`</div>`; }
 function zbreakText(arr){ const tot=arr.reduce((a,b)=>a+b,0); if(!tot) return "";
   return arr.map((v,i)=> v>0?`${ZONES[i].k} ${Math.round(v/tot*100)}%`:null).filter(Boolean).join(" · "); }
+/* ---- Execution score: how close the completed session was to its planned target ---- */
+function execScore(w, lg){
+  if(!w || w.t==="Rest" || !lg) return null;
+  let basis=null, planned=null, actual=null;
+  if(w.d && lg.d!=null){ basis="time"; planned=+w.d; actual=+lg.d; }            // duration is the primary prescription
+  else if(w.k && lg.k!=null){ basis="dist"; planned=+w.k; actual=+lg.k; }       // fall back to distance
+  if(planned==null || actual==null || !(planned>0)) return null;
+  const pct = Math.round(actual/planned*100);
+  const dev = Math.abs(pct-100);
+  const level = dev<=10 ? "good" : dev<=25 ? "warn" : "bad";                     // ±10% nailed it, ±25% close, beyond = off
+  return {pct, level, basis, planned, actual};
+}
+function execLabel(es){ return es.level==="good" ? "On target" : (es.pct>100 ? "Above plan" : "Below plan"); }
+function execReadoutHTML(es, w){
+  const fmt = es.basis==="time" ? fmtDur : fmtDist;
+  const lg = state.log[editingId]||{};
+  let zline="";
+  const ti = zoneTextToIdx(w.z);
+  if(ti!=null && Array.isArray(lg.zones) && lg.zt===hrThresholds().join(",")){   // only trust buckets computed with current zones
+    const tot=lg.zones.reduce((a,b)=>a+b,0);
+    if(tot){ const inZ=Math.round((lg.zones[ti]||0)/tot*100);
+      zline=`<div class="exec-zone">${inZ}% of your time was in <b style="color:${ZONES[ti].c}">${ZONES[ti].k}</b> — the target zone</div>`; }
+  }
+  return `<div class="exec-read ${es.level}"><span class="exec-pct">${es.pct}%</span>`
+    + `<span class="exec-cap"><b>${execLabel(es)}</b> · ${fmt(es.actual)} done vs ${fmt(es.planned)} planned</span></div>${zline}`;
+}
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
   const ztNow=hrThresholds().join(",");
@@ -1451,6 +1494,7 @@ function openModal(id){
       <button class="toggle" id="f_done" aria-pressed="${!!state.done[id]}"></button>
       <div><b>Mark as completed</b><div style="font-size:12px;color:var(--muted)">Counts toward your totals & progress.</div></div>
     </div>
+    <div id="f_exec" hidden></div>
     <div class="grid3">
       <div class="field"><label>Actual time (min)</label><input id="f_ld" type="number" min="0" placeholder="${w.d??""}" value="${lg.d??""}"></div>
       <div class="field"><label>Actual dist (km)</label><input id="f_lk" type="number" min="0" step="0.1" placeholder="${w.k??""}" value="${lg.k??""}"></div>
@@ -1459,7 +1503,16 @@ function openModal(id){
     <div class="field"><label>Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
     <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
   `;
-  $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); };
+  const refreshExec = ()=>{
+    const elx=$("#f_exec"); if(!elx) return;
+    const isDone = $("#f_done").getAttribute("aria-pressed")==="true";
+    const es = isDone ? execScore(w, { d:numOrNull($("#f_ld").value), k:numOrNull($("#f_lk").value) }) : null;
+    if(!es){ elx.hidden=true; elx.innerHTML=""; return; }
+    elx.hidden=false; elx.innerHTML = execReadoutHTML(es, w);
+  };
+  $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); refreshExec(); };
+  ["f_ld","f_lk"].forEach(idn=>{ const el=$("#"+idn); if(el) el.addEventListener("input", refreshExec); });
+  refreshExec();
   backdrop.classList.add("open");
 }
 
@@ -1505,8 +1558,10 @@ $("#mSave").onclick = ()=>{
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
-    const lg={ d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), c:(get("f_lc")||"").trim() };
-    if(lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&!lg.c) delete state.log[id]; else state.log[id]=lg;
+    const prev=state.log[id]||{};                  // keep Strava-derived fields (zones/zt/sid) the modal doesn't edit
+    const lg=Object.assign({}, prev, { d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), c:(get("f_lc")||"").trim() });
+    const empty = lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&!lg.c && lg.sid==null && !(Array.isArray(lg.zones)&&lg.zones.length);
+    if(empty) delete state.log[id]; else state.log[id]=lg;
     ensureTypeVisible(t);   // never hide the session you just edited behind an off filter
   }
   closeModal(); save(); render();
