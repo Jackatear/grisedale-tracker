@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05g" />
+<meta name="app-build" content="2026-06-05h" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -286,6 +286,30 @@
   .pseg-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .pseg-metrics .pill{font-size:11.5px;padding:2px 8px;font-variant-numeric:tabular-nums}
   .pseg-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
+  /* Coach strip: training load + readiness */
+  .coach-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  .coach-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column}
+  .coach-card h4{margin:0;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:600}
+  .cc-big{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1;margin-top:7px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .cc-trend{font-size:12px;font-weight:600;color:var(--muted)}
+  .cc-badge{align-self:flex-start;display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;margin-top:10px;font-variant-numeric:tabular-nums}
+  .cc-badge.good{color:var(--good);background:color-mix(in srgb,var(--good) 13%,transparent)}
+  .cc-badge.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+  .cc-badge.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
+  .cc-badge.neutral{color:var(--muted);background:var(--bg2)}
+  .cc-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:9px}
+  .cc-spark{display:flex;align-items:flex-end;gap:4px;height:34px;margin-top:auto;padding-top:11px}
+  .cc-spark i{flex:1;background:var(--line2);border-radius:3px 3px 0 0;min-height:3px}
+  .cc-spark i.cur{background:var(--accent)}
+  @media (max-width:700px){ .coach-strip{grid-template-columns:1fr;gap:10px} }
+  /* Daily check-in sheet (reuses .sd-pick-back overlay) */
+  .ci-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0}
+  .ci-lab{font-size:13.5px;font-weight:500}
+  .ci-lab small{color:var(--faint);font-weight:400}
+  .ci-scale{display:flex;gap:6px}
+  .ci-scale button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);font:inherit;font-size:15px;font-weight:600}
+  .ci-scale button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .ci-ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin:-3px 2px 0}
 
   .legend-foot{margin:28px 0 50px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
   .legend-foot b{color:var(--muted)}
@@ -556,6 +580,7 @@
     <div id="todayCard"></div>
     <div class="section-label">Overview</div>
     <div class="dash" id="dash"></div>
+    <div id="coachStrip"></div>
 
     <div class="toolbar">
       <div class="menuwrap">
@@ -824,6 +849,7 @@ function migrate(raw){
     paceZones: paceZonesOrDefault(raw.paceZones),
     strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
     strengthDays: Array.isArray(raw.strengthDays) ? raw.strengthDays.map(normStrengthDay) : synthStrengthDays(raw.strengthLog),
+    readiness: (raw.readiness && typeof raw.readiness==="object") ? raw.readiness : {},
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -857,7 +883,7 @@ function paceZonesOrDefault(pz){   // keep the user's paces if they've entered a
   if(Array.isArray(pz)&&pz.length===5 && pz.some(p=>Array.isArray(p)&&((p[0]&&String(p[0]).trim())||(p[1]&&String(p[1]).trim())))) return pz;
   return defaultPaceZones();
 }
-function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays}); }
+function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays, r:state.readiness}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
 function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
@@ -1013,6 +1039,7 @@ function render(){
   renderCountdown();
   renderToday();
   renderDash();
+  renderCoach();
   renderChips();
   renderToolbarState();
   renderWeeks();
@@ -1358,6 +1385,109 @@ function renderDash(){
       <div class="prow"><span>${pct}% of the plan done</span><b>${T.total-T.done} to go</b></div></div>
   `;
 }
+
+/* ===== COACH: training load (objective) + readiness (subjective) ===== */
+const LOAD_W=[1,2,3,4,5];                         // per-minute weight for Z1..Z5 (TRIMP-style)
+function sessionLoad(id){                          // load units for one completed session
+  const w=getWO(id); if(!w||w.t==="Rest"||!state.done[id]) return 0;
+  const lg=state.log[id]||{};
+  if(Array.isArray(lg.zones)){ const tot=lg.zones.reduce((a,b)=>a+b,0);
+    if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }   // precise: time-in-zone
+  const min = lg.d!=null ? lg.d : (w.d||0); if(!min) return 0;
+  let zi = lg.hr!=null ? hrToZoneIdx(lg.hr) : zoneTextToIdx(w.z); if(zi==null) zi=1;   // fallback: minutes × zone weight
+  return min*(LOAD_W[zi]||1);
+}
+function dayLoad(date){ let s=0; (state.board[date]||[]).forEach(id=>{ s+=sessionLoad(id); }); return s; }
+function rollingLoad(end, days){ let s=0; for(let i=0;i<days;i++) s+=dayLoad(addDays(end,-i)); return s; }
+function loadByWeek(){ return weekMondays().map(mon=>{ let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); return {mon, load:Math.round(l)}; }); }
+function loadBand(acwr, c28){
+  if(c28<60 || acwr==null) return {lvl:"neutral", label:"Building baseline", note:"A few weeks of logged sessions unlock the ramp guardrail."};
+  if(acwr>1.5) return {lvl:"bad",  label:"Spike · "+acwr.toFixed(2), note:"Sharp jump in load — elevated injury risk. Add easy days or cut a hard session."};
+  if(acwr>1.3) return {lvl:"warn", label:"Ramping · "+acwr.toFixed(2), note:"Climbing fast. Fine briefly — just don't stack another big week on top."};
+  if(acwr<0.8) return {lvl:"neutral", label:"Easing · "+acwr.toFixed(2), note:"Load is dropping — ideal in a taper/recovery week, watch for detraining otherwise."};
+  return {lvl:"good", label:"On track · "+acwr.toFixed(2), note:"Load is building in the safe zone. Keep it rolling."};
+}
+function readinessScore(r){ if(!r) return null; const v=[r.sleep,r.legs,r.energy,r.mot].filter(x=>x!=null); return v.length? Math.round(v.reduce((a,b)=>a+b,0)/(v.length*5)*100):null; }
+function coachNudge(score, acwr){
+  if(score<=45) return "You're flagging — keep today easy or trim the hard bits. Adaptation happens in recovery.";
+  if(acwr!=null && acwr>1.5) return "Feeling ok, but load is spiking — resist piling more on today.";
+  if(score>=80) return "Fresh and ready — a good day to attack a quality session.";
+  return "Solid — train as planned and listen to the legs.";
+}
+function sparkBars(vals, max, curIdx){ const m=Math.max(1,max); return vals.map((v,i)=>`<i class="${i===curIdx?'cur':''}" style="height:${v==null?3:Math.max(3,Math.round(v/m*34))}px;${v==null?'opacity:.3':''}"></i>`).join(""); }
+function renderCoach(){
+  const host=$("#coachStrip"); if(!host) return;
+  const today=todayISO();
+  // ---- load ----
+  const acute=rollingLoad(today,7), prev=rollingLoad(addDays(today,-7),7), c28=rollingLoad(today,28), chronic=c28/4;
+  const acwr = chronic>0 ? acute/chronic : null;
+  const trend = prev>0 ? Math.round((acute-prev)/prev*100) : null;
+  const band = loadBand(acwr, c28);
+  const wk=loadByWeek().slice(-6), curMon=mondayOf(today);
+  const loadSpark = sparkBars(wk.map(w=>w.load), Math.max(...wk.map(w=>w.load),1), wk.findIndex(w=>w.mon===curMon));
+  const trendHTML = trend==null?"":`<span class="cc-trend">${trend>=0?"▲":"▼"} ${Math.abs(trend)}% vs prev 7d</span>`;
+  const loadCard=`<div class="coach-card">
+    <h4>Training load · last 7 days</h4>
+    <div class="cc-big">${Math.round(acute)} ${trendHTML}</div>
+    <div class="cc-badge ${band.lvl}">${esc(band.label)}</div>
+    <div class="cc-note">${band.note}</div>
+    <div class="cc-spark" title="weekly load (last 6 weeks)">${loadSpark}</div>
+  </div>`;
+  // ---- readiness ----
+  const r=state.readiness&&state.readiness[today], score=readinessScore(r);
+  const days=[]; for(let i=6;i>=0;i--) days.push(readinessScore(state.readiness&&state.readiness[addDays(today,-i)]));
+  const rSpark=sparkBars(days,100,6);
+  let readyCard;
+  if(score==null){
+    let last=null; for(let i=1;i<=7;i++){ const s=readinessScore(state.readiness&&state.readiness[addDays(today,-i)]); if(s!=null){ last=s; break; } }
+    readyCard=`<div class="coach-card">
+      <h4>Readiness</h4>
+      <button class="btn primary" data-ci="1" style="width:100%;margin-top:9px">Morning check-in ›</button>
+      <div class="cc-note">10-second tap: sleep, legs, energy, motivation.${last!=null?` Last logged: ${last}%.`:""}</div>
+      <div class="cc-spark" title="readiness (last 7 days)">${rSpark}</div>
+    </div>`;
+  } else {
+    const word = score>=80?"Fresh":score>=60?"Good":score>=45?"A bit tired":"Run down";
+    readyCard=`<div class="coach-card">
+      <h4>Readiness · today</h4>
+      <div class="cc-big">${score}% <span class="cc-trend">${word}</span></div>
+      <div class="cc-note">${coachNudge(score, acwr)}</div>
+      <div class="cc-spark" title="readiness (last 7 days)">${rSpark}</div>
+      <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
+    </div>`;
+  }
+  host.innerHTML=`<div class="coach-strip">${loadCard}${readyCard}</div>`;
+}
+$("#coachStrip").addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
+function openCheckin(){
+  closeCheckin();
+  const today=todayISO(), cur=(state.readiness&&state.readiness[today])||{};
+  const dims=[["sleep","Sleep"],["legs","Legs / freshness"],["energy","Energy"],["mot","Motivation"]];
+  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="ciBack";
+  back.innerHTML=`<div class="sd-pick"><h3>How are you today?</h3>
+    ${dims.map(d=>`<div class="ci-row"><span class="ci-lab">${d[1]}</span><div class="ci-scale" data-dim="${d[0]}">${[1,2,3,4,5].map(n=>`<button data-n="${n}" aria-pressed="${cur[d[0]]==n}">${n}</button>`).join("")}</div></div>`).join("")}
+    <div class="ci-ends"><span>1 · poor</span><span>great · 5</span></div>
+    <div class="ci-row"><span class="ci-lab">Resting HR <small>optional</small></span><input id="ciRhr" class="sd-f" type="number" inputmode="numeric" placeholder="bpm" value="${cur.rhr??""}" style="width:92px;text-align:center"></div>
+    <textarea id="ciNote" class="sd-note" placeholder="Anything notable… (optional)">${esc(cur.note||"")}</textarea>
+    <button class="btn primary" id="ciSave" style="width:100%;margin-top:12px">Save check-in</button></div>`;
+  back.addEventListener("click", ev=>{
+    if(ev.target===back){ closeCheckin(); return; }
+    const sb=ev.target.closest(".ci-scale button");
+    if(sb){ [...sb.parentElement.children].forEach(b=>b.setAttribute("aria-pressed","false")); sb.setAttribute("aria-pressed","true"); return; }
+    if(ev.target.id==="ciSave"){ saveCheckin(back); }
+  });
+  document.body.appendChild(back);
+}
+function saveCheckin(back){
+  const today=todayISO(), r={};
+  back.querySelectorAll(".ci-scale").forEach(sc=>{ const sel=sc.querySelector('[aria-pressed="true"]'); if(sel) r[sc.getAttribute("data-dim")]=+sel.getAttribute("data-n"); });
+  const rhr=back.querySelector("#ciRhr").value.trim(); if(rhr) r.rhr=+rhr;
+  const note=back.querySelector("#ciNote").value.trim(); if(note) r.note=note;
+  state.readiness=state.readiness||{};
+  if(Object.keys(r).length) state.readiness[today]=r; else delete state.readiness[today];
+  closeCheckin(); save(); render();
+}
+function closeCheckin(){ const b=$("#ciBack"); if(b) b.remove(); }
 
 function renderChips(){
   const ids = Object.keys(woMap());
@@ -2064,6 +2194,7 @@ function adoptRemote(remote){
   if(Array.isArray(remote.paceZones)&&remote.paceZones.length===5) state.paceZones=remote.paceZones;
   if(remote.strengthLog && typeof remote.strengthLog==="object") state.strengthLog=remote.strengthLog;
   if(Array.isArray(remote.strengthDays)) state.strengthDays=remote.strengthDays.map(normStrengthDay);
+  if(remote.readiness && typeof remote.readiness==="object") state.readiness=remote.readiness;
   if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
   if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
   activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
@@ -2091,7 +2222,7 @@ function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTi
 async function cloudPushNow(){
   _pushTimer=null; if(!cloudOn()) return;
   syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, updatedAt: state.updatedAt });
+  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, readiness: state.readiness, updatedAt: state.updatedAt });
   const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
   try{ setStatus("saving");
     if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
