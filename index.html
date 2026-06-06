@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05u" />
+<meta name="app-build" content="2026-06-05v" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -199,6 +199,8 @@
   .wstats{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
   .wstat{font-size:12px;color:var(--muted);white-space:nowrap}
   .wstat b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
+  .week.flash-week{animation:wkflash 1.2s ease}
+  @keyframes wkflash{0%,100%{box-shadow:none}25%{box-shadow:0 0 0 2px var(--accent)}}
   .botnav{display:none}
   @media (max-width:700px){
     .botnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:35;background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-top:1px solid var(--line);padding:0 0 env(safe-area-inset-bottom)}
@@ -1238,7 +1240,22 @@ function updateBotnav(home){
   const cur = home ? "home" : (["plan","strength","calendar"].includes(state.tab)?state.tab:"plan");
   $$("#botnav .bn").forEach(b=>b.classList.toggle("active", b.dataset.nav===cur));
 }
-$("#botnav").addEventListener("click", e=>{ const b=e.target.closest("[data-nav]"); if(!b) return; const n=b.dataset.nav; if(n==="home") goHome(); else gotoTab(n); });
+// Snap the schedule to today's week (expanding it if collapsed) with a brief flash
+function scrollToToday(){
+  const mon=mondayOf(todayISO());
+  if(state.collapsed && state.collapsed[mon]){ state.collapsed[mon]=false; save(); renderWeeks(); }
+  const el = $("#weeks .day-cell.is-today") || $(`#weeks .week[data-mon="${mon}"]`);
+  if(!el){ window.scrollTo({top:0, behavior:"smooth"}); return; }   // today outside plan → top (Today card)
+  const off = (($(".topbar")||{}).offsetHeight||60) + 8;
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - off, behavior:"smooth" });
+  const wk = el.closest(".week"); if(wk){ wk.classList.remove("flash-week"); void wk.offsetWidth; wk.classList.add("flash-week"); }
+}
+$("#botnav").addEventListener("click", e=>{
+  const b=e.target.closest("[data-nav]"); if(!b) return; const n=b.dataset.nav;
+  if(n==="home"){ goHome(); return; }
+  if(n==="plan" && state.activeId && state.tab==="plan" && !$("#planView").hidden){ scrollToToday(); return; }   // already on Plan → jump to today
+  gotoTab(n);
+});
 function newBlankPlan(){ syncActiveToLibrary(); pushUndo(); const rec=blankRecord("New plan"); state.plans.push(rec); state.activeId=rec.id; activateMirror(state); state.tab="plan"; save(); render(); window.scrollTo(0,0); }
 function renamePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; const name=prompt("Plan name:", rec.planName||""); if(name===null) return; pushUndo(); rec.planName=(name.trim()||rec.planName); if(state.activeId===id) state.planName=rec.planName; save(); render(); }
 function deletePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; if(!confirm('Delete "'+(rec.planName||"this plan")+'"? This removes the plan and its progress everywhere it syncs.')) return; pushUndo(); syncActiveToLibrary(); state.plans=state.plans.filter(p=>p.id!==id); if(state.activeId===id){ state.activeId=null; activateMirror(state); } save(); render(); }
@@ -2046,7 +2063,7 @@ function ensureTypeVisible(t){ if(!t) return; if(!state.seenTypes.includes(t)) s
 $("#themeBtn").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"; save(); render(); };
 $("#unitBtn").onclick  = ()=>{ state.unit  = state.unit==="km"?"mi":"km"; save(); render(); };
 $("#undoBtn").onclick  = undo;
-document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; state.tab=b.dataset.tab; save(); applyTab(); });
+document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; if(b.dataset.tab==="plan" && state.tab==="plan"){ scrollToToday(); return; } state.tab=b.dataset.tab; save(); applyTab(); });
 $("#dashToggle").addEventListener("click", ()=>{ state.dashOpen = !(state.dashOpen!==false); save(); renderDash(); });
 
 /* ===== Calendar (month grid) view ===== */
