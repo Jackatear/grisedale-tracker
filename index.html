@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05m" />
+<meta name="app-build" content="2026-06-05n" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -332,9 +332,16 @@
   .cc-badge.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
   .cc-badge.neutral{color:var(--muted);background:var(--bg2)}
   .cc-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:9px}
-  .cc-spark{display:flex;align-items:flex-end;gap:4px;height:34px;margin-top:auto;padding-top:11px}
-  .cc-spark i{flex:1;background:var(--line2);border-radius:3px 3px 0 0;min-height:3px}
-  .cc-spark i.cur{background:var(--accent)}
+  .cc-chart{margin-top:auto;padding-top:13px}
+  .cc-chart-cap{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600;margin-bottom:8px}
+  .cc-bars{display:flex;align-items:flex-end;gap:4px;height:32px}
+  .cc-bars i{flex:1;background:var(--line2);border-radius:3px 3px 0 0;min-height:3px}
+  .cc-bars i.cur{background:var(--accent)}
+  .cc-bars i.empty{background:transparent;border:1px dashed var(--line2);min-height:9px;border-radius:3px}
+  .cc-xlabels{display:flex;gap:4px;margin-top:5px}
+  .cc-xlabels span{flex:1;text-align:center;font-size:9px;color:var(--faint);font-variant-numeric:tabular-nums;overflow:hidden}
+  .cc-xlabels span.cur{color:var(--accent);font-weight:700}
+  .cc-chart-empty{margin-top:auto;padding-top:13px;font-size:11.5px;color:var(--faint);line-height:1.45}
   @media (max-width:700px){ .coach-strip{grid-template-columns:1fr;gap:10px} }
   /* Daily check-in sheet (reuses .sd-pick-back overlay) */
   .ci-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0}
@@ -1531,7 +1538,15 @@ function coachNudge(score, acwr){
   if(score>=80) return "Fresh and ready — a good day to attack a quality session.";
   return "Solid — train as planned and listen to the legs.";
 }
-function sparkBars(vals, max, curIdx){ const m=Math.max(1,max); return vals.map((v,i)=>`<i class="${i===curIdx?'cur':''}" style="height:${v==null?3:Math.max(3,Math.round(v/m*34))}px;${v==null?'opacity:.3':''}"></i>`).join(""); }
+function miniChart(cap, vals, max, labels, curIdx, emptyMsg){
+  if(!vals.some(v=>v!=null && v>0)) return `<div class="cc-chart-empty">${esc(emptyMsg)}</div>`;
+  const m=Math.max(1,max);
+  const bars=vals.map((v,i)=> v==null
+    ? `<i class="empty" title="no data"></i>`
+    : `<i class="${i===curIdx?'cur':''}" style="height:${Math.max(3,Math.round(v/m*32))}px" title="${v}"></i>`).join("");
+  const xl=labels.map((l,i)=>`<span class="${i===curIdx?'cur':''}">${esc(l)}</span>`).join("");
+  return `<div class="cc-chart"><div class="cc-chart-cap">${esc(cap)}</div><div class="cc-bars">${bars}</div><div class="cc-xlabels">${xl}</div></div>`;
+}
 function renderCoach(){
   const host=$("#coachStrip"); if(!host) return;
   const today=todayISO();
@@ -1540,20 +1555,22 @@ function renderCoach(){
   const acwr = chronic>0 ? acute/chronic : null;
   const trend = prev>0 ? Math.round((acute-prev)/prev*100) : null;
   const band = loadBand(acwr, c28);
-  const wkLoads=[]; for(let i=5;i>=0;i--){ const mon=addDays(mondayOf(today),-7*i); let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); wkLoads.push(Math.round(l)); }
-  const loadSpark = sparkBars(wkLoads, Math.max(...wkLoads,1), 5);
+  const wkLoads=[], wkLabels=[];
+  for(let i=5;i>=0;i--){ const mon=addDays(mondayOf(today),-7*i); let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); wkLoads.push(Math.round(l)); wkLabels.push(i===0?"now":String(d(mon).getDate())); }
+  const loadChart = miniChart("Weekly load · last 6 wks", wkLoads, Math.max(...wkLoads,1), wkLabels, 5, "Builds as you train — your last 6 weeks of load will chart here.");
   const trendHTML = trend==null?"":`<span class="cc-trend">${trend>=0?"▲":"▼"} ${Math.abs(trend)}% vs prev 7d</span>`;
   const loadCard=`<div class="coach-card">
     <h4>Training load · last 7 days</h4>
     <div class="cc-big">${Math.round(acute)} ${trendHTML}</div>
     <div class="cc-badge ${band.lvl}">${esc(band.label)}</div>
     <div class="cc-note">${band.note}</div>
-    <div class="cc-spark" title="weekly load (last 6 weeks)">${loadSpark}</div>
+    ${loadChart}
   </div>`;
   // ---- readiness ----
   const r=state.readiness&&state.readiness[today], score=readinessScore(r);
-  const days=[]; for(let i=6;i>=0;i--) days.push(readinessScore(state.readiness&&state.readiness[addDays(today,-i)]));
-  const rSpark=sparkBars(days,100,6);
+  const days=[], rLabels=[];
+  for(let i=6;i>=0;i--){ const dt=addDays(today,-i); days.push(readinessScore(state.readiness&&state.readiness[dt])); rLabels.push(WD[d(dt).getDay()].slice(0,1)); }
+  const rChart=miniChart("Readiness · last 7 days", days, 100, rLabels, 6, "Check in a few days to see your readiness trend here.");
   let readyCard;
   if(score==null){
     let last=null; for(let i=1;i<=7;i++){ const s=readinessScore(state.readiness&&state.readiness[addDays(today,-i)]); if(s!=null){ last=s; break; } }
@@ -1561,7 +1578,7 @@ function renderCoach(){
       <h4>Readiness</h4>
       <button class="btn primary" data-ci="1" style="width:100%;margin-top:9px">Morning check-in ›</button>
       <div class="cc-note">10-second tap: sleep, legs, energy, motivation.${last!=null?` Last logged: ${last}%.`:""}</div>
-      <div class="cc-spark" title="readiness (last 7 days)">${rSpark}</div>
+      ${rChart}
     </div>`;
   } else {
     const word = score>=80?"Fresh":score>=60?"Good":score>=45?"A bit tired":"Run down";
@@ -1569,7 +1586,7 @@ function renderCoach(){
       <h4>Readiness · today</h4>
       <div class="cc-big">${score}% <span class="cc-trend">${word}</span></div>
       <div class="cc-note">${coachNudge(score, acwr)}</div>
-      <div class="cc-spark" title="readiness (last 7 days)">${rSpark}</div>
+      ${rChart}
       <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
     </div>`;
   }
