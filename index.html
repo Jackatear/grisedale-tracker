@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05s" />
+<meta name="app-build" content="2026-06-05t" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -305,6 +305,15 @@
   .btn.danger{color:#d9685f;border-color:color-mix(in srgb,#d9685f 35%,var(--line2))}
   .btn.danger:hover{border-color:#d9685f}
   .sectlabel{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);margin:2px 0 -4px}
+  .ss-hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--faint);font-size:10px}
+  .ss-in{width:100%;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:9px 11px;font:inherit;font-variant-numeric:tabular-nums}
+  .ss-in:focus{outline:none;border-color:var(--accent)}
+  .ss-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .ss-chip{border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:999px;padding:4px 11px;font:inherit;font-size:11.5px;font-weight:600;cursor:pointer}
+  .ss-chip:hover{border-color:var(--accent);color:var(--accent)}
+  .ss-prev{margin-top:10px}
+  .ss-prev .mv-sect{display:none}
+  .ss-empty{font-size:12px;color:var(--faint);font-style:italic;padding:2px 0}
   /* Read-only session view (opens before you choose to Edit) */
   .mv{display:flex;flex-direction:column;gap:16px}
   .mv-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
@@ -1199,7 +1208,7 @@ function newBlankPlan(){ syncActiveToLibrary(); pushUndo(); const rec=blankRecor
 function renamePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; const name=prompt("Plan name:", rec.planName||""); if(name===null) return; pushUndo(); rec.planName=(name.trim()||rec.planName); if(state.activeId===id) state.planName=rec.planName; save(); render(); }
 function deletePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; if(!confirm('Delete "'+(rec.planName||"this plan")+'"? This removes the plan and its progress everywhere it syncs.')) return; pushUndo(); syncActiveToLibrary(); state.plans=state.plans.filter(p=>p.id!==id); if(state.activeId===id){ state.activeId=null; activateMirror(state); } save(); render(); }
 function planToCSVfor(rec){
-  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","structure","zone","phase","block","notes"];
   const lines=[head.join(",")]; const del=rec.deleted||{}, edits=rec.edits||{};
   const all=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&!del[w.id]);
   const eff=w=>Object.assign({},w,edits[w.id]||{});
@@ -1208,19 +1217,19 @@ function planToCSVfor(rec){
   all.forEach(w=>{ if(!seen.has(w.id)) order.push(eff(w)); });
   order.sort((a,b)=> a.date<b.date?-1:a.date>b.date?1:0);
   order.forEach(w=>{ const blk=(rec.blocks&&rec.blocks[mondayOf(w.date)])||{};
-    lines.push([w.date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(",")); });
+    lines.push([w.date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",w.struct??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(",")); });
   return lines.join("\n");
 }
 function exportPlanCSV(id){ syncActiveToLibrary(); const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; download((rec.planName||"plan").replace(/\s+/g,"-").toLowerCase()+".csv", planToCSVfor(rec), "text/csv"); }
 // Blank starter template: header + a few worked example rows so a person (or an AI) can see exactly how to fill it.
 function csvTemplate(){
-  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","structure","zone","phase","block","notes"];
   const ex=[
-    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"road","Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Conversational, easy effort."],
-    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"road","Z4",1,"Base — week 1","surface = road/trail/fell/track/bike. On road, paces are shown; on fell, sessions are judged by effort + HR, not km pace. 15 min WU, 4×8 min @ threshold, 10 min CD."],
-    ["2026-01-07","Rest day","Rest","","","","","",1,"Base — week 1","Leave duration/distance/vert/zone/surface blank when they don't apply (e.g. rest)."],
-    ["2026-01-10","Long mountain day","Long",110,14,1100,"fell","Z2",1,"Base — week 1","Off-road/fell — give your best DISTANCE estimate even though it's terrain. Pace is by effort, not km."],
-    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","bike","Z1",1,"Base — week 1","Use the Bike type to swap a run for a ride. type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest."]
+    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"road","","Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Leave 'structure' blank for a plain run."],
+    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"road","WU 15min Z2 | 4x8min Z4 r90s | CD 10min Z2","Z4",1,"Base — week 1","structure = the interval breakdown. WU/CD = warm-up/cool-down · 4x8min Z4 = 4 reps of 8 min at Z4 · r90s = 90s recovery · | separates blocks. Any number of blocks."],
+    ["2026-01-07","Rest day","Rest","","","","","","",1,"Base — week 1","Leave fields blank when they don't apply (e.g. rest)."],
+    ["2026-01-10","Long mountain day","Long",110,14,1100,"fell","","Z2",1,"Base — week 1","surface=fell → judged by effort + HR, not km pace. Give your best DISTANCE estimate even though it's terrain."],
+    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","bike","","Z1",1,"Base — week 1","type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest. surface = road/trail/fell/track/bike."]
   ];
   return [head.join(",")].concat(ex.map(r=>r.map(csvCell).join(","))).join("\n");
 }
@@ -1769,10 +1778,38 @@ function blockZoneIdx(tag, fb){
   if(/^T$|THRESH/.test(tag)) return Math.max(fb,3);
   return fb;
 }
+// Parse the explicit "structure" mini-syntax → segments. e.g. "WU 15min Z2 | 4x6min Z3 r90s | CD 10min Z2"
+function parseStructure(str, fb){
+  const tokens=String(str).split(/[|;]/).map(s=>s.trim()).filter(Boolean); if(!tokens.length) return null;
+  const segs=[];
+  for(const tk of tokens){
+    const zm=/z\s*([1-5])/i.exec(tk); const zidx = zm ? (+zm[1]-1) : null;
+    const rm=/\br\s*(\d+)\s*(s|sec|secs|m|min|mins)?/i.exec(tk);
+    let rec=""; if(rm){ rec = rm[1] + (rm[2]&&/m/i.test(rm[2]) ? " min" : "s"); }
+    if(/^(wu|warm)/i.test(tk)){ const n=/(\d+)/.exec(tk); segs.push({kind:"wu", dur:n?+n[1]:10}); continue; }
+    if(/^(cd|cool)/i.test(tk)){ const n=/(\d+)/.exec(tk); segs.push({kind:"cd", dur:n?+n[1]:10}); continue; }
+    const rep=/(\d+)\s*[x×]\s*(\d+)\s*(min|mins|m|s|sec|secs)?/i.exec(tk);
+    if(rep){ const unit=/^s/i.test(rep[3]||"min")?"s":"min"; segs.push({kind:"work", reps:+rep[1], each:+rep[2], unit, idx:(zidx!=null?zidx:fb), rec:(+rep[1]>1?rec:"")}); continue; }
+    const st=/(\d+)\s*(min|mins|m)?/i.exec(tk);
+    if(st) segs.push({kind:"work", reps:1, each:+st[1], unit:"min", idx:(zidx!=null?zidx:fb), rec:""});
+  }
+  return segs.length ? {segs} : null;
+}
+// Serialize parsed segments back to the structure syntax (so an existing session's structure is editable in the field)
+function segsToStructure(segs){
+  return (segs||[]).map(s=>{
+    if(s.kind==="wu") return `WU ${s.dur}min Z2`;
+    if(s.kind==="cd") return `CD ${s.dur}min Z2`;
+    const each = s.each + (s.unit==="s"?"s":"min");
+    if(s.reps>1) return `${s.reps}x${each} Z${(s.idx||0)+1}${(s.rec&&/^\d/.test(s.rec))?` r${s.rec.replace(/\s+/g,"")}`:""}`;
+    return `${s.each}min Z${(s.idx||0)+1}`;
+  }).join(" | ");
+}
 function sessionPlan(w){
   if(!w || w.t==="Rest") return null;
-  const name=w.n||"", note=w.note||"";
   const fb = (zoneTextToIdx(w.z)==null) ? 3 : zoneTextToIdx(w.z);
+  if(w.struct && String(w.struct).trim()) return parseStructure(w.struct, fb);   // explicit structure wins over text parsing
+  const name=w.n||"", note=w.note||"";
   const wu = /(\d+)\s*(?:min\s*)?(?:WU|w\/u|warm[\s-]?up)/i.exec(note);
   const cd = /(\d+)\s*(?:min\s*)?(?:CD|c\/d|cool[\s-]?down)/i.exec(note);
   let rec=""; const rm=/(\d+)\s*(s|sec|secs|min|mins)?\s*(jog|float|walk|easy)/i.exec(note);
@@ -2187,6 +2224,7 @@ function modalViewHTML(w){
 }
 function modalEditHTML(w){
   const lg=state.log[editingId]||{};
+  const sp0=sessionPlan(w); const structVal = w.struct || (sp0 ? segsToStructure(sp0.segs) : "");
   return `
     <div class="field"><label>Session</label><input id="f_n" value="${esc(w.n)}"></div>
     <div class="grid3">
@@ -2200,6 +2238,15 @@ function modalEditHTML(w){
       <div class="field"><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value="${w.k??""}"></div>
       <div class="field"><label>Vert (m)</label><input id="f_v" type="number" min="0" value="${w.v??""}"></div>
     </div>
+    <div class="sectlabel">Session structure <span class="ss-hint">optional · builds the interval breakdown</span></div>
+    <input id="f_struct" class="ss-in" value="${esc(structVal)}" placeholder="WU 15min Z2 | 4x6min Z3 r90s | CD 10min Z2">
+    <div class="ss-chips">
+      <button type="button" class="ss-chip" data-ins="WU 15min Z2">+ warm-up</button>
+      <button type="button" class="ss-chip" data-ins="4x6min Z3 r90s">+ interval set</button>
+      <button type="button" class="ss-chip" data-ins="20min Z3">+ steady</button>
+      <button type="button" class="ss-chip" data-ins="CD 10min Z2">+ cool-down</button>
+    </div>
+    <div id="f_structprev" class="ss-prev"></div>
     ${w.note? `<div><div class="sectlabel" style="margin-bottom:6px">Coach notes</div><div class="coach">${esc(w.note)}</div></div>`:""}
     <div class="sectlabel">Your log</div>
     <div class="donerow">
@@ -2227,6 +2274,19 @@ function wireModalEdit(w){
   $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); refreshExec(); };
   ["f_ld","f_lk"].forEach(idn=>{ const el=$("#"+idn); if(el) el.addEventListener("input", refreshExec); });
   refreshExec();
+  wireStructure();
+}
+// Live structure field: chips append blocks, preview renders the parsed session plan as you type
+function wireStructure(){
+  const si=$("#f_struct"), sp=$("#f_structprev"); if(!si||!sp) return;
+  const refresh=()=>{ const v=si.value.trim();
+    const pw={ t:($("#f_t")||{}).value||"Easy", z:($("#f_z")||{}).value||"", sf:($("#f_sf")||{}).value||"", struct:v };
+    sp.innerHTML = v ? sessionPlanHTML(pw) : `<div class="ss-empty">No structure — renders as a plain session (no interval breakdown).</div>`;
+  };
+  si.addEventListener("input", refresh);
+  $$(".ss-chip").forEach(b=> b.addEventListener("click", ()=>{ const cur=si.value.trim(); si.value = cur ? cur+" | "+b.dataset.ins : b.dataset.ins; refresh(); si.focus(); }));
+  ["f_sf","f_z","f_t"].forEach(id=>{ const el=$("#"+id); if(el) el.addEventListener("change", refresh); });
+  refresh();
 }
 function openModal(id){
   const w=getWO(id); if(!w) return;
@@ -2265,9 +2325,19 @@ function openNew(date){
       <div class="field"><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value=""></div>
       <div class="field"><label>Vert (m)</label><input id="f_v" type="number" min="0" value=""></div>
     </div>
+    <div class="sectlabel">Session structure <span class="ss-hint">optional · for intervals</span></div>
+    <input id="f_struct" class="ss-in" value="" placeholder="WU 15min Z2 | 4x6min Z3 r90s | CD 10min Z2">
+    <div class="ss-chips">
+      <button type="button" class="ss-chip" data-ins="WU 15min Z2">+ warm-up</button>
+      <button type="button" class="ss-chip" data-ins="4x6min Z3 r90s">+ interval set</button>
+      <button type="button" class="ss-chip" data-ins="20min Z3">+ steady</button>
+      <button type="button" class="ss-chip" data-ins="CD 10min Z2">+ cool-down</button>
+    </div>
+    <div id="f_structprev" class="ss-prev"></div>
     <div class="field"><label>Notes</label><textarea id="f_note" placeholder="Session details…"></textarea></div>
   `;
   setModalFooter();
+  wireStructure();
   backdrop.classList.add("open");
   refreshScrollLock();
 }
@@ -2281,14 +2351,14 @@ $("#mSave").onclick = ()=>{
     const t=get("f_t")||"Easy";
     const w={ id:editingId, date, t, n:(get("f_n")||"Untitled").trim(),
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v")),
-      z:(get("f_z")||"—").trim()||"—", sf:(get("f_sf")||"").trim(), s:0, sa:0, note:(get("f_note")||"").trim() };
+      z:(get("f_z")||"—").trim()||"—", sf:(get("f_sf")||"").trim(), struct:(get("f_struct")||"").trim(), s:0, sa:0, note:(get("f_note")||"").trim() };
     state.custom.push(w);
     (state.board[date]=state.board[date]||[]).push(w.id);
     ensureTypeVisible(t);
   }else{
     const id=editingId, t=get("f_t");
     state.edits[id]=Object.assign({}, state.edits[id], {
-      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(), sf:(get("f_sf")||"").trim(),
+      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(), sf:(get("f_sf")||"").trim(), struct:(get("f_struct")||"").trim(),
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
@@ -2357,13 +2427,13 @@ function parsePlanDate(s){
   const dt=new Date(s); return isNaN(dt)?null:iso(dt);   // fallback for "8 Jun 2026" etc.
 }
 function planToCSV(){
-  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","structure","zone","phase","block","notes"];
   const lines=[head.join(",")];
   weekMondays().forEach(mon=>{
     const blk=(state.blocks&&state.blocks[mon])||{};
     for(let di=0;di<7;di++){ const date=addDays(mon,di); (state.board[date]||[]).forEach(id=>{
       const w=getWO(id, true); if(!w) return;
-      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
+      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",w.struct??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
     });}
   });
   return lines.join("\n");
@@ -2376,7 +2446,7 @@ function importCSV(text, name){
   const iDate=idx("date"), iName=idx("session","name","workout","title"), iType=idx("type","activity"),
         iDur=idx("duration_min","duration","minutes","min","time"), iDist=idx("distance_km","distance","km"),
         iVert=idx("vert_m","vert","elevation","climb","ascent"), iZone=idx("zone","effort","intensity"),
-        iPhase=idx("phase"), iBlock=idx("block","week","label"), iSurf=idx("surface","terrain","ground"), iNote=idx("notes","note","why","description","details");
+        iPhase=idx("phase"), iBlock=idx("block","week","label"), iSurf=idx("surface","terrain","ground"), iStruct=idx("structure","intervals","steps"), iNote=idx("notes","note","why","description","details");
   if(iDate<0 || iName<0){
     alert("CSV needs at least a 'date' and 'session' column.\n\nExpected header:\ndate, session, type, duration_min, distance_km, vert_m, zone, phase, block, notes");
     return;
@@ -2393,6 +2463,7 @@ function importCSV(text, name){
       v: iVert>=0?numOrNull(row[iVert]):null,
       z:(iZone>=0?(row[iZone]||"").trim():"")||"—",
       sf:(iSurf>=0?(row[iSurf]||"").trim().toLowerCase():""),
+      struct:(iStruct>=0?(row[iStruct]||"").trim():""),
       note:(iNote>=0?(row[iNote]||"").trim():"") });
     const mon=mondayOf(date);
     if(!blocks[mon]){ const ph=iPhase>=0?(row[iPhase]||"").trim():"", lb=iBlock>=0?(row[iBlock]||"").trim():"";
