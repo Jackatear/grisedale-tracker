@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05l" />
+<meta name="app-build" content="2026-06-05m" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -24,7 +24,7 @@
     --radius:12px;
     --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
     --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
-    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8;
+    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8; --t-strength:#6a61d4;
   }
   [data-theme="dark"]{
     color-scheme:dark;
@@ -36,7 +36,7 @@
     --good:#46b487; --warn:#d8a23f; --bad:#e26b6b; --shadow:0 10px 30px rgba(0,0,0,.38);
     --t-easy:#5cc497; --t-recovery:#5aacde; --t-threshold:#d7ad4c;
     --t-hills:#e07887; --t-descent:#54bccb; --t-simulation:#d57fb2;
-    --t-long:#988fe0; --t-race:#d7b84e; --t-rest:#7f8a99; --t-bike:#6f97e0;
+    --t-long:#988fe0; --t-race:#d7b84e; --t-rest:#7f8a99; --t-bike:#6f97e0; --t-strength:#8a82e6;
   }
   [data-theme="light"]{
     color-scheme:light;
@@ -47,7 +47,7 @@
     --good:#2c9c67; --warn:#c1841b; --bad:#cf4b46; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
     --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
     --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
-    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8;
+    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8; --t-strength:#6a61d4;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -258,6 +258,11 @@
   .card.race{border-color:var(--t-race);border-left-color:var(--t-race);background:color-mix(in srgb,var(--t-race) 7%,var(--panel))}
   .card.race .cname{font-weight:700}
   .card.rest{opacity:.6}
+  .card.strength{cursor:pointer;background:color-mix(in srgb,var(--c) 5%,var(--panel))}
+  .card.strength .scheck{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:5px;background:var(--good);display:grid;place-items:center}
+  .card.strength .scheck::after{content:"";width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-1px}
+  .sd-card.flash{animation:sdflash 1.1s ease}
+  @keyframes sdflash{0%,100%{box-shadow:0 0 0 0 transparent}25%{box-shadow:0 0 0 2px var(--accent)}}
   .day-cell .empty{font-size:11px;color:var(--faint);text-align:center;padding:12px 0;border:1px dashed var(--line2);border-radius:6px}
 
   /* ---------- Modal ---------- */
@@ -1361,8 +1366,9 @@ function openSdPicker(){
     requestAnimationFrame(()=>{ const rail=$(".sd-rail"); if(rail) rail.scrollLeft=0; });
   });
   document.body.appendChild(back);
+  refreshScrollLock();
 }
-function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); }
+function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); refreshScrollLock(); }
 function applyTab(){
   const t = ["plan","strength","calendar"].includes(state.tab) ? state.tab : "plan";
   $("#planView").hidden = t!=="plan";
@@ -1588,6 +1594,7 @@ function openCheckin(){
     if(ev.target.id==="ciSave"){ saveCheckin(back); }
   });
   document.body.appendChild(back);
+  refreshScrollLock();
 }
 function saveCheckin(back){
   const today=todayISO(), r={};
@@ -1598,7 +1605,7 @@ function saveCheckin(back){
   if(Object.keys(r).length) state.readiness[today]=r; else delete state.readiness[today];
   closeCheckin(); save(); render();
 }
-function closeCheckin(){ const b=$("#ciBack"); if(b) b.remove(); }
+function closeCheckin(){ const b=$("#ciBack"); if(b) b.remove(); refreshScrollLock(); }
 
 function renderChips(){
   const ids = Object.keys(woMap());
@@ -1776,6 +1783,25 @@ function weekZones(weekIds){
   return {plan, act, hasAct, planTot:plan.reduce((a,b)=>a+b,0)};
 }
 
+/* Completed strength sessions surface as cards on the plan board / calendar for their date */
+function strengthDaysOn(date){ return (state.strengthDays||[]).filter(c=>c.done && c.date===date); }
+function strengthCardHTML(c){
+  const rows=c.rows||[]; const logged=rows.filter(r=>r.log).length;
+  const meta=[];
+  if(c.mins) meta.push(`<span class="pill">${c.mins} min</span>`);
+  meta.push(`<span class="pill">${rows.length} exercise${rows.length===1?"":"s"}</span>`);
+  if(logged) meta.push(`<span class="pill">${logged} logged</span>`);
+  return `<div class="card strength" data-strength="${esc(c.id)}" style="--c:var(--t-strength)" title="View in Strength">
+      <span class="scheck" aria-hidden="true"></span>
+      <div class="ctype">Strength</div>
+      <div class="cname">${esc(c.title)}</div>
+      <div class="cmeta">${meta.join("")}</div>
+    </div>`;
+}
+function openStrengthFromBoard(id){
+  state.tab="strength"; save(); render();
+  requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${id}"]`); if(el){ el.scrollIntoView({inline:"center",block:"nearest"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } });
+}
 function renderWeeks(){
   const mondays = weekMondays();
   const psm = planStartMonday();
@@ -1795,12 +1821,14 @@ function renderWeeks(){
       const visible = ids.filter(id=>{ const w=getWO(id); return w && passesFilter(w); });
       const isToday = date===todayISO();
       const cardsHTML = visible.map(cardHTML).join("");
+      const sCards = (state.filters.vis==="todo") ? "" : strengthDaysOn(date).map(strengthCardHTML).join("");   // completed strength = done
+      const inner = cardsHTML + sCards;
       cells += `<div class="day-cell ${isToday?'is-today':''}" data-date="${date}">
           <div class="day-head ${isToday?'today':''}">
             <span><span class="dnum">${dayShort(date)}</span></span>
             <button class="addbtn" data-add="${date}" title="Add session">＋</button>
           </div>
-          ${cardsHTML || (ids.length? "" : `<div class="empty">—</div>`)}
+          ${inner || (ids.length? "" : `<div class="empty">—</div>`)}
         </div>`;
     }
     const T = totals(weekIds);
@@ -1891,9 +1919,11 @@ function renderCalendar(){
     const dtc=new Date(y, mo-1, 1 - firstDow + i);
     const isoD=iso(dtc), inMonth = dtc.getMonth()===(mo-1);
     const ids=(state.board[isoD]||[]).filter(id=>getWO(id));
-    const evts=ids.slice(0,MAX).map(id=>{ const w=getWO(id), ty=TYPES[w.t]||TYPES.Rest;
-      return `<div class="cal-evt ${state.done[id]?'done':''}" data-id="${id}" style="--c:${ty.c}" title="${esc(w.n)}">${esc(w.n)}</div>`; }).join("");
-    const more = ids.length>MAX ? `<div class="cal-more">+${ids.length-MAX}</div>` : "";
+    const items = ids.map(id=>{ const w=getWO(id), ty=TYPES[w.t]||TYPES.Rest;
+        return `<div class="cal-evt ${state.done[id]?'done':''}" data-id="${id}" style="--c:${ty.c}" title="${esc(w.n)}">${esc(w.n)}</div>`; })
+      .concat(strengthDaysOn(isoD).map(c=>`<div class="cal-evt done" data-strength="${esc(c.id)}" style="--c:var(--t-strength)" title="${esc(c.title)}">${esc(c.title)}</div>`));
+    const evts = items.slice(0,MAX).join("");
+    const more = items.length>MAX ? `<div class="cal-more">+${items.length-MAX}</div>` : "";
     cells += `<div class="cal-cell ${inMonth?'':'out'} ${isoD===today?'today':''}" data-date="${isoD}" data-in="${inMonth?1:0}">
         <div class="cal-dnum">${dtc.getDate()}</div><div class="cal-evts">${evts}${more}</div></div>`;
   }
@@ -1915,9 +1945,9 @@ $("#calendarView").addEventListener("click", e=>{
     state.calMonth = a==="today" ? todayISO().slice(0,7) : shiftMonth(state.calMonth||todayISO().slice(0,7), a==="next"?1:-1);
     save(); renderCalendar(); return; }
   const evt=e.target.closest(".cal-evt");
-  if(evt){ openModal(evt.dataset.id); return; }
+  if(evt){ if(evt.dataset.strength) openStrengthFromBoard(evt.dataset.strength); else openModal(evt.dataset.id); return; }
   const cell=e.target.closest(".cal-cell");
-  if(cell && cell.dataset.in==="1" && !(state.board[cell.dataset.date]||[]).some(id=>getWO(id))) openNew(cell.dataset.date);
+  if(cell && cell.dataset.in==="1" && !(state.board[cell.dataset.date]||[]).some(id=>getWO(id)) && !strengthDaysOn(cell.dataset.date).length) openNew(cell.dataset.date);
 });
 document.addEventListener("keydown", e=>{
   const mod=e.metaKey||e.ctrlKey; if(!(mod && (e.key==='z'||e.key==='Z'))) return;
@@ -1960,6 +1990,8 @@ weeksEl.addEventListener("click", e=>{
   if(add){ openNew(add.dataset.add); return; }
   const wact = e.target.closest("[data-act]");
   if(wact){ if(wact.dataset.act==="addWeek") addWeek(); else if(wact.dataset.act==="rmWeek") removeLastWeek(); return; }
+  const sc = e.target.closest("[data-strength]");
+  if(sc){ openStrengthFromBoard(sc.dataset.strength); return; }
   const card = e.target.closest(".card");
   if(card){ if(Date.now()-lastDragEnd<250) return; openModal(card.dataset.id); }
 });
@@ -2012,6 +2044,13 @@ function moveWorkout(id,date,beforeId){
 
 /* ============================ MODAL ============================ */
 const backdrop=$("#backdrop"); let editingId=null, isNew=false;
+// Lock background scroll while any modal/sheet is open (iOS-safe: fix the body, restore scroll on close)
+let _lockY=0, _locked=false;
+function refreshScrollLock(){
+  const open = backdrop.classList.contains("open") || !!document.getElementById("ciBack") || !!document.getElementById("sdPickBack");
+  if(open && !_locked){ _locked=true; _lockY=window.scrollY||window.pageYOffset||0; const b=document.body; b.style.position="fixed"; b.style.top=`-${_lockY}px`; b.style.left="0"; b.style.right="0"; b.style.width="100%"; }
+  else if(!open && _locked){ _locked=false; const b=document.body; b.style.position=""; b.style.top=""; b.style.left=""; b.style.right=""; b.style.width=""; window.scrollTo(0,_lockY); }
+}
 
 let modalMode="view";   // "view" | "edit" | "new"
 function setModalFooter(){
@@ -2092,6 +2131,7 @@ function openModal(id){
   setModalFooter();
   $("#mBody").scrollTop=0;
   backdrop.classList.add("open");
+  refreshScrollLock();
 }
 function modalEnterEdit(){
   if(!editingId || isNew) return;
@@ -2122,6 +2162,7 @@ function openNew(date){
   `;
   setModalFooter();
   backdrop.classList.add("open");
+  refreshScrollLock();
 }
 
 function numOrNull(v){ v=(v||"").toString().trim(); return v===""? null : +v; }
@@ -2170,7 +2211,7 @@ $("#mDelete").onclick = ()=>{
   removeFromBoard(id); delete state.done[id]; delete state.log[id]; delete state.edits[id];
   closeModal(); save(); render();
 };
-function closeModal(){ backdrop.classList.remove("open"); editingId=null; modalMode="view"; }
+function closeModal(){ backdrop.classList.remove("open"); editingId=null; modalMode="view"; refreshScrollLock(); }
 $("#mClose").onclick=closeModal; $("#mCancel").onclick=closeModal;
 backdrop.addEventListener("click", e=>{ if(e.target===backdrop) closeModal(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"&&backdrop.classList.contains("open")) closeModal(); });
