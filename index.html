@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05o" />
+<meta name="app-build" content="2026-06-05p" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -200,6 +200,13 @@
   .wstat{font-size:12px;color:var(--muted);white-space:nowrap}
   .wstat b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
   .phasebadge{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid var(--line2);color:var(--muted)}
+  .wk-adj-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
+  .wk-adj-badge.down{color:var(--t-recovery);background:color-mix(in srgb,var(--t-recovery) 14%,transparent)}
+  .wk-adj-badge.up{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+  .wk-adj{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 2px 12px}
+  .wk-adj-lab{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600}
+  .wk-seg button{padding:5px 12px;font-size:12px}
+  .wk-adj-note{font-size:11px;color:var(--muted)}
   .phase1,.phase2{background:transparent}
 
   .week-grid{display:grid;grid-template-columns:repeat(7,minmax(165px,1fr));gap:0;overflow-x:auto}
@@ -886,10 +893,10 @@ const LS_KEY = "grisedale.tracker.v1";            // legacy / fallback localStor
 const DB_NAME = "grisedaleTracker", STORE = "app", STATE_KEY = "state";
 const KM_TO_MI = 0.621371, M_TO_FT = 3.28084;
 /* ---- multi-plan library model ---- */
-const PLAN_FIELDS=["planName","plan","blocks","board","done","log","edits","custom","deleted","endMonday"];
+const PLAN_FIELDS=["planName","plan","blocks","board","done","log","edits","custom","deleted","endMonday","weekAdj"];
 function newId(){ return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function seedRecord(){ return { id:"seed-grisedale", planName:"Grisedale Horseshoe", plan:SEED_PLAN.map(s=>({...s})), blocks:seedBlocks(), board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{}, endMonday:"" }; }
-function blankRecord(name){ return { id:newId(), planName:(name||"Untitled plan"), plan:[], blocks:{}, board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{}, endMonday:"" }; }
+function seedRecord(){ return { id:"seed-grisedale", planName:"Grisedale Horseshoe", plan:SEED_PLAN.map(s=>({...s})), blocks:seedBlocks(), board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{}, endMonday:"", weekAdj:{} }; }
+function blankRecord(name){ return { id:newId(), planName:(name||"Untitled plan"), plan:[], blocks:{}, board:{}, done:{}, log:{}, edits:{}, custom:[], deleted:{}, endMonday:"", weekAdj:{} }; }
 function normalizeRec(r){ return Object.assign(blankRecord("Untitled plan"), r||{}, { id:(r&&r.id)||newId() }); }
 const defaultPrefs = () => ({ collapsed:{}, unit:"km", theme:"light", themeV:2, showZones:false, zonesOpen:false, tab:"plan", seenTypes:[...TYPE_ORDER], filters:{types:[...TYPE_ORDER], rest:true, vis:"all", q:""} });
 // Copy the active plan record onto top-level `state` (the working mirror the UI reads/writes).
@@ -995,11 +1002,18 @@ function todayISO(){ return iso(new Date()); }
 
 // Effective workout (raw/custom + edits), or null if deleted
 function allRaw(){ return (state.plan||[]).concat(state.custom||[]); }
-function getWO(id){
+function weekFactor(date){ const a=state.weekAdj&&state.weekAdj[mondayOf(date)]; return (typeof a==="number"&&a>0)?a:1; }
+function scaleField(v,f,dp){ if(v==null||v==="") return v; const m=Math.pow(10,dp||0); return Math.round(v*f*m)/m; }
+function getWO(id, raw){
   if(state.deleted[id]) return null;
   const base = allRaw().find(w=>w.id===id);
   if(!base) return null;
-  return Object.assign({}, base, state.edits[id]||{});
+  const w = Object.assign({}, base, state.edits[id]||{});
+  if(!raw && w.t!=="Race" && w.t!=="Rest"){                 // apply this week's intensity dial (non-destructive, display/calc only)
+    const f = weekFactor(w.date);
+    if(f!==1){ w.d=scaleField(w.d,f,0); w.k=scaleField(w.k,f,1); w.v=scaleField(w.v,f,0); w.adj=f; }
+  }
+  return w;
 }
 function woMap(){ const m={}; allRaw().forEach(w=>{ if(!state.deleted[w.id]) m[w.id]=getWO(w.id); }); return m; }
 
@@ -1869,6 +1883,17 @@ function renderWeeks(){
       ? `<span class="phasebadge ${(''+blk.phase).indexOf('2')>=0?'phase2':'phase1'}">${typeof blk.phase==='number'?('Phase '+blk.phase):esc(blk.phase)}</span>`
       : "";
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
+    const f = weekFactor(mon);
+    const adjBadge = f!==1 ? `<span class="wk-adj-badge ${f<1?'down':'up'}">${f<1?'−':'+'}${Math.round(Math.abs(f-1)*100)}%</span>` : "";
+    const adjRow = `<div class="wk-adj">
+        <span class="wk-adj-lab">Dial this week</span>
+        <div class="seg wk-seg">
+          <button data-wadj="${mon}|0.9" aria-pressed="${f===0.9}">Easier</button>
+          <button data-wadj="${mon}|1" aria-pressed="${f===1}">Normal</button>
+          <button data-wadj="${mon}|1.1" aria-pressed="${f===1.1}">Harder</button>
+        </div>
+        ${f!==1?`<span class="wk-adj-note">volume ${f<1?'−':'+'}${Math.round(Math.abs(f-1)*100)}% this week</span>`:""}
+      </div>`;
     const Z = weekZones(weekIds);
     const planTxt = zbreakText(Z.plan), doneTxt = Z.hasAct ? zbreakText(Z.act) : "";
     const zonestrip = (state.showZones && (Z.planTot||Z.hasAct)) ? `<div class="zonestrip">
@@ -1880,11 +1905,11 @@ function renderWeeks(){
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
           <span class="wn">Week ${weekNum}</span>
-          ${phaseBadge}
+          ${phaseBadge}${adjBadge}
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
         </div>
-        <div class="week-body">${zonestrip}<div class="week-grid">${cells}</div></div>
+        <div class="week-body">${adjRow}${zonestrip}<div class="week-grid">${cells}</div></div>
       </div>`;
   });
   const legend = state.showZones ? `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>` : "";
@@ -2044,6 +2069,9 @@ weeksEl.addEventListener("click", e=>{
   if(add){ openNew(add.dataset.add); return; }
   const wact = e.target.closest("[data-act]");
   if(wact){ if(wact.dataset.act==="addWeek") addWeek(); else if(wact.dataset.act==="rmWeek") removeLastWeek(); return; }
+  const wadj = e.target.closest("[data-wadj]");
+  if(wadj){ const [mon,fs]=wadj.dataset.wadj.split("|"); const f=+fs; state.weekAdj=state.weekAdj||{};
+    if(f===1) delete state.weekAdj[mon]; else state.weekAdj[mon]=f; save(); render(); return; }
   const sc = e.target.closest("[data-strength]");
   if(sc){ openStrengthFromBoard(sc.dataset.strength); return; }
   const card = e.target.closest(".card");
@@ -2189,7 +2217,7 @@ function openModal(id){
 }
 function modalEnterEdit(){
   if(!editingId || isNew) return;
-  const w=getWO(editingId); if(!w) return;
+  const w=getWO(editingId, true); if(!w) return;   // edit the canonical values, not the week-dialled display values
   modalMode="edit";
   $("#mBody").innerHTML = modalEditHTML(w);
   wireModalEdit(w);
