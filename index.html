@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05w" />
+<meta name="app-build" content="2026-06-05x" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -338,6 +338,12 @@
   .mv-stat .lab{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
   .mv-stat b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
   .mv-note{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13px;line-height:1.5;color:var(--txt);white-space:pre-wrap}
+  .hr-box{margin-top:10px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .hr-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .hr-lab{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);font-weight:600}
+  .hr-stat{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .hr-svg{width:100%;height:56px;display:block;overflow:visible}
+  .hr-empty{color:var(--faint);font-size:12.5px;line-height:1.45;font-style:italic;text-align:center;padding:14px 6px}
   .mv-empty{color:var(--muted);font-size:13px;line-height:1.5;background:var(--bg2);border:1px dashed var(--line2);border-radius:10px;padding:14px}
   .mv-plan{display:flex;flex-direction:column;gap:7px}
   .pseg{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg2)}
@@ -2267,9 +2273,23 @@ function modalViewHTML(w){
     ${sessionPlanHTML(w)}
     ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
     ${done
-      ? `<div><div class="mv-sect" style="margin-bottom:8px">Your log</div>${es?execReadoutHTML(es,w):""}${act.length?`<div class="mv-stats" style="margin-top:${es?"10px":"0"}">${act.map(stat).join("")}</div>`:""}${lg.c?`<div class="mv-note" style="margin-top:10px">${esc(lg.c)}</div>`:""}</div>`
+      ? `<div><div class="mv-sect" style="margin-bottom:8px">Your log</div>${es?execReadoutHTML(es,w):""}${act.length?`<div class="mv-stats" style="margin-top:${es?"10px":"0"}">${act.map(stat).join("")}</div>`:""}${hrSparkHTML(lg)}${lg.c?`<div class="mv-note" style="margin-top:10px">${esc(lg.c)}</div>`:""}</div>`
       : `<div class="mv-empty">Not logged yet. Tap <b>Edit</b> to mark it done and record how it went.</div>`}
   </div>`;
+}
+// Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
+function hrSparkHTML(lg){
+  const raw = lg && lg.hrSeries;
+  const pts = Array.isArray(raw) ? raw.filter(v=>v!=null && v>0) : [];
+  if(pts.length<3) return `<div class="hr-box hr-empty">Heart-rate graph not available — sync this activity from Strava (needs HR data).</div>`;
+  const W=300, H=56, n=raw.length, mn=Math.min(...pts), mx=Math.max(...pts), range=Math.max(1,mx-mn);
+  const xx=i=> (n>1? i/(n-1):0)*W;
+  const yy=v=> 5 + (1-(v-mn)/range)*(H-12);
+  let d="", started=false;
+  raw.forEach((v,i)=>{ if(v==null||v<=0) return; d += (started?" L":"M")+xx(i).toFixed(1)+" "+yy(v).toFixed(1); started=true; });
+  const avg=Math.round(pts.reduce((a,b)=>a+b,0)/pts.length);
+  return `<div class="hr-box"><div class="hr-head"><span class="hr-lab">Heart rate</span><span class="hr-stat">avg ${avg} · peak ${mx} bpm</span></div>
+    <svg class="hr-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="var(--bad)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></div>`;
 }
 function modalEditHTML(w){
   const lg=state.log[editingId]||{};
@@ -2783,7 +2803,8 @@ async function stravaSync(){
       try{
         const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:zlist.map(x=>x.sid), thresholds:hrThresholds()})});
         const zd=await zr.json();
-        if(zd && zd.zones){ zlist.forEach(x=>{ const arr=zd.zones[String(x.sid)]; if(Array.isArray(arr)&&arr.length){ state.log[x.id]=Object.assign({}, state.log[x.id]||{}, {zones:arr.slice(0,5), zt:ztNow}); } }); }
+        if(zd && zd.zones){ zlist.forEach(x=>{ const arr=zd.zones[String(x.sid)], sr=zd.series&&zd.series[String(x.sid)];
+          if(Array.isArray(arr)&&arr.length){ const u={zones:arr.slice(0,5), zt:ztNow}; if(Array.isArray(sr)&&sr.length) u.hrSeries=sr; state.log[x.id]=Object.assign({}, state.log[x.id]||{}, u); } }); }
         if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
       }catch(_){}
     }
