@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05p" />
+<meta name="app-build" content="2026-06-05q" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -327,6 +327,7 @@
   .pseg-metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
   .pseg-metrics .pill{font-size:11.5px;padding:2px 8px;font-variant-numeric:tabular-nums}
   .pseg-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .pseg-note{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:9px;padding-left:2px;font-style:italic}
   /* Coach strip: training load + readiness */
   .coach-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
   .coach-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column}
@@ -1009,6 +1010,11 @@ function getWO(id, raw){
   const base = allRaw().find(w=>w.id===id);
   if(!base) return null;
   const w = Object.assign({}, base, state.edits[id]||{});
+  w.fell = isFellSurface(w);   // lock terrain in BEFORE filling an estimated distance (the heuristic keys off missing distance)
+  if(!raw && (w.k==null||w.k==="") && w.d>0 && !["Rest","Bike","Race"].includes(w.t)){   // estimate distance when missing (terrain-aware) so fell cards show a distance too
+    const spd = w.fell ? 7 : (w.sf==="trail" ? 9.5 : 10.5);   // km/h: fell slow (climbs/terrain), trail moderate, road quicker
+    w.k = Math.round(w.d/60*spd*10)/10; w.kEst = true;
+  }
   if(!raw && w.t!=="Race" && w.t!=="Rest"){                 // apply this week's intensity dial (non-destructive, display/calc only)
     const f = weekFactor(w.date);
     if(f!==1){ w.d=scaleField(w.d,f,0); w.k=scaleField(w.k,f,1); w.v=scaleField(w.v,f,0); w.adj=f; }
@@ -1193,7 +1199,7 @@ function newBlankPlan(){ syncActiveToLibrary(); pushUndo(); const rec=blankRecor
 function renamePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; const name=prompt("Plan name:", rec.planName||""); if(name===null) return; pushUndo(); rec.planName=(name.trim()||rec.planName); if(state.activeId===id) state.planName=rec.planName; save(); render(); }
 function deletePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; if(!confirm('Delete "'+(rec.planName||"this plan")+'"? This removes the plan and its progress everywhere it syncs.')) return; pushUndo(); syncActiveToLibrary(); state.plans=state.plans.filter(p=>p.id!==id); if(state.activeId===id){ state.activeId=null; activateMirror(state); } save(); render(); }
 function planToCSVfor(rec){
-  const head=["date","session","type","duration_min","distance_km","vert_m","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
   const lines=[head.join(",")]; const del=rec.deleted||{}, edits=rec.edits||{};
   const all=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&!del[w.id]);
   const eff=w=>Object.assign({},w,edits[w.id]||{});
@@ -1202,19 +1208,19 @@ function planToCSVfor(rec){
   all.forEach(w=>{ if(!seen.has(w.id)) order.push(eff(w)); });
   order.sort((a,b)=> a.date<b.date?-1:a.date>b.date?1:0);
   order.forEach(w=>{ const blk=(rec.blocks&&rec.blocks[mondayOf(w.date)])||{};
-    lines.push([w.date,w.n,w.t,w.d??"",w.k??"",w.v??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(",")); });
+    lines.push([w.date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(",")); });
   return lines.join("\n");
 }
 function exportPlanCSV(id){ syncActiveToLibrary(); const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; download((rec.planName||"plan").replace(/\s+/g,"-").toLowerCase()+".csv", planToCSVfor(rec), "text/csv"); }
 // Blank starter template: header + a few worked example rows so a person (or an AI) can see exactly how to fill it.
 function csvTemplate(){
-  const head=["date","session","type","duration_min","distance_km","vert_m","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
   const ex=[
-    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Conversational, easy effort."],
-    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"Z4",1,"Base — week 1","15 min warm-up, 4×8 min @ threshold w/ 2 min jog, 10 min cool-down. Notes may contain commas."],
-    ["2026-01-07","Rest day","Rest","","","","",1,"Base — week 1","Leave duration/distance/vert/zone blank when they don't apply (e.g. rest)."],
-    ["2026-01-10","Long run","Long",90,18,400,"Z2",1,"Base — week 1","Time on feet on rolling terrain; steady aerobic effort."],
-    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","Z1",1,"Base — week 1","Use the Bike type to swap a run for a ride. type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest."]
+    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"road","Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Conversational, easy effort."],
+    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"road","Z4",1,"Base — week 1","surface = road/trail/fell/track/bike. On road, paces are shown; on fell, sessions are judged by effort + HR, not km pace. 15 min WU, 4×8 min @ threshold, 10 min CD."],
+    ["2026-01-07","Rest day","Rest","","","","","",1,"Base — week 1","Leave duration/distance/vert/zone/surface blank when they don't apply (e.g. rest)."],
+    ["2026-01-10","Long mountain day","Long",110,14,1100,"fell","Z2",1,"Base — week 1","Off-road/fell — give your best DISTANCE estimate even though it's terrain. Pace is by effort, not km."],
+    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","bike","Z1",1,"Base — week 1","Use the Bike type to swap a run for a ride. type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest."]
   ];
   return [head.join(",")].concat(ex.map(r=>r.map(csvCell).join(","))).join("\n");
 }
@@ -1689,7 +1695,7 @@ function cardHTML(id){
   const ty = TYPES[w.t]||TYPES.Rest;
   const meta = [];
   if(w.d) meta.push(`<span class="pill">${fmtDur(w.d)}</span>`);
-  if(w.k!=null) meta.push(`<span class="pill">${fmtDist(w.k)}</span>`);
+  if(w.k!=null) meta.push(`<span class="pill"${w.kEst?' title="estimated from time + terrain"':''}>${w.kEst?"~":""}${fmtDist(w.k)}</span>`);
   if(w.v!=null) meta.push(`<span class="pill">↗ ${fmtVert(w.v)}</span>`);
   if(w.z && w.z!=="—") meta.push(`<span class="pill zone">${esc(w.z)}</span>`);
   const lg = state.log[id]||{};
@@ -1791,26 +1797,37 @@ function sessionPlan(w){
   if(cd) segs.push({kind:"cd", dur:+cd[1]});
   return {segs};
 }
-function segMetrics(idx){
-  const p=paceRangeLabel(idx), h=hrRangeLabel(idx);
+// Is this an off-road/fell session? Prefer the explicit surface; fall back to type / vert-without-distance for legacy plans.
+function isFellSurface(w){
+  if(!w) return false;
+  if(w.fell!==undefined) return w.fell;   // getWO locks this in before any distance estimate
+  if(w.sf) return w.sf==="fell";
+  return ["Descent","Simulation","Hills"].includes(w.t) || (w.v!=null && (w.k==null||w.k===""));
+}
+function segMetrics(idx, noPace){
+  const h=hrRangeLabel(idx);
+  if(noPace) return (h?`<span class="pill">♥ ${esc(h)}</span>`:"")+`<span class="pill">by effort</span>`;   // fell: HR + effort, no km pace
+  const p=paceRangeLabel(idx);
   return (p?`<span class="pill">⏱ ${esc(p)}</span>`:"")+(h?`<span class="pill">♥ ${esc(h)}</span>`:"");
 }
 function sessionPlanHTML(w){
   const plan=sessionPlan(w); if(!plan) return "";
+  const fell=isFellSurface(w);
   const body=plan.segs.map(seg=>{
     if(seg.kind==="work"){
       const each = seg.unit==="s" ? seg.each+"s" : seg.each+" min";
       const title = seg.reps>1 ? `${seg.reps} × ${each}` : `${each} continuous`;
       return `<div class="pseg work" style="border-left-color:${ZONES[seg.idx].c}">
         <div class="pseg-h">${esc(title)}<span class="pseg-z" style="color:${ZONES[seg.idx].c}">${ZONES[seg.idx].k} · ${ZONE_DESC[seg.idx]}</span></div>
-        <div class="pseg-metrics">${segMetrics(seg.idx)}</div>
+        <div class="pseg-metrics">${segMetrics(seg.idx, fell)}</div>
         ${seg.rec?`<div class="pseg-sub">${esc(seg.rec)} recovery between reps</div>`:""}
       </div>`;
     }
-    const pr=paceRangeLabel(1);
+    const pr = fell ? "" : paceRangeLabel(1);
     return `<div class="pseg"><div class="pseg-h">${seg.kind==="wu"?"Warm-up":"Cool-down"} · ${seg.dur} min<span class="pseg-z" style="color:${ZONES[1].c}">${ZONES[1].k} easy</span></div>${pr?`<div class="pseg-metrics"><span class="pill">⏱ ${esc(pr)}</span></div>`:""}</div>`;
   }).join("");
-  return `<div><div class="mv-sect" style="margin-bottom:8px">Session plan</div><div class="mv-plan">${body}</div></div>`;
+  const note = fell ? `<div class="pseg-note">Fell / off-road — judge these by effort and heart rate, not km pace.</div>` : "";
+  return `<div><div class="mv-sect" style="margin-bottom:8px">Session plan</div><div class="mv-plan">${body}</div>${note}</div>`;
 }
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
@@ -2332,13 +2349,13 @@ function parsePlanDate(s){
   const dt=new Date(s); return isNaN(dt)?null:iso(dt);   // fallback for "8 Jun 2026" etc.
 }
 function planToCSV(){
-  const head=["date","session","type","duration_min","distance_km","vert_m","zone","phase","block","notes"];
+  const head=["date","session","type","duration_min","distance_km","vert_m","surface","zone","phase","block","notes"];
   const lines=[head.join(",")];
   weekMondays().forEach(mon=>{
     const blk=(state.blocks&&state.blocks[mon])||{};
     for(let di=0;di<7;di++){ const date=addDays(mon,di); (state.board[date]||[]).forEach(id=>{
-      const w=getWO(id); if(!w) return;
-      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
+      const w=getWO(id, true); if(!w) return;
+      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
     });}
   });
   return lines.join("\n");
@@ -2351,7 +2368,7 @@ function importCSV(text, name){
   const iDate=idx("date"), iName=idx("session","name","workout","title"), iType=idx("type","activity"),
         iDur=idx("duration_min","duration","minutes","min","time"), iDist=idx("distance_km","distance","km"),
         iVert=idx("vert_m","vert","elevation","climb","ascent"), iZone=idx("zone","effort","intensity"),
-        iPhase=idx("phase"), iBlock=idx("block","week","label"), iNote=idx("notes","note","why","description","details");
+        iPhase=idx("phase"), iBlock=idx("block","week","label"), iSurf=idx("surface","terrain","ground"), iNote=idx("notes","note","why","description","details");
   if(iDate<0 || iName<0){
     alert("CSV needs at least a 'date' and 'session' column.\n\nExpected header:\ndate, session, type, duration_min, distance_km, vert_m, zone, phase, block, notes");
     return;
@@ -2367,6 +2384,7 @@ function importCSV(text, name){
       d: iDur>=0?numOrNull(row[iDur]):null, k: iDist>=0?numOrNull(row[iDist]):null,
       v: iVert>=0?numOrNull(row[iVert]):null,
       z:(iZone>=0?(row[iZone]||"").trim():"")||"—",
+      sf:(iSurf>=0?(row[iSurf]||"").trim().toLowerCase():""),
       note:(iNote>=0?(row[iNote]||"").trim():"") });
     const mon=mondayOf(date);
     if(!blocks[mon]){ const ph=iPhase>=0?(row[iPhase]||"").trim():"", lb=iBlock>=0?(row[iBlock]||"").trim():"";
