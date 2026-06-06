@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05t" />
+<meta name="app-build" content="2026-06-05u" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -199,6 +199,15 @@
   .wstats{margin-left:auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
   .wstat{font-size:12px;color:var(--muted);white-space:nowrap}
   .wstat b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
+  .botnav{display:none}
+  @media (max-width:700px){
+    .botnav{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:35;background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-top:1px solid var(--line);padding:0 0 env(safe-area-inset-bottom)}
+    .botnav .bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 7px;background:none;border:0;color:var(--faint);font:inherit;font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .botnav .bn svg{width:23px;height:23px}
+    .botnav .bn.active{color:var(--accent)}
+    .tabsrow{display:none}                 /* replaced by the bottom nav on phones */
+    body{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
+  }
   .phasebadge{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid var(--line2);color:var(--muted)}
   .wk-adj-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
   .wk-adj-badge.down{color:var(--t-recovery);background:color-mix(in srgb,var(--t-recovery) 14%,transparent)}
@@ -715,6 +724,14 @@
     <div id="calendarView" hidden></div>
   </div>
 
+  <!-- Persistent bottom navigation (mobile) -->
+  <nav class="botnav" id="botnav">
+    <button class="bn" data-nav="home" aria-label="All plans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Home</span></button>
+    <button class="bn" data-nav="plan" aria-label="Training plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><line x1="3.5" y1="6" x2="4" y2="6"/><line x1="3.5" y1="12" x2="4" y2="12"/><line x1="3.5" y1="18" x2="4" y2="18"/></svg><span>Plan</span></button>
+    <button class="bn" data-nav="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2.5" x2="8" y2="6"/><line x1="16" y1="2.5" x2="16" y2="6"/></svg><span>Calendar</span></button>
+    <button class="bn" data-nav="strength" aria-label="Strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6.5" y1="12" x2="17.5" y2="12"/><rect x="2.5" y="8.5" width="3" height="7" rx="1"/><rect x="18.5" y="8.5" width="3" height="7" rx="1"/></svg><span>Strength</span></button>
+  </nav>
+
   <!-- Modal -->
   <div class="backdrop" id="backdrop">
     <div class="modal" role="dialog" aria-modal="true">
@@ -1165,6 +1182,8 @@ function render(){
   $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
+  if(state.activeId) lastActivePlanId = state.activeId;
+  updateBotnav(home);
   $("#homeView").hidden = !home;
   $("#tabsRow").hidden = home;
   if(home){
@@ -1204,6 +1223,22 @@ function planStats(rec){
 }
 function loadPlan(id){ syncActiveToLibrary(); if(!(state.plans||[]).some(p=>p.id===id)) return; state.activeId=id; activateMirror(state); state.tab="plan"; _lastDataSer=planSig(); render(); window.scrollTo(0,0); }
 function goHome(){ syncActiveToLibrary(); state.activeId=null; _lastDataSer=planSig(); render(); window.scrollTo(0,0); }
+let lastActivePlanId=null;
+// Bottom-nav: jump to a tab, opening the last-used (or first) plan if we're on the home screen
+function gotoTab(tab){
+  if(!state.activeId){
+    syncActiveToLibrary();
+    const id = (lastActivePlanId && (state.plans||[]).some(p=>p.id===lastActivePlanId)) ? lastActivePlanId : ((state.plans||[])[0]||{}).id;
+    if(!id) return;
+    state.activeId=id; activateMirror(state); _lastDataSer=planSig();
+  }
+  state.tab=tab; save(); render(); window.scrollTo(0,0);
+}
+function updateBotnav(home){
+  const cur = home ? "home" : (["plan","strength","calendar"].includes(state.tab)?state.tab:"plan");
+  $$("#botnav .bn").forEach(b=>b.classList.toggle("active", b.dataset.nav===cur));
+}
+$("#botnav").addEventListener("click", e=>{ const b=e.target.closest("[data-nav]"); if(!b) return; const n=b.dataset.nav; if(n==="home") goHome(); else gotoTab(n); });
 function newBlankPlan(){ syncActiveToLibrary(); pushUndo(); const rec=blankRecord("New plan"); state.plans.push(rec); state.activeId=rec.id; activateMirror(state); state.tab="plan"; save(); render(); window.scrollTo(0,0); }
 function renamePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; const name=prompt("Plan name:", rec.planName||""); if(name===null) return; pushUndo(); rec.planName=(name.trim()||rec.planName); if(state.activeId===id) state.planName=rec.planName; save(); render(); }
 function deletePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; if(!confirm('Delete "'+(rec.planName||"this plan")+'"? This removes the plan and its progress everywhere it syncs.')) return; pushUndo(); syncActiveToLibrary(); state.plans=state.plans.filter(p=>p.id!==id); if(state.activeId===id){ state.activeId=null; activateMirror(state); } save(); render(); }
