@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05v" />
+<meta name="app-build" content="2026-06-05w" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1994,9 +1994,6 @@ function renderWeeks(){
       <div class="wstat"><b>${fmtDur(T.runDur)}</b>${T.bikeDur?` <span style="color:var(--t-bike)">+${fmtDur(T.bikeDur)} bike</span>`:""}</div>
       ${T.vert? `<div class="wstat">↗ <b>${fmtVert(T.vert)}</b></div>`:""}
       <div class="wstat"><b>${T.done}/${T.total}</b> done</div>`;
-    const phaseBadge = blk && blk.phase
-      ? `<span class="phasebadge ${(''+blk.phase).indexOf('2')>=0?'phase2':'phase1'}">${typeof blk.phase==='number'?('Phase '+blk.phase):esc(blk.phase)}</span>`
-      : "";
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
     const f = weekFactor(mon);
     const adjBadge = f!==1 ? `<span class="wk-adj-badge ${f<1?'down':'up'}">${f<1?'−':'+'}${Math.round(Math.abs(f-1)*100)}%</span>` : "";
@@ -2015,7 +2012,7 @@ function renderWeeks(){
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
           <span class="wn">Week ${weekNum}</span>
-          ${phaseBadge}${arrows}${adjBadge}
+          ${arrows}${adjBadge}
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
         </div>
