@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05r" />
+<meta name="app-build" content="2026-06-05s" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -203,10 +203,9 @@
   .wk-adj-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
   .wk-adj-badge.down{color:var(--t-recovery);background:color-mix(in srgb,var(--t-recovery) 14%,transparent)}
   .wk-adj-badge.up{color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
-  .wk-adj{display:flex;align-items:center;gap:8px;justify-content:flex-end;padding:0 2px 10px}
-  .wk-adj-lab{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600}
-  .wk-seg{border-radius:7px}
-  .wk-seg button{padding:4px 10px;font-size:11px}
+  .wk-arrows{display:inline-flex;gap:3px;flex:0 0 auto}
+  .wk-arrow{width:21px;height:21px;border:1px solid var(--line2);border-radius:5px;background:var(--bg2);color:var(--muted);font-size:11px;line-height:1;display:grid;place-items:center;padding:0;cursor:pointer}
+  .wk-arrow:hover{border-color:var(--accent);color:var(--accent)}
   .phase1,.phase2{background:transparent}
 
   .week-grid{display:grid;grid-template-columns:repeat(7,minmax(165px,1fr));gap:0;overflow-x:auto}
@@ -1812,6 +1811,8 @@ function surfaceLabel(w){
   if(w.sf) return w.sf;                       // explicit road/trail/fell/track
   return isFellSurface(w) ? "fell" : "road";  // inferred for legacy plans
 }
+const SURFACES=["road","trail","fell","track"];
+function surfaceOptions(cur){ return SURFACES.map(s=>`<option value="${s}" ${cur===s?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join(""); }
 function segMetrics(idx, noPace){
   const h=hrRangeLabel(idx);
   if(noPace) return (h?`<span class="pill">♥ ${esc(h)}</span>`:"")+`<span class="pill">by effort</span>`;   // fell: HR + effort, no km pace
@@ -1910,14 +1911,10 @@ function renderWeeks(){
     const titleHTML = blk && blk.label ? `<b>${esc(blk.label)}</b>` : (weekNum<1 ? `<b>Before the plan</b>` : "");
     const f = weekFactor(mon);
     const adjBadge = f!==1 ? `<span class="wk-adj-badge ${f<1?'down':'up'}">${f<1?'−':'+'}${Math.round(Math.abs(f-1)*100)}%</span>` : "";
-    const adjRow = `<div class="wk-adj">
-        <span class="wk-adj-lab">Intensity</span>
-        <div class="seg wk-seg">
-          <button data-wadj="${mon}|0.9" aria-pressed="${f===0.9}" title="Ease this week ~10% lighter">Easier</button>
-          <button data-wadj="${mon}|1" aria-pressed="${f===1}" title="Planned volume">Normal</button>
-          <button data-wadj="${mon}|1.1" aria-pressed="${f===1.1}" title="Push this week ~10% harder">Harder</button>
-        </div>
-      </div>`;
+    const arrows = `<span class="wk-arrows" title="Dial this week's volume ±10%">
+        <button class="wk-arrow" data-wstep="${mon}|down" aria-label="Easier (lighter week)">↓</button>
+        <button class="wk-arrow" data-wstep="${mon}|up" aria-label="Harder (bigger week)">↑</button>
+      </span>`;
     const Z = weekZones(weekIds);
     const planTxt = zbreakText(Z.plan), doneTxt = Z.hasAct ? zbreakText(Z.act) : "";
     const zonestrip = (state.showZones && (Z.planTot||Z.hasAct)) ? `<div class="zonestrip">
@@ -1929,11 +1926,11 @@ function renderWeeks(){
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
           <span class="wn">Week ${weekNum}</span>
-          ${phaseBadge}${adjBadge}
+          ${phaseBadge}${arrows}${adjBadge}
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
         </div>
-        <div class="week-body">${adjRow}${zonestrip}<div class="week-grid">${cells}</div></div>
+        <div class="week-body">${zonestrip}<div class="week-grid">${cells}</div></div>
       </div>`;
   });
   const legend = state.showZones ? `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>` : "";
@@ -2083,6 +2080,11 @@ $("#zonesBtn").onclick = ()=>{ state.showZones=!state.showZones; save(); renderT
 
 // Week collapse + card click + checkbox + add
 weeksEl.addEventListener("click", e=>{
+  const wstep = e.target.closest("[data-wstep]");   // intensity arrows in the week header (check before toggle so they don't collapse the week)
+  if(wstep){ const [mon,dir]=wstep.dataset.wstep.split("|"); const steps=[0.9,1,1.1];
+    let i=steps.indexOf(weekFactor(mon)); if(i<0) i=1; i=dir==="up"?Math.min(2,i+1):Math.max(0,i-1);
+    const nf=steps[i]; state.weekAdj=state.weekAdj||{};
+    if(nf===1) delete state.weekAdj[mon]; else state.weekAdj[mon]=nf; save(); render(); return; }
   const zs = e.target.closest(".zonestrip");
   if(zs){ zs.classList.toggle("open"); return; }   // tap the intensity bars to reveal the % breakdown
   const tog = e.target.closest("[data-toggle]");
@@ -2093,9 +2095,6 @@ weeksEl.addEventListener("click", e=>{
   if(add){ openNew(add.dataset.add); return; }
   const wact = e.target.closest("[data-act]");
   if(wact){ if(wact.dataset.act==="addWeek") addWeek(); else if(wact.dataset.act==="rmWeek") removeLastWeek(); return; }
-  const wadj = e.target.closest("[data-wadj]");
-  if(wadj){ const [mon,fs]=wadj.dataset.wadj.split("|"); const f=+fs; state.weekAdj=state.weekAdj||{};
-    if(f===1) delete state.weekAdj[mon]; else state.weekAdj[mon]=f; save(); render(); return; }
   const sc = e.target.closest("[data-strength]");
   if(sc){ openStrengthFromBoard(sc.dataset.strength); return; }
   const card = e.target.closest(".card");
@@ -2177,7 +2176,7 @@ function modalViewHTML(w){
     ? (es?`<span class="pill exec ${es.level}">${es.pct}%</span><span class="mv-flag done">✓ Completed</span>`:`<span class="mv-flag done">✓ Completed</span>`)
     : `<span class="mv-flag">○ To do</span>`;
   return `<div class="mv">
-    <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
+    <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${surfaceLabel(w)?`<span class="pill">${esc(surfaceLabel(w)[0].toUpperCase()+surfaceLabel(w).slice(1))}</span>`:""}${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
     ${plan.length?`<div><div class="mv-sect" style="margin-bottom:8px">Planned target</div><div class="mv-stats">${plan.map(stat).join("")}</div></div>`:""}
     ${sessionPlanHTML(w)}
     ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
@@ -2190,8 +2189,9 @@ function modalEditHTML(w){
   const lg=state.log[editingId]||{};
   return `
     <div class="field"><label>Session</label><input id="f_n" value="${esc(w.n)}"></div>
-    <div class="grid2">
+    <div class="grid3">
       <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t===w.t?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
+      <div class="field"><label>Surface</label><select id="f_sf">${surfaceOptions(w.sf||surfaceLabel(w)||"road")}</select></div>
       <div class="field"><label>HR zone / effort</label><input id="f_z" value="${esc(w.z||"")}"></div>
     </div>
     <div class="sectlabel">Planned target</div>
@@ -2255,8 +2255,9 @@ function openNew(date){
   $("#mBody").dataset.date = date;
   $("#mBody").innerHTML = `
     <div class="field"><label>Session</label><input id="f_n" value="" placeholder="e.g. Easy shakeout"></div>
-    <div class="grid2">
+    <div class="grid3">
       <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t==="Easy"?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
+      <div class="field"><label>Surface</label><select id="f_sf">${surfaceOptions("road")}</select></div>
       <div class="field"><label>HR zone / effort</label><input id="f_z" value="" placeholder="Z2"></div>
     </div>
     <div class="grid3">
@@ -2280,14 +2281,14 @@ $("#mSave").onclick = ()=>{
     const t=get("f_t")||"Easy";
     const w={ id:editingId, date, t, n:(get("f_n")||"Untitled").trim(),
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v")),
-      z:(get("f_z")||"—").trim()||"—", s:0, sa:0, note:(get("f_note")||"").trim() };
+      z:(get("f_z")||"—").trim()||"—", sf:(get("f_sf")||"").trim(), s:0, sa:0, note:(get("f_note")||"").trim() };
     state.custom.push(w);
     (state.board[date]=state.board[date]||[]).push(w.id);
     ensureTypeVisible(t);
   }else{
     const id=editingId, t=get("f_t");
     state.edits[id]=Object.assign({}, state.edits[id], {
-      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(),
+      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(), sf:(get("f_sf")||"").trim(),
       d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
