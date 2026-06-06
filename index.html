@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05n" />
+<meta name="app-build" content="2026-06-05o" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -492,6 +492,17 @@
   .sd-pick .opt:hover{border-color:var(--accent)}
   .sd-pick .opt b{font-size:13.5px;font-weight:600}
   .sd-pick .opt small{color:var(--muted);font-size:11.5px}
+  .day-sheet-head h3{margin:2px 0 13px;font-size:15.5px;letter-spacing:-.1px}
+  .day-list{display:flex;flex-direction:column;gap:8px;margin-bottom:11px}
+  .day-it{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--line);border-left:3px solid var(--c);background:var(--panel2);border-radius:11px;padding:12px 13px;font:inherit;cursor:pointer;color:var(--txt)}
+  .day-it:hover{border-color:var(--line2);border-left-color:var(--c)}
+  .day-it-main{flex:1;min-width:0}
+  .day-it-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--c)}
+  .day-it-name{font-size:13.5px;font-weight:600;margin:2px 0 0;line-height:1.3}
+  .day-it-meta{font-size:11.5px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
+  .day-it-done{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+  .day-it-go{flex:0 0 auto;color:var(--faint);font-size:18px;padding-right:2px}
+  .day-empty{color:var(--faint);font-size:13px;text-align:center;padding:18px 0}
   .sd-ref{margin:20px 2px 50px;max-width:760px;border-top:1px solid var(--line);padding-top:4px}
   .sd-ref summary{cursor:pointer;font-size:12px;color:var(--muted);font-weight:600;padding:10px 0;list-style:none}
   .sd-ref summary::-webkit-details-marker{display:none}
@@ -1961,11 +1972,37 @@ $("#calendarView").addEventListener("click", e=>{
   if(nav){ const a=nav.dataset.cal;
     state.calMonth = a==="today" ? todayISO().slice(0,7) : shiftMonth(state.calMonth||todayISO().slice(0,7), a==="next"?1:-1);
     save(); renderCalendar(); return; }
-  const evt=e.target.closest(".cal-evt");
-  if(evt){ if(evt.dataset.strength) openStrengthFromBoard(evt.dataset.strength); else openModal(evt.dataset.id); return; }
   const cell=e.target.closest(".cal-cell");
-  if(cell && cell.dataset.in==="1" && !(state.board[cell.dataset.date]||[]).some(id=>getWO(id)) && !strengthDaysOn(cell.dataset.date).length) openNew(cell.dataset.date);
+  if(cell) openDaySheet(cell.dataset.date);          // open the whole day → tappable session cards
 });
+// Day detail sheet: lists every session on a day as a big, easy-to-tap mini card
+function openDaySheet(date){
+  closeDaySheet();
+  const ids=(state.board[date]||[]).filter(id=>getWO(id));
+  const items = ids.map(id=>{ const w=getWO(id), ty=TYPES[w.t]||TYPES.Rest, done=!!state.done[id];
+    const meta=[]; if(w.d)meta.push(fmtDur(w.d)); if(w.k!=null)meta.push(fmtDist(w.k)); if(w.v!=null)meta.push("↗ "+fmtVert(w.v)); if(w.z&&w.z!=="—")meta.push(w.z);
+    return `<button class="day-it" data-open="${esc(id)}" style="--c:${ty.c}">
+        <div class="day-it-main"><div class="day-it-type">${esc(ty.label)}</div><div class="day-it-name">${esc(w.n)}</div>${meta.length?`<div class="day-it-meta">${esc(meta.join(" · "))}</div>`:""}</div>
+        ${done?`<span class="day-it-done">✓</span>`:`<span class="day-it-go">›</span>`}</button>`;
+  }).join("");
+  const sItems = strengthDaysOn(date).map(c=>{ const rows=c.rows||[];
+    return `<button class="day-it" data-strength="${esc(c.id)}" style="--c:var(--t-strength)">
+        <div class="day-it-main"><div class="day-it-type">Strength</div><div class="day-it-name">${esc(c.title)}</div><div class="day-it-meta">${c.mins?c.mins+" min · ":""}${rows.length} exercise${rows.length===1?"":"s"}</div></div>
+        <span class="day-it-done">✓</span></button>`;
+  }).join("");
+  const list = (items||sItems) ? `<div class="day-list">${items}${sItems}</div>` : `<div class="day-empty">No sessions this day.</div>`;
+  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="daySheetBack";
+  back.innerHTML=`<div class="sd-pick"><div class="day-sheet-head"><h3>${esc(dayLong(date))}</h3></div>${list}
+    <button class="btn" data-dayadd="${esc(date)}" style="width:100%;margin-top:4px">＋ Add session</button></div>`;
+  back.addEventListener("click", ev=>{
+    if(ev.target===back){ closeDaySheet(); return; }
+    const op=ev.target.closest("[data-open]"); if(op){ closeDaySheet(); openModal(op.dataset.open); return; }
+    const st=ev.target.closest("[data-strength]"); if(st){ closeDaySheet(); openStrengthFromBoard(st.dataset.strength); return; }
+    const ad=ev.target.closest("[data-dayadd]"); if(ad){ closeDaySheet(); openNew(ad.dataset.dayadd); return; }
+  });
+  document.body.appendChild(back); refreshScrollLock();
+}
+function closeDaySheet(){ const b=$("#daySheetBack"); if(b) b.remove(); refreshScrollLock(); }
 document.addEventListener("keydown", e=>{
   const mod=e.metaKey||e.ctrlKey; if(!(mod && (e.key==='z'||e.key==='Z'))) return;
   const el=e.target; if(el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)||el.isContentEditable)) return; // let fields handle their own undo
@@ -2064,7 +2101,7 @@ const backdrop=$("#backdrop"); let editingId=null, isNew=false;
 // Lock background scroll while any modal/sheet is open (iOS-safe: fix the body, restore scroll on close)
 let _lockY=0, _locked=false;
 function refreshScrollLock(){
-  const open = backdrop.classList.contains("open") || !!document.getElementById("ciBack") || !!document.getElementById("sdPickBack");
+  const open = backdrop.classList.contains("open") || !!document.querySelector(".sd-pick-back");
   if(open && !_locked){ _locked=true; _lockY=window.scrollY||window.pageYOffset||0; const b=document.body; b.style.position="fixed"; b.style.top=`-${_lockY}px`; b.style.left="0"; b.style.right="0"; b.style.width="100%"; }
   else if(!open && _locked){ _locked=false; const b=document.body; b.style.position=""; b.style.top=""; b.style.left=""; b.style.right=""; b.style.width=""; window.scrollTo(0,_lockY); }
 }
