@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05y" />
+<meta name="app-build" content="2026-06-05z" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -366,6 +366,26 @@
   .cc-badge.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,transparent)}
   .cc-badge.neutral{color:var(--muted);background:var(--bg2)}
   .cc-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:9px}
+  /* Coach suggestion banner (written weekly by the Worker, approved here) */
+  .coach-prop{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:15px 16px;margin-bottom:14px}
+  .cp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+  .cp-eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:700}
+  .cp-plan{font-size:11px;color:var(--muted)}
+  .cp-rec{margin-left:auto;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .cp-rec.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+  .cp-rec.good{color:var(--good);background:color-mix(in srgb,var(--good) 13%,transparent)}
+  .cp-rec.accent{color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent)}
+  .cp-head-line{font-size:15px;font-weight:700;line-height:1.3;margin:2px 0 5px}
+  .cp-reason{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 11px}
+  .cp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+  .cp-chip{font-size:11px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums}
+  .cp-chip b{color:var(--txt);font-weight:700}
+  .cp-chip.good{border-color:color-mix(in srgb,var(--good) 35%,var(--line))}
+  .cp-chip.warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+  .cp-chip.bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+  .cp-calls{margin:0 0 12px;padding-left:18px}
+  .cp-calls li{font-size:12.5px;color:var(--txt);line-height:1.5;margin:3px 0}
+  .cp-acts{display:flex;gap:8px;flex-wrap:wrap}
   .cc-chart{margin-top:auto;padding-top:13px}
   .cc-chart-cap{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600;margin-bottom:8px}
   .cc-bars{display:flex;align-items:flex-end;gap:4px;height:32px}
@@ -975,6 +995,7 @@ function migrate(raw){
     strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
     strengthDays: Array.isArray(raw.strengthDays) ? raw.strengthDays.map(normStrengthDay) : synthStrengthDays(raw.strengthLog),
     readiness: (raw.readiness && typeof raw.readiness==="object") ? raw.readiness : {},
+    coachProposal: (raw.coachProposal && typeof raw.coachProposal==="object") ? raw.coachProposal : null,
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -1647,6 +1668,49 @@ function miniChart(cap, vals, max, labels, curIdx, emptyMsg){
   const xl=labels.map((l,i)=>`<span class="${i===curIdx?'cur':''}">${esc(l)}</span>`).join("");
   return `<div class="cc-chart"><div class="cc-chart-cap">${esc(cap)}</div><div class="cc-bars">${bars}</div><div class="cc-xlabels">${xl}</div></div>`;
 }
+// Weekly coach suggestion (written into state.coachProposal by the Worker). Read-only banner + one-click apply.
+function coachPropHTML(){
+  const p=state.coachProposal; if(!p || typeof p!=="object") return "";
+  if(p.weekOf && p.weekOf < mondayOf(todayISO())) return "";        // stale — the target week has passed
+  const m=p.metrics||{};
+  const REC={ ease:{label:"Ease next week",cls:"warn"}, hold:{label:"Hold — as planned",cls:"good"}, push:{label:"Push next week",cls:"accent"} };
+  const rc=REC[p.recommendation]||REC.hold;
+  const chips=[];
+  if(m.acwr!=null){ const band=loadBand(+m.acwr, m.chronic28||0); chips.push(`<span class="cp-chip ${band.lvl==="neutral"?"":band.lvl}">ACWR <b>${(+m.acwr).toFixed(2)}</b></span>`); }
+  if(m.acute7!=null){ const tr=(m.prev7>0)?Math.round((m.acute7-m.prev7)/m.prev7*100):null; chips.push(`<span class="cp-chip">Load 7d <b>${m.acute7}</b>${tr!=null?` (${tr>=0?"+":""}${tr}%)`:""}</span>`); }
+  if(m.readiness7!=null) chips.push(`<span class="cp-chip">Readiness <b>${m.readiness7}%</b></span>`);
+  if(m.lastWeek && m.lastWeek.planned){ const lw=m.lastWeek; chips.push(`<span class="cp-chip">Last wk <b>${lw.done}/${lw.planned}</b>${lw.execAvg!=null?` · ${lw.execAvg}%`:""}</span>`); }
+  if(m.weeksToRace!=null) chips.push(`<span class="cp-chip">Race in <b>${m.weeksToRace}w</b></span>`);
+  const calls=(Array.isArray(p.callouts)&&p.callouts.length)?`<ul class="cp-calls">${p.callouts.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:"";
+  const acts = p.recommendation==="hold"
+    ? `<button class="btn" data-coach-dismiss="1">Got it</button>`
+    : `<button class="btn primary" data-coach-apply="1">Apply — ${p.recommendation==="ease"?"easier":"harder"} week</button><button class="btn" data-coach-dismiss="1">Dismiss</button>`;
+  const when=p.weekOf? mdShort(p.weekOf) : "";
+  return `<div class="coach-prop">
+    <div class="cp-head"><span class="cp-eyebrow">⚡ Coach suggestion</span>${when?`<span class="cp-plan">· week of ${esc(when)}</span>`:""}<span class="cp-rec ${rc.cls}">${esc(rc.label)}</span></div>
+    ${p.headline?`<div class="cp-head-line">${esc(p.headline)}</div>`:""}
+    ${p.reasoning?`<p class="cp-reason">${esc(p.reasoning)}</p>`:""}
+    ${chips.length?`<div class="cp-chips">${chips.join("")}</div>`:""}
+    ${calls}
+    <div class="cp-acts">${acts}</div>
+  </div>`;
+}
+function applyCoachProposal(){
+  const p=state.coachProposal; if(!p) return;
+  pushUndo();
+  const f=(typeof p.factor==="number"&&p.factor>0)?p.factor:1;
+  if(p.weekOf){
+    if(p.planId && p.planId===state.activeId){ state.weekAdj=state.weekAdj||{}; state.weekAdj[p.weekOf]=f; syncActiveToLibrary(); }
+    else { const rec=(state.plans||[]).find(r=>r.id===p.planId)||(state.plans||[])[0]; if(rec){ rec.weekAdj=rec.weekAdj||{}; rec.weekAdj[p.weekOf]=f; } }
+  }
+  state.coachProposal=null; state.updatedAt=Date.now();
+  writeLocal(); cloudPushNow(); render();
+}
+function dismissCoachProposal(){
+  if(!state.coachProposal) return;
+  state.coachProposal=null; state.updatedAt=Date.now();
+  writeLocal(); cloudPushNow(); render();
+}
 function renderCoach(){
   const host=$("#coachStrip"); if(!host) return;
   const today=todayISO();
@@ -1690,9 +1754,13 @@ function renderCoach(){
       <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
     </div>`;
   }
-  host.innerHTML=`<div class="coach-strip">${loadCard}${readyCard}</div>`;
+  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
+document.addEventListener("click", e=>{
+  if(e.target.closest("[data-coach-apply]")) applyCoachProposal();
+  else if(e.target.closest("[data-coach-dismiss]")) dismissCoachProposal();
+});
 function openCheckin(){
   closeCheckin();
   const today=todayISO(), cur=(state.readiness&&state.readiness[today])||{};
@@ -2655,6 +2723,7 @@ function adoptRemote(remote){
   if(remote.strengthLog && typeof remote.strengthLog==="object") state.strengthLog=remote.strengthLog;
   if(Array.isArray(remote.strengthDays)) state.strengthDays=remote.strengthDays.map(normStrengthDay);
   if(remote.readiness && typeof remote.readiness==="object") state.readiness=remote.readiness;
+  state.coachProposal = (remote.coachProposal && typeof remote.coachProposal==="object") ? remote.coachProposal : null;  // coach suggestion written by the Worker
   if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
   if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
   activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
@@ -2682,7 +2751,7 @@ function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTi
 async function cloudPushNow(){
   _pushTimer=null; if(!cloudOn()) return;
   syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, readiness: state.readiness, updatedAt: state.updatedAt });
+  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, readiness: state.readiness, coachProposal: state.coachProposal||null, updatedAt: state.updatedAt });
   const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
   try{ setStatus("saving");
     if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
