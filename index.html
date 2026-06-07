@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05z" />
+<meta name="app-build" content="2026-06-07a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -386,6 +386,8 @@
   .cp-calls{margin:0 0 12px;padding-left:18px}
   .cp-calls li{font-size:12.5px;color:var(--txt);line-height:1.5;margin:3px 0}
   .cp-acts{display:flex;gap:8px;flex-wrap:wrap}
+  .coach-next{font-size:11.5px;color:var(--faint);text-align:center;margin:-4px 0 16px;line-height:1.5}
+  .coach-next b{color:var(--muted);font-weight:700}
   .cc-chart{margin-top:auto;padding-top:13px}
   .cc-chart-cap{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600;margin-bottom:8px}
   .cc-bars{display:flex;align-items:flex-end;gap:4px;height:32px}
@@ -1711,6 +1713,20 @@ function dismissCoachProposal(){
   state.coachProposal=null; state.updatedAt=Date.now();
   writeLocal(); cloudPushNow(); render();
 }
+// Next automatic coach run = next Sunday 17:00 UTC (cron "0 17 * * SUN" on the Worker).
+function nextCoachRun(){
+  const now=new Date();
+  const r=new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 17,0,0));
+  while(r.getUTCDay()!==0 || r.getTime()<=now.getTime()) r.setUTCDate(r.getUTCDate()+1);
+  return r;
+}
+function coachNextHTML(){
+  const now=new Date(), r=nextCoachRun(), ms=r-now;
+  const days=Math.floor(ms/86400000), hrs=Math.floor((ms%86400000)/3600000);
+  const when = days>=1 ? `in ${days} day${days===1?"":"s"}` : (hrs>=1 ? `in ${hrs} hour${hrs===1?"":"s"}` : "within the hour");
+  const dlabel = `${WD[r.getDay()]} ${r.getDate()} ${MO[r.getMonth()]}`;
+  return `<div class="coach-next">⚡ Coach reviews your training every Sunday — next review <b>${when}</b> · ${dlabel}</div>`;
+}
 function renderCoach(){
   const host=$("#coachStrip"); if(!host) return;
   const today=todayISO();
@@ -1754,7 +1770,7 @@ function renderCoach(){
       <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
     </div>`;
   }
-  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>`;
+  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>${coachNextHTML()}`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
 document.addEventListener("click", e=>{
