@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-05x" />
+<meta name="app-build" content="2026-06-05y" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1283,11 +1283,13 @@ function exportPlanCSV(id){ syncActiveToLibrary(); const rec=(state.plans||[]).f
 function csvTemplate(){
   const head=["date","session","type","duration_min","distance_km","vert_m","surface","structure","zone","phase","block","notes"];
   const ex=[
-    ["2026-01-05","Easy aerobic run","Easy",45,8,120,"road","","Z2",1,"Base — week 1","EXAMPLE ROW — replace these with your own sessions (one row per day). Date = YYYY-MM-DD. Leave 'structure' blank for a plain run."],
-    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"road","WU 15min Z2 | 4x8min Z4 r90s | CD 10min Z2","Z4",1,"Base — week 1","structure = the interval breakdown. WU/CD = warm-up/cool-down · 4x8min Z4 = 4 reps of 8 min at Z4 · r90s = 90s recovery · | separates blocks. Any number of blocks."],
-    ["2026-01-07","Rest day","Rest","","","","","","",1,"Base — week 1","Leave fields blank when they don't apply (e.g. rest)."],
-    ["2026-01-10","Long mountain day","Long",110,14,1100,"fell","","Z2",1,"Base — week 1","surface=fell → judged by effort + HR, not km pace. Give your best DISTANCE estimate even though it's terrain."],
-    ["2026-01-11","Recovery spin (optional)","Bike",40,"","","bike","","Z1",1,"Base — week 1","type = Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest. surface = road/trail/fell/track/bike."]
+    ["2026-01-05","DEMO — delete this row","Easy",45,8,120,"road","","Z2",1,"Base — week 1","DEMO ROW — delete these examples and add your own (one row per session per day). COLUMNS: date=YYYY-MM-DD · session=name · type=Easy/Recovery/Threshold/Hills/Descent/Simulation/Long/Bike/Race/Rest · duration_min, distance_km, vert_m = numbers (blank if N/A) · surface=road/trail/fell/track/bike · zone=Z1–Z5 (or free text) · phase=number (groups into Phase 1/2…) · block=week label shown in the header · structure=interval breakdown (see next row) · notes=free text (commas OK)."],
+    ["2026-01-06","Threshold 4×8 min","Threshold",60,11,80,"road","WU 15min Z2 | 4x8min Z4 r90s | CD 10min Z2","Z4",1,"Base — week 1","INTERVALS go in the 'structure' column. Syntax: 'WU <min> <zone>'=warm-up · 'CD <min> <zone>'=cool-down · '<reps>x<dur> <zone> r<rec>'=work (e.g. 4x8min Z4 r90s = 4×8 min at Z4, 90s recovery; use r2m for minutes, r45s for seconds) · '<min> <zone>'=a steady block · separate blocks with ' | '. On road/trail surfaces the breakdown shows target paces."],
+    ["2026-01-08","Uphill threshold 5×6 min","Threshold",65,8.5,650,"fell","WU 15min Z2 | 5x6min Z4 r2m | CD 10min Z2","Z4",2,"Fell block","SURFACE matters: surface=fell (or off-road) → the session is judged by effort + heart rate, NOT km pace (so no pace shown). Still give a best-estimate distance_km; vert_m is the key number on the hills."],
+    ["2026-01-10","Long mountain day","Long",110,14,1100,"fell","","Z2",2,"Fell block","Non-interval sessions leave 'structure' blank. Long aerobic day — steady effort."],
+    ["2026-01-11","Recovery spin","Bike",50,"","","bike","","Z1",1,"Base — week 1","Cross-training. type=Bike, surface=bike; leave distance/vert blank (duration is enough)."],
+    ["2026-01-12","Rest day","Rest","","","","","","",1,"Base — week 1","Full rest. Leave duration/distance/vert/surface/zone/structure all blank."],
+    ["2026-09-05","RACE — Goal race","Race","",16,1525,"fell","","Cat AM",2,"Race week","type=Race with the real distance_km + vert_m. zone can be free text (e.g. a race category)."]
   ];
   return [head.join(",")].concat(ex.map(r=>r.map(csvCell).join(","))).join("\n");
 }
