@@ -4,11 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07b" />
+<meta name="app-build" content="2026-06-07c" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Plan Tracker" />
+<link rel="manifest" href="manifest.json" />
 <title>Grisedale Horseshoe · 13-Week Plan</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvc3ZnPg==" />
@@ -388,6 +389,10 @@
   .cp-acts{display:flex;gap:8px;flex-wrap:wrap}
   .coach-next{font-size:11.5px;color:var(--faint);text-align:center;margin:-4px 0 16px;line-height:1.5}
   .coach-next b{color:var(--muted);font-weight:700}
+  /* PWA "new version available" prompt */
+  #updbar{position:fixed;left:12px;right:12px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:80;background:var(--panel);border:1px solid var(--line2);box-shadow:var(--shadow);border-radius:12px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--txt)}
+  #updbar button{background:var(--accent);border:0;color:#fff;border-radius:8px;padding:8px 15px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto}
+  @media(min-width:701px){ #updbar{left:auto;right:18px;bottom:18px;max-width:340px} }
   .cc-chart{margin-top:auto;padding-top:13px}
   .cc-chart-cap{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600;margin-bottom:8px}
   .cc-bars{display:flex;align-items:flex-end;gap:4px;height:32px}
@@ -2956,6 +2961,37 @@ let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); }
 hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); renderCloud(); if(cloudOn()) cloudConnect(cloud.token,{silent:true}); }).catch(firstRender);
 setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
+</script>
+<script>
+/* PWA: register the service worker (installable + offline). Network-first means a new
+   deploy reaches you automatically when online; the bar only appears when the worker
+   script itself changes. */
+(function(){
+  if(!("serviceWorker" in navigator)) return;
+  function showUpdateBar(worker){
+    if(document.getElementById("updbar")) return;
+    var bar=document.createElement("div"); bar.id="updbar";
+    var span=document.createElement("span"); span.textContent="A new version is available.";
+    var btn=document.createElement("button"); btn.textContent="Refresh";
+    btn.onclick=function(){ btn.textContent="Updating…"; worker.postMessage({type:"SKIP_WAITING"}); };
+    bar.appendChild(span); bar.appendChild(btn); document.body.appendChild(bar);
+  }
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("service-worker.js").then(function(reg){
+      if(reg.waiting && navigator.serviceWorker.controller) showUpdateBar(reg.waiting);
+      reg.addEventListener("updatefound", function(){
+        var nw=reg.installing; if(!nw) return;
+        nw.addEventListener("statechange", function(){
+          if(nw.state==="installed" && navigator.serviceWorker.controller) showUpdateBar(nw);
+        });
+      });
+    }).catch(function(){});
+    var refreshing=false;
+    navigator.serviceWorker.addEventListener("controllerchange", function(){
+      if(refreshing) return; refreshing=true; window.location.reload();
+    });
+  });
+})();
 </script>
 </body>
 </html>
