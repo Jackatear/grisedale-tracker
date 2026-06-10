@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07g" />
+<meta name="app-build" content="2026-06-07h" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -409,6 +409,12 @@
   .pg-bars i:hover,.pg-bars i.tipped{opacity:1;filter:brightness(1.12)}
   .pg-bars i.zero{background:var(--line2)}
   .pg-bars.vert i{background:var(--t-strength)}
+  .pg-bars.ef i{background:var(--good)}
+  /* "why this session" + key-session markers */
+  .mv-why{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+  .mv-why b{color:var(--txt)}
+  .tc-key{color:var(--accent);font-weight:800}
+  .ckey{margin-left:6px;color:var(--accent);font-weight:800;letter-spacing:.3px}
   /* race predictor (home) */
   .pred-row{display:flex;gap:9px;margin-top:10px}
   .pred{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 4px;min-width:0}
@@ -1634,6 +1640,54 @@ function renderCountdown(){
 }
 
 /* "Today" coach brief — what to run now, the why, the target zone, one-tap done. */
+/* What each session type actually builds — so every card answers "why am I doing this?" */
+const TYPE_WHY={
+  Easy:      {builds:"Aerobic base — more capillaries, more mitochondria, better fat-burning. The engine everything else sits on.", feel:"Conversational. If you can't chat, you're stealing from the next hard day."},
+  Recovery:  {builds:"Active recovery — flushes the legs and locks in the adaptation from your hard days without adding stress.", feel:"Embarrassingly slow, on purpose."},
+  Threshold: {builds:"Lactate threshold — the effort you can race at. The single biggest lever on race pace.", feel:"Comfortably hard: strong but controlled, an effort you could hold for about an hour."},
+  Hills:     {builds:"Climbing strength and power — fell races are decided by who climbs best for their weight.", feel:"Hard drives up, full recoveries. Power, not panic."},
+  Descent:   {builds:"Descending skill and eccentric leg durability — free race-day speed, and the quads to survive using it.", feel:"Relaxed, quick feet, eyes ahead. Confidence beats braking."},
+  Simulation:{builds:"Race-specific fitness — terrain, pacing, kit and fuelling rehearsed under race-like stress.", feel:"A dress rehearsal: race effort in the key sections."},
+  Long:      {builds:"Endurance and durability — teaches your body to burn fat and your legs to last the whole race.", feel:"Steady and patient. Time on feet beats pace today."},
+  Bike:      {builds:"Aerobic volume without impact — engine work your legs don't have to pay for.", feel:"An easy spin unless the plan says otherwise."},
+  Race:      {builds:"The point of it all — and the most honest fitness test you own.", feel:"Empty the tank."},
+  Rest:      {builds:"Adaptation. Fitness is built in recovery, not in training — skipping rest skips the gains.", feel:"Genuinely off, guilt-free."}
+};
+// The week's most important session: races > simulations > quality, ties broken by training load.
+function keySessionId(mon){
+  let best=null, bestScore=-1;
+  for(let di=0;di<7;di++)(state.board[addDays(mon,di)]||[]).forEach(id=>{
+    const w=getWO(id); if(!w) return;
+    const rank={Race:5,Simulation:4,Threshold:3,Hills:3,Descent:2,Long:1}[w.t]||0; if(!rank) return;
+    const score=rank*100000+(plannedLoad(w)||0);
+    if(score>bestScore){ bestScore=score; best=id; }
+  });
+  return best;
+}
+// Efficiency Factor (speed ÷ heart rate) on easy aerobic runs — the closest thing to a fitness dial.
+// Same HR, more metres per minute = the aerobic engine grew. Weekly medians across all plans.
+function efWeekly(n){
+  const mons=[]; const thisMon=mondayOf(todayISO());
+  for(let i=n-1;i>=0;i--) mons.push(addDays(thisMon,-7*i));
+  const byWeek={}; mons.forEach(m=>byWeek[m]=[]);
+  (state.plans||[]).forEach(rec=>{
+    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
+      if(!w||!w.date) return;
+      if(rec.deleted&&rec.deleted[w.id]) return;
+      if(!(rec.done&&rec.done[w.id])) return;
+      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
+      if(eff.t==="Bike"||eff.t==="Rest"||eff.sf==="fell"||eff.sf==="bike") return;
+      const zi=zoneTextToIdx(eff.z); if(zi!=null && zi>1) return;         // easy/aerobic only — hard runs aren't comparable
+      const lg=(rec.log&&rec.log[w.id])||{}; const km=+lg.k||0, min=+lg.d||0, hr=+lg.hr||0;
+      if(km<4||min<25||hr<95||hr>185) return;                             // too short / no HR → unreliable signal
+      if(((+lg.v||0)/km)>30) return;                                      // hilly runs wreck the comparison
+      const pace=min/km; if(pace<2.8||pace>8) return;
+      const mon=mondayOf(eff.date); if(!(mon in byWeek)) return;
+      byWeek[mon].push((km*1000/min)/hr);
+    });
+  });
+  return mons.map(m=>{ const a=byWeek[m].slice().sort((x,y)=>x-y); return {mon:m, ef:a.length? a[Math.floor(a.length/2)] : null}; });
+}
 function renderToday(){
   const host=$("#todayCard"); if(!host) return;
   const t=todayISO();
@@ -1653,7 +1707,8 @@ function renderToday(){
   const dd=daysBetween(t,fdate);
   const eyebrow = mode==="today" ? "Today" : (dd===1?"Tomorrow":`In ${dd} days · ${WD[d(fdate).getDay()]} ${d(fdate).getDate()} ${MO[d(fdate).getMonth()]}`);
   const meta=[]; if(w.d)meta.push(fmtDur(w.d)); if(w.k!=null)meta.push(fmtDist(w.k)); if(w.v!=null)meta.push("↗ "+fmtVert(w.v)); if(w.z&&w.z!=="—")meta.push(w.z);
-  const why=((w.note||"").split("\n")[0]||"").trim();
+  const why=((w.note||"").split("\n")[0]||"").trim() || ((TYPE_WHY[w.t]||{}).feel||"");
+  const isKey = keySessionId(mondayOf(fdate))===focus.id;
   const mon=mondayOf(fdate); const wids=[]; for(let di=0;di<7;di++)(state.board[addDays(mon,di)]||[]).forEach(id=>wids.push(id));
   const T=totals(wids);
   const es = done ? execScore(w, state.log[focus.id]||{}) : null;
@@ -1662,7 +1717,7 @@ function renderToday(){
     : mode==="today" ? `<button class="btn primary tc-do" data-done="${focus.id}">Mark done</button>`
     : `<span class="tc-view">View ›</span>`;
   host.innerHTML = `<div class="today-card ${done?'done':''}" style="--c:${ty.c}" data-open="${focus.id}">
-      <div class="tc-eyebrow">${eyebrow}${isRest?"":` · <span style="color:var(--c)">${esc(ty.label)}</span>`}${w.s?` · + strength`:""}</div>
+      <div class="tc-eyebrow">${eyebrow}${isRest?"":` · <span style="color:var(--c)">${esc(ty.label)}</span>`}${isKey?` · <span class="tc-key">★ Key session of the week</span>`:""}${w.s?` · + strength`:""}</div>
       <div class="tc-title">${esc(w.n)}</div>
       ${meta.length?`<div class="tc-meta">${meta.map(x=>`<span class="pill">${esc(x)}</span>`).join("")}</div>`:""}
       ${why?`<div class="tc-why">${esc(why)}</div>`:""}
@@ -2009,6 +2064,22 @@ function pgHours(min){ return (Math.round(min/6)/10); }
 function renderProgress(){
   const host=$("#progressView"); if(!host) return;
   const wks=athleteWeeks(16);
+  // aerobic engine (Efficiency Factor) trend — the proof the training is working
+  const efw=efWeekly(16), efNN=efw.filter(x=>x.ef!=null);
+  let engineBody="";
+  if(efNN.length>=4){
+    const med=a=>{ const s=a.slice().sort((x,y)=>x-y); return s[Math.floor(s.length/2)]; };
+    const base=med(efNN.slice(0, Math.max(3, Math.floor(efNN.length/2))).map(x=>x.ef));
+    const late=med(efNN.slice(-3).map(x=>x.ef));
+    const pct=Math.round((late-base)/base*1000)/10;
+    const verdict = pct>=1 ? `<b>▲ +${pct}% — same heart rate, more speed.</b> Your aerobic engine is measurably growing. This is what getting better looks like.`
+      : pct<=-1 ? `<b>▼ ${pct}% vs your baseline.</b> Normal mid-block, in heat, or when tired — judge the month, not the week. If it keeps sliding while readiness drops, ease.`
+      : `<b>→ Holding steady.</b> The engine keeps what it's built — gains show after consistent easy-volume blocks.`;
+    engineBody = pgChart(efw.map(x=>x.ef||0), efw.map(x=>x.mon), "ef", v=>v? v.toFixed(2)+" m/min per bpm":"no easy runs")
+      + `<p class="pg-verdict">${verdict}</p>`;
+  } else {
+    engineBody = `<div class="pg-empty">Unlocks after ~4 weeks of easy runs with heart rate + distance logged (sync from Strava). Then this chart becomes your proof the training is working: the same easy heart rate buying more speed.</div>`;
+  }
   const cur=wks[wks.length-1];
   const l4=wks.slice(-4);
   const avg4min=l4.reduce((a,w)=>a+w.min,0)/4, avg4vert=l4.reduce((a,w)=>a+w.vert,0)/4;
@@ -2060,6 +2131,8 @@ function renderProgress(){
       ${pgChart(wks.map(w=>w.min), wks.map(w=>w.mon), "", v=>pgHours(v)+" h")}</div>
     <div class="pg-card"><h4>Vert per week · last 16 weeks</h4><p class="pg-sub">Climbing volume — the single most fell-specific number you own. Biggest week: <b>${fmtVert(bigVert)}</b>.</p>
       ${pgChart(wks.map(w=>w.vert), wks.map(w=>w.mon), "vert", v=>fmtVert(Math.round(v)))}</div>
+    <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
+      ${engineBody}</div>
     <div class="pg-card"><h4>Intensity balance · last 28 days</h4>
       ${ztot?`<div class="pg-zbar">${zbar}</div><div class="pg-zleg">${zleg}</div>`:""}
       <p class="pg-verdict">${verdict}</p></div>
@@ -2162,6 +2235,7 @@ function passesFilter(w){
   return true;
 }
 
+let _keyIds=null;
 function cardHTML(id){
   const w = getWO(id); if(!w) return "";
   const ty = TYPES[w.t]||TYPES.Rest;
@@ -2179,7 +2253,7 @@ function cardHTML(id){
   const surf = surfaceLabel(w);
   return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
       <button class="check" data-check="${id}" title="Mark complete"></button>
-      <div class="ctype">${esc(ty.label)}${surf?`<span class="csurf">· ${esc(surf)}</span>`:""}</div>
+      <div class="ctype">${esc(ty.label)}${surf?`<span class="csurf">· ${esc(surf)}</span>`:""}${_keyIds&&_keyIds.has(id)?`<span class="ckey" title="Key session of the week — this is the one to nail">★ key</span>`:""}</div>
       <div class="cname">${esc(w.n)}</div>
       ${meta.length?`<div class="cmeta">${meta.join("")}</div>`:""}
     </div>`;
@@ -2372,6 +2446,7 @@ function openStrengthFromBoard(id){
 }
 function renderWeeks(){
   const mondays = weekMondays();
+  _keyIds = new Set(mondays.map(keySessionId).filter(Boolean));   // ★ the most important session of each week
   const psm = planStartMonday();
   let html = "", lastPhase=null;
   mondays.forEach((mon,wi)=>{
@@ -2680,8 +2755,10 @@ function modalViewHTML(w){
   const flag = done
     ? (es?`<span class="pill exec ${es.level}">${es.pct}%</span><span class="mv-flag done">✓ Completed</span>`:`<span class="mv-flag done">✓ Completed</span>`)
     : `<span class="mv-flag">○ To do</span>`;
+  const why=TYPE_WHY[w.t];
   return `<div class="mv">
     <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${surfaceLabel(w)?`<span class="pill">${esc(surfaceLabel(w)[0].toUpperCase()+surfaceLabel(w).slice(1))}</span>`:""}${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
+    ${why?`<div class="mv-why"><div><b>Builds:</b> ${esc(why.builds)}</div><div class="why-feel"><b>Feel:</b> ${esc(why.feel)}</div></div>`:""}
     ${plan.length?`<div><div class="mv-sect" style="margin-bottom:8px">Planned target</div><div class="mv-stats">${plan.map(stat).join("")}</div></div>`:""}
     ${sessionPlanHTML(w)}
     ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
