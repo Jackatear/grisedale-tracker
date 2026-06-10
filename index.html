@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07k" />
+<meta name="app-build" content="2026-06-07l" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -761,6 +761,10 @@
   .btn,.iconbtn,.sd-btn,.s-add-btn,.undobtn,.search,.sd-f,.sd-note,.tab,.seg,.seg button,.zc-in{border-radius:2px}
   .mark{border-radius:3px}
   .topbar{background:var(--bg)}
+  /* "you are here" — the current training week */
+  .week.current{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .week.current>.week-head{background:color-mix(in srgb,var(--accent) 7%,var(--bg));border-left:3px solid var(--accent)}
+  .wn.now{background:var(--accent);border-color:var(--accent);color:#faf7ec;font-weight:700;letter-spacing:.02em}
 </style>
 </head>
 <body>
@@ -844,7 +848,7 @@
       <button class="iconbtn" id="collapseBtn" title="Expand / collapse all">⇕ Weeks</button>
     </div>
 
-    <div class="section-label">Schedule</div>
+    <div class="section-label" id="schedLabel">Schedule</div>
     <div id="weeks"></div>
 
     <p class="legend-foot">
@@ -2495,13 +2499,25 @@ function renderWeeks(){
   const mondays = weekMondays();
   _keyIds = new Set(mondays.map(keySessionId).filter(Boolean));   // ★ the most important session of each week
   const psm = planStartMonday();
+  // "You are here": current week is the anchor; only it + next week open by default (manual toggles always win)
+  const tw = mondayOf(todayISO());
+  const anchor = mondays.includes(tw) ? tw : (mondays[0]||tw);
+  const nextAnchor = addDays(anchor,7);
+  const sl = $("#schedLabel");
+  if(sl){
+    const dates=(state.plan||[]).filter(w=>!(state.deleted&&state.deleted[w.id])).map(w=>w.date).filter(Boolean).sort();
+    const totW = dates.length ? Math.round((d(mondayOf(dates[dates.length-1]))-d(psm))/(7*86400000))+1 : null;
+    const twNum = Math.round((d(tw)-d(psm))/(7*86400000))+1;
+    sl.textContent = (totW && twNum>=1 && twNum<=totW) ? `Schedule · week ${twNum} of ${totW}` : "Schedule";
+  }
   let html = "", lastPhase=null;
   mondays.forEach((mon,wi)=>{
     const weekNum = Math.round((d(mon)-d(psm))/(7*86400000)) + 1;   // 1 = plan start; 0/−1 = before the plan
     const blk = state.blocks && state.blocks[mon];
     const phase = blk && blk.phase;
     if(phase!=null && phase!==lastPhase){ html += `<div class="phase-head">${typeof phase==='number'?('Phase '+phase):esc(phase)}</div>`; lastPhase=phase; }
-    const collapsed = !!state.collapsed[mon];
+    const isCurrent = mon===tw;
+    const collapsed = (state.collapsed[mon]!==undefined) ? !!state.collapsed[mon] : !(mon===anchor || mon===nextAnchor);
     const weekIds = [];
     let cells = "";
     for(let di=0; di<7; di++){
@@ -2541,10 +2557,10 @@ function renderWeeks(){
         ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
         <div class="zbreak">${Z.planTot?`<span><b>Plan</b> ${planTxt}</span>`:""}${Z.hasAct?`<span><b>Done</b> ${doneTxt}</span>`:""}</div>
       </div>` : "";
-    html += `<div class="week ${collapsed?'collapsed':''}" data-mon="${mon}">
+    html += `<div class="week ${collapsed?'collapsed':''} ${isCurrent?'current':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
           <span class="caret">▼</span>
-          <span class="wn">Week ${weekNum}</span>
+          <span class="wn ${isCurrent?'now':''}">${isCurrent?`This week`:`Week ${weekNum}`}</span>
           ${arrows}${adjBadge}
           <span class="wtitle">${titleHTML}<span>${mdShort(mon)} – ${mdShort(addDays(mon,6))}</span></span>
           <span class="wstats">${wstats}</span>
