@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07h" />
+<meta name="app-build" content="2026-06-07i" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -415,6 +415,8 @@
   .mv-why b{color:var(--txt)}
   .tc-key{color:var(--accent);font-weight:800}
   .ckey{margin-left:6px;color:var(--accent);font-weight:800;letter-spacing:.3px}
+  .sd-pick .opt.repeat{border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
+  .sd-pick .opt.repeat b{color:var(--accent)}
   /* race predictor (home) */
   .pred-row{display:flex;gap:9px;margin-top:10px}
   .pred{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 4px;min-width:0}
@@ -1508,6 +1510,17 @@ function synthStrengthDays(log){
 function sdFmtDate(isoStr){ if(!isoStr) return ""; const dt=d(isoStr); return `${WD[dt.getDay()]} ${dt.getDate()} ${MO[dt.getMonth()]}`; }
 
 const SD_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+// What you lifted last time, per exercise (done sessions, newest first) — fuels the "↻ last" hints.
+function lastStrengthLogs(){
+  const m={};
+  (state.strengthDays||[]).filter(c=>c.done&&c.date).sort((a,b)=>a.date<b.date?1:-1).forEach(c=>{
+    (c.rows||[]).forEach(r=>{
+      const k=(r.name||"").trim().toLowerCase(); if(!k||!(r.log||"").trim()) return;
+      (m[k]=m[k]||[]).push({date:c.date, id:c.id, log:r.log, dose:r.dose});
+    });
+  });
+  return m;
+}
 function renderStrength(){
   const days = state.strengthDays || (state.strengthDays=[]);
   const done = days.filter(c=>c.done), mon=mondayOf(todayISO());
@@ -1516,8 +1529,13 @@ function renderStrength(){
   const summary = days.length
     ? `${days.length} session${days.length===1?"":"s"} · ${thisWeek} this week${lastDone?` · last ${sdFmtDate(lastDone)}`:""}`
     : `Track your gym work — weights, sets and how it felt.`;
+  const lastBy = lastStrengthLogs();
   const doneRow = r => `<div class="sd-row"><span class="sd-name">${esc(r.name)}</span><span class="sd-dose">${esc(r.dose||"—")}</span><span class="sd-log ${r.log?"":"empty"}">${esc(r.log||"—")}</span></div>`;
-  const editRow = r => `<div class="sd-erow"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="sets" value="${esc(r.dose)}"><input class="sd-f lg" data-f="log" placeholder="kg" value="${esc(r.log)}"></div>`;
+  const editRow = (r,c) => {
+    const k=(r.name||"").trim().toLowerCase();
+    const prev=(lastBy[k]||[]).find(e=>e.id!==c.id && e.date<=(c.date||todayISO()));
+    return `<div class="sd-erow"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="${prev&&prev.dose?esc(prev.dose):"sets"}" value="${esc(r.dose)}"><input class="sd-f lg" data-f="log" placeholder="${prev?("↻ "+esc(prev.log)):"kg"}" value="${esc(r.log)}" title="${prev?("Last time ("+sdFmtDate(prev.date)+"): "+esc(prev.log)+" — beat it"):""}"></div>`;
+  };
   const cardHTML = c => {
     const d=!!c.done, rows=c.rows||[];
     const sub = [c.focus, c.mins?`${c.mins} min`:""].filter(Boolean).join(" · ");
@@ -1534,7 +1552,7 @@ function renderStrength(){
     return `<div class="sd-card" data-sd="${esc(c.id)}">
       <div class="sd-chead"><div class="sd-htext"><input class="sd-titin" data-f="title" value="${esc(c.title)}" placeholder="Session name">${sub?`<div class="sd-sub" style="margin-top:6px">${esc(sub)}</div>`:""}</div><span class="sd-badge draft">Draft</span></div>
       <div class="sd-dateline"><label>Date</label><input class="sd-datein" data-f="date" type="date" value="${esc(c.date||todayISO())}"></div>
-      <div class="sd-body">${rows.map(editRow).join("")}<button class="sd-addrow" data-act="addrow">＋ Add exercise</button><textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea></div>
+      <div class="sd-body">${rows.map(r=>editRow(r,c)).join("")}<button class="sd-addrow" data-act="addrow">＋ Add exercise</button><textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea></div>
       <div class="sd-foot"><button class="sd-btn primary" data-act="done">Mark done</button><button class="sd-btn ghost" data-act="del">Delete</button></div></div>`;
   };
   const body = days.length
@@ -1560,15 +1578,20 @@ function readStrengthCard(cardEl, c){
 function openSdPicker(){
   closeSdPicker();
   const opts=strengthTemplates();
+  const lastDone=(state.strengthDays||[]).filter(c=>c.done&&c.date).sort((a,b)=>a.date<b.date?1:-1)[0];
   const back=document.createElement("div"); back.className="sd-pick-back"; back.id="sdPickBack";
   back.innerHTML=`<div class="sd-pick"><h3>New strength session</h3>${
+    lastDone?`<button class="opt repeat" data-ri="repeat"><span><b>↻ Repeat last session</b><br><small>${esc(lastDone.title)} · ${sdFmtDate(lastDone.date)} — beat last time's numbers</small></span><small>${(lastDone.rows||[]).filter(r=>r.name).length} ex</small></button>`:""
+  }${
     opts.map((o,i)=>`<button class="opt" data-ri="${i}"><span><b>${esc(o.name)}</b><br><small>${esc(o.focus)}</small></span><small>${o.mins} min</small></button>`).join("")
   }<button class="opt" data-ri="blank"><span><b>Blank session</b><br><small>Start from scratch</small></span><small>＋</small></button></div>`;
   back.addEventListener("click", ev=>{
     if(ev.target===back){ closeSdPicker(); return; }
     const o=ev.target.closest(".opt"); if(!o) return;
     const ri=o.getAttribute("data-ri");
-    const card = ri==="blank"
+    const card = ri==="repeat"
+      ? normStrengthDay({ title:lastDone.title, focus:lastDone.focus, mins:lastDone.mins, rows:(lastDone.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,log:""})) })
+      : ri==="blank"
       ? normStrengthDay({ title:"Strength session", rows:[{name:"",dose:"",log:""},{name:"",dose:"",log:""}] })
       : (r=>normStrengthDay({ title:r.name, focus:r.focus, mins:r.mins, rows:r.ex.map(e=>({name:e[0],dose:e[1],log:""})) }))(opts[+ri]);
     card.date=todayISO();
