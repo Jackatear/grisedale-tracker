@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07f" />
+<meta name="app-build" content="2026-06-07g" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -91,6 +91,7 @@
   .iconbtn:hover{border-color:var(--faint);color:var(--txt)}
   .iconbtn:disabled{opacity:.4;cursor:default}
   .iconbtn:disabled:hover{border-color:var(--line2);color:var(--muted)}
+  .m-only{display:none!important}   /* mobile-only controls (revealed in the ≤700px media query) */
 
   .wrap{max-width:1400px;margin:0 auto;padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
 
@@ -657,12 +658,17 @@
   /* ---------- Mobile ---------- */
   @media (max-width:700px){
     .wrap{padding:13px calc(13px + env(safe-area-inset-right)) calc(13px + env(safe-area-inset-bottom)) calc(13px + env(safe-area-inset-left))}
-    .topbar{padding:calc(10px + env(safe-area-inset-top)) calc(13px + env(safe-area-inset-right)) 10px calc(13px + env(safe-area-inset-left));gap:9px}
+    /* one-row header: units & theme live in the ⋯ menu on phones */
+    .topbar{padding:calc(10px + env(safe-area-inset-top)) calc(13px + env(safe-area-inset-right)) 10px calc(13px + env(safe-area-inset-left));gap:8px;flex-wrap:nowrap}
     .mini{display:none}                 /* dashboard already shows these; declutter the header */
-    .brand{gap:9px}
-    .brand h1{font-size:13px}
-    .brand p{font-size:10.5px}
-    .iconbtn{padding:7px 9px}
+    #unitBtn,#themeBtn{display:none}
+    .brand{gap:9px;flex:1;min-width:0;margin-right:0}
+    .brand>div{min-width:0}
+    .brand h1{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand p{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .iconbtn{padding:7px 9px;flex:0 0 auto}
+    .menu .m-only{display:block!important}
+    .menu .sep.m-only{display:block!important}
     .dash{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
     .stat{padding:11px 12px;border-radius:11px}
     .stat .lab{font-size:9px;letter-spacing:.4px}
@@ -673,8 +679,15 @@
     .prow{font-size:10.5px;margin-top:7px}
     .tabs{margin-bottom:14px;width:100%}
     .tab{flex:1;text-align:center}
-    .toolbar{gap:7px;margin-bottom:14px}
-    .search{flex:1 1 100%;order:-1}     /* search gets its own full-width row */
+    /* one-row toolbar: search collapses behind ⌕, Zones/Weeks live in the ⋯ menu */
+    .toolbar{gap:6px;margin-bottom:14px}
+    .toolbar .iconbtn,.toolbar .undobtn{font-size:12px;padding:7px 8px}
+    .toolbar .seg button{padding:6px 9px;font-size:12px}
+    #zonesBtn,#collapseBtn{display:none}
+    #searchBtn{display:inline-flex!important;font-size:15px;line-height:1;padding:5px 9px}
+    .search{display:none}
+    .toolbar.searching .search{display:block;flex:1 1 100%;order:-1}
+    .toolbar.searching #searchBtn{border-color:var(--accent);color:var(--accent)}
     /* weekly calendar → vertical agenda (no sideways scrolling, much nicer to tap) */
     .week-head{flex-wrap:wrap;row-gap:5px;padding:11px 13px}
     .week-head .wstats{gap:12px}
@@ -749,6 +762,11 @@
         <button data-act="strava">Connect Strava (auto-log)</button>
         <button data-act="stravaSync">Sync activities from Strava</button>
         <button data-act="stravaOff">Disconnect Strava</button>
+        <div class="sep m-only"></div>
+        <button data-act="unit" class="m-only">Units · km ⇄ mi</button>
+        <button data-act="theme" class="m-only">Light / dark theme</button>
+        <button data-act="zones" class="m-only">Weekly intensity zones</button>
+        <button data-act="weeks" class="m-only">Expand / collapse weeks</button>
       </div>
     </div>
   </div>
@@ -789,6 +807,7 @@
         <button data-vis="todo">To-do</button>
         <button data-vis="done">Done</button>
       </div>
+      <button class="iconbtn m-only" id="searchBtn" title="Search sessions">⌕</button>
       <button class="iconbtn" id="zonesBtn" title="Show/hide weekly intensity zones">Zones</button>
       <button class="iconbtn" id="collapseBtn" title="Expand / collapse all">⇕ Weeks</button>
     </div>
@@ -2555,6 +2574,14 @@ $("#collapseBtn").onclick = ()=>{
   save(); renderWeeks();
 };
 $("#zonesBtn").onclick = ()=>{ state.showZones=!state.showZones; save(); renderToolbarState(); renderWeeks(); };
+// Mobile: search hides behind ⌕ — collapsing it also clears an active query (a hidden filter would confuse)
+$("#searchBtn").onclick = ()=>{
+  const t=document.querySelector(".toolbar"); if(!t) return;
+  const open=t.classList.toggle("searching");
+  const s=$("#search");
+  if(open){ s.focus(); }
+  else if(s.value){ s.value=""; s.dispatchEvent(new Event("input",{bubbles:true})); }
+};
 
 // Week collapse + card click + checkbox + add
 weeksEl.addEventListener("click", e=>{
@@ -2962,6 +2989,11 @@ menu.addEventListener("click", e=>{
     case "strava":     stravaConnect(); break;
     case "stravaSync": stravaSync(); break;
     case "stravaOff":  stravaDisconnect(); render(); break;
+    // mobile-only settings (the topbar buttons are hidden on phones to keep the header one row)
+    case "unit":  state.unit = state.unit==="km"?"mi":"km"; save(); render(); break;
+    case "theme": state.theme = state.theme==="dark"?"light":"dark"; save(); render(); break;
+    case "zones": state.showZones=!state.showZones; save(); renderToolbarState(); renderWeeks(); break;
+    case "weeks": $("#collapseBtn").onclick(); break;
   }
 });
 $("#importJsonFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
