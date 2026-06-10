@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07e" />
+<meta name="app-build" content="2026-06-07f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -400,11 +400,20 @@
   .pg-card h4{margin:0 0 3px;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:8px}
   .pg-card h4 .btn{margin-left:auto;font-size:12px;padding:6px 11px}
   .pg-sub{font-size:12px;color:var(--muted);margin:0 0 10px}
-  .pg-bars{display:flex;align-items:flex-end;gap:3px;height:90px;margin-top:8px}
-  .pg-bars i{flex:1;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;opacity:.82}
+  .pg-chartwrap{position:relative}
+  .pg-tip{position:absolute;top:2px;transform:translate(-50%,-110%);background:var(--txt);color:var(--panel);font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px;white-space:nowrap;z-index:5;pointer-events:none;font-variant-numeric:tabular-nums;box-shadow:var(--shadow)}
+  .pg-bars{display:flex;align-items:flex-end;gap:3px;height:90px;margin-top:18px}
+  .pg-bars i{flex:1;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;opacity:.82;cursor:pointer}
   .pg-bars i:last-child{opacity:1}
+  .pg-bars i:hover,.pg-bars i.tipped{opacity:1;filter:brightness(1.12)}
   .pg-bars i.zero{background:var(--line2)}
   .pg-bars.vert i{background:var(--t-strength)}
+  /* race predictor (home) */
+  .pred-row{display:flex;gap:9px;margin-top:10px}
+  .pred{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 4px;min-width:0}
+  .pred .pl{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);font-weight:700}
+  .pred .pv{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+  .pred .pp{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:1px}
   .pg-xlab{display:flex;gap:3px;margin-top:5px}
   .pg-xlab span{flex:1;text-align:center;font-size:9px;color:var(--faint);white-space:nowrap;overflow:visible}
   .pg-zbar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:10px 0 9px;background:var(--bg2)}
@@ -1776,6 +1785,59 @@ function coachNextHTML(){
   const dlabel = `${WD[r.getDay()]} ${r.getDate()} ${MO[r.getMonth()]}`;
   return `<div class="coach-next">⚡ Coach reviews your training every Sunday — next review <b>${when}</b> · ${dlabel}</div>`;
 }
+/* ---- Race predictor (free, formula-based: Riegel T2 = T1 × (D2/D1)^1.06) ---- */
+function parseRaceTime(s){
+  if(!s) return null; const p=String(s).trim().split(":").map(Number);
+  if(!p.length||p.some(isNaN)) return null;
+  if(p.length===3) return p[0]*60+p[1]+p[2]/60;
+  if(p.length===2) return p[0]+p[1]/60;
+  return p[0];
+}
+// Best recent anchor effort: a logged non-fell race beats a training run; fell efforts are excluded
+// (their pace says nothing about flat speed).
+function predictorAnchor(){
+  const today=todayISO();
+  const races=(state.races||[])
+    .filter(r=> r && r.date && r.date<=today && r.date>=addDays(today,-270) && +r.k>=3 && parseRaceTime(r.time) && !(+r.v && (+r.v)/(+r.k)>40))
+    .sort((a,b)=> a.date<b.date?1:-1);
+  if(races.length){ const r=races[0]; return {km:+r.k, min:parseRaceTime(r.time), src:r.name, when:r.date, kind:"race"}; }
+  let best=null; const since=addDays(today,-84);
+  (state.plans||[]).forEach(rec=>{
+    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
+      if(!w||!w.date||w.date<since||w.date>today) return;
+      if(rec.deleted&&rec.deleted[w.id]) return; if(!(rec.done&&rec.done[w.id])) return;
+      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
+      if(eff.t==="Rest"||eff.t==="Bike"||eff.sf==="fell"||eff.sf==="bike") return;
+      if(typeof isFellSurface==="function" && isFellSurface(eff)) return;
+      const lg=(rec.log&&rec.log[w.id])||{};
+      const km=lg.k!=null&&lg.k!==""?+lg.k:null, min=lg.d!=null&&lg.d!==""?+lg.d:null;
+      if(!km||!min||km<3) return;
+      const pace=min/km; if(pace<2.6||pace>8) return;             // GPS junk / walks
+      if(!best||pace<best.min/best.km) best={km,min,src:eff.n,when:eff.date,kind:"run"};
+    });
+  });
+  return best;
+}
+function fmtRaceTime(min){
+  const s=Math.round(min*60), h=Math.floor(s/3600), m=Math.floor(s%3600/60), ss=s%60;
+  return h? `${h}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}` : `${m}:${String(ss).padStart(2,"0")}`;
+}
+function predPace(minPerKm){ const s=Math.round(minPerKm*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function predictorHTML(){
+  const a=predictorAnchor();
+  if(!a) return `<div class="coach-card" style="margin-bottom:16px"><h4>Race predictor</h4>
+    <div class="cc-note">Log a few runs with time + distance (or a race on the Progress tab) and your predicted 5K / 10K / half-marathon times appear here. No APIs — pure maths.</div></div>`;
+  const chips=[["5K",5],["10K",10],["HALF",21.0975]].map(([l,dk])=>{
+    const t=a.min*Math.pow(dk/a.km,1.06);
+    return `<div class="pred"><div class="pl">${l}</div><div class="pv">${fmtRaceTime(t)}</div><div class="pp">${predPace(t/dk)}/km</div></div>`;
+  }).join("");
+  const note = a.kind==="race"
+    ? `Riegel formula from your <b>${esc(a.src)}</b> result (${mdShort(a.when)}).`
+    : `Riegel formula from your best recent run — <b>${esc(a.src)}</b> (${mdShort(a.when)}), ${fmtDist(a.km)} in ${fmtRaceTime(a.min)}. Training paces undersell race fitness, so treat these as a floor.`;
+  return `<div class="coach-card" style="margin-bottom:16px"><h4>Race predictor</h4>
+    <div class="pred-row">${chips}</div>
+    <div class="cc-note">${note} Terrain, taper and race day move these — log real races on the Progress tab to sharpen them.</div></div>`;
+}
 function renderCoach(){
   const host=$("#coachStrip"); if(!host) return;
   const today=todayISO();
@@ -1819,7 +1881,7 @@ function renderCoach(){
       <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
     </div>`;
   }
-  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>${coachNextHTML()}`;
+  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>${predictorHTML()}${coachNextHTML()}`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
 document.addEventListener("click", e=>{
@@ -1901,10 +1963,29 @@ function athleteZoneMix(days){
 }
 function pgChart(vals, mons, cls, fmt){
   const max=Math.max.apply(null, vals.concat([1]));
-  const bars=vals.map((v,i)=>`<i class="${v>0?"":"zero"}" style="height:${v>0?Math.max(4,Math.round(v/max*100)):2}%" title="wk ${mdShort(mons[i])} · ${fmt(v)}"></i>`).join("");
+  const bars=vals.map((v,i)=>`<i class="${v>0?"":"zero"}" style="height:${v>0?Math.max(4,Math.round(v/max*100)):2}%" data-tip="${esc(fmt(v))} · wk of ${mdShort(mons[i])}"></i>`).join("");
   const labs=mons.map((m,i)=> `<span>${i%4===0? mdShort(m):""}</span>`).join("");
-  return `<div class="pg-bars ${cls||""}">${bars}</div><div class="pg-xlab">${labs}</div>`;
+  return `<div class="pg-chartwrap"><div class="pg-tip" hidden></div><div class="pg-bars ${cls||""}">${bars}</div><div class="pg-xlab">${labs}</div></div>`;
 }
+// Hover (desktop) or tap (mobile) a bar → show its value above the chart.
+function pgShowTip(bar){
+  const wrap=bar.closest(".pg-chartwrap"); if(!wrap) return;
+  const tip=wrap.querySelector(".pg-tip"); if(!tip) return;
+  wrap.querySelectorAll(".pg-bars i.tipped").forEach(b=>b.classList.remove("tipped"));
+  bar.classList.add("tipped");
+  tip.textContent=bar.dataset.tip||""; tip.hidden=false;
+  const wr=wrap.getBoundingClientRect(), br=bar.getBoundingClientRect();
+  let x=br.left-wr.left+br.width/2;
+  const half=tip.offsetWidth/2+4; x=Math.max(half, Math.min(wr.width-half, x));
+  tip.style.left=x+"px";
+}
+function pgHideTip(wrap){
+  wrap.querySelectorAll(".pg-tip").forEach(t=>t.hidden=true);
+  wrap.querySelectorAll(".pg-bars i.tipped").forEach(b=>b.classList.remove("tipped"));
+}
+$("#progressView").addEventListener("pointerover", e=>{ const b=e.target.closest(".pg-bars i"); if(b && b.dataset.tip) pgShowTip(b); });
+$("#progressView").addEventListener("pointerdown", e=>{ const b=e.target.closest(".pg-bars i"); if(b && b.dataset.tip) pgShowTip(b); else pgHideTip($("#progressView")); });
+$("#progressView").addEventListener("pointerleave", ()=>pgHideTip($("#progressView")));
 function pgHours(min){ return (Math.round(min/6)/10); }
 function renderProgress(){
   const host=$("#progressView"); if(!host) return;
@@ -3098,21 +3179,26 @@ async function stravaSync(){
     const data=await res.json();
     if(data.error){ alert("Couldn't reach Strava ("+data.error+").\nIf you just changed the callback domain in Strava settings, give it a minute and retry."); return; }
     if(data.refresh_token && data.refresh_token!==strava.refresh) stravaSaveTokens(data.refresh_token, strava.name);
-    const acts=data.activities||[];
+    const acts=mergeSplitActivities(data.activities||[]);
     const m=matchActivities(acts);
     const imp=m.imported||[];
     // Compute time-in-zone from the HR stream using OUR zones (home-page thresholds), ignoring Strava's config.
     // Recompute for: freshly imported activities + any logged activity whose stored buckets predate the current zones.
     const ztNow=hrThresholds().join(",");
-    const zmap={}; imp.forEach(x=>{ if(x.sid!=null) zmap[x.id]={id:x.id, sid:x.sid}; });
-    for(const id in state.log){ const lg=state.log[id]; if(lg && lg.sid!=null && lg.zt!==ztNow) zmap[id]={id, sid:lg.sid}; }
-    const zlist=Object.values(zmap).slice(0,30);
+    const zmap={}; imp.forEach(x=>{ const sids=x.sids||(x.sid!=null?[x.sid]:null); if(sids) zmap[x.id]={id:x.id, sids}; });
+    for(const id in state.log){ const lg=state.log[id]; if(!lg||lg.zt===ztNow) continue; const sids=lg.sids||(lg.sid!=null?[lg.sid]:null); if(sids) zmap[id]={id, sids}; }
+    const zlist=Object.values(zmap).slice(0,20);
     if(zlist.length){
       try{
-        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:zlist.map(x=>x.sid), thresholds:hrThresholds()})});
+        const allIds=[...new Set(zlist.flatMap(x=>x.sids))].slice(0,30);
+        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:allIds, thresholds:hrThresholds()})});
         const zd=await zr.json();
-        if(zd && zd.zones){ zlist.forEach(x=>{ const arr=zd.zones[String(x.sid)], sr=zd.series&&zd.series[String(x.sid)];
-          if(Array.isArray(arr)&&arr.length){ const u={zones:arr.slice(0,5), zt:ztNow}; if(Array.isArray(sr)&&sr.length) u.hrSeries=sr; state.log[x.id]=Object.assign({}, state.log[x.id]||{}, u); } }); }
+        if(zd && zd.zones){ zlist.forEach(x=>{
+          // sum zone buckets (and chain HR series) across all watch-restart parts of the session
+          let sum=null, series=[];
+          x.sids.forEach(s=>{ const arr=zd.zones[String(s)]; if(Array.isArray(arr)&&arr.length){ sum=sum||[0,0,0,0,0]; arr.slice(0,5).forEach((v,i)=>sum[i]+=v); }
+            const sr=zd.series&&zd.series[String(s)]; if(Array.isArray(sr)&&sr.length) series=series.concat(sr); });
+          if(sum){ const u={zones:sum, zt:ztNow}; if(series.length) u.hrSeries=series; state.log[x.id]=Object.assign({}, state.log[x.id]||{}, u); } }); }
         if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
       }catch(_){}
     }
@@ -3123,29 +3209,76 @@ async function stravaSync(){
   }catch(e){ alert("Strava sync failed — check your connection and try again."); }
   finally{ strava.busy=false; }
 }
+// Watch stop/starts upload one session as several Strava files. Stitch them back together:
+// same day, same sport class, restarted within 45 min of the previous part ending = one session.
+function mergeSplitActivities(raw){
+  const sorted=(raw||[]).slice().sort((a,b)=> (a.start||"")<(b.start||"")? -1:1);
+  const out=[];
+  sorted.forEach(src=>{
+    const a=Object.assign({},src);
+    const cls=/ride|cycl|bike|virtual/i.test(a.type||"")?"bike":"run";
+    const startMs=new Date(a.start||0).getTime();
+    const endMs=startMs+((a.elapsed_time||a.moving_time||0)*1000);
+    const prev=out[out.length-1];
+    if(prev && prev._cls===cls && (prev.start||"").slice(0,10)===(a.start||"").slice(0,10)
+       && startMs>=prev._endMs-60000 && (startMs-prev._endMs)<=45*60000){
+      const t1=prev.moving_time||0, t2=a.moving_time||0;
+      if(prev.hr!=null && a.hr!=null && (t1+t2)>0) prev.hr=(prev.hr*t1+a.hr*t2)/(t1+t2); else prev.hr=prev.hr??a.hr;
+      if(a.maxhr!=null) prev.maxhr=Math.max(prev.maxhr||0, a.maxhr);
+      prev.distance=(prev.distance||0)+(a.distance||0);
+      prev.moving_time=t1+t2;
+      prev.elev=(prev.elev||0)+(a.elev||0);
+      prev._endMs=Math.max(prev._endMs, endMs);
+      (prev.sids=prev.sids||[prev.id]).push(a.id);
+      return;
+    }
+    a._cls=cls; a._endMs=endMs; out.push(a);
+  });
+  return out;
+}
 function matchActivities(acts){
   if(!state.activeId || !acts.length) return {matched:0,added:0,updated:0,imported:[]};
   pushUndo();
-  // map already-imported Strava id → session id (so re-sync UPDATES/backfills instead of duplicating)
+  // map already-imported Strava id → session id (so re-sync UPDATES/backfills instead of duplicating);
+  // include every member id of previously stitched sessions
   const bySid={};
   (state.custom||[]).forEach(c=>{ if(c.sid!=null) bySid[String(c.sid)]=c.id; });
-  for(const id in state.log){ const sid=state.log[id]&&state.log[id].sid; if(sid!=null) bySid[String(sid)]=id; }
+  for(const id in state.log){ const lg=state.log[id]; if(!lg) continue;
+    if(lg.sid!=null) bySid[String(lg.sid)]=id;
+    (lg.sids||[]).forEach(s=>{ if(bySid[String(s)]==null) bySid[String(s)]=id; }); }
   let matched=0, added=0, updated=0; const used=new Set(), imported=[];
   acts.forEach(a=>{
     const date=(a.start||"").slice(0,10); if(!date) return;
-    const isBike=/ride|cycl|bike|virtual/i.test(a.type||"");
+    const isBike=a._cls==="bike" || /ride|cycl|bike|virtual/i.test(a.type||"");
     const km  = a.distance ? Math.round(a.distance/100)/10 : null;
     const min = a.moving_time ? Math.round(a.moving_time/60) : null;
     const vert= a.elev!=null ? Math.round(a.elev) : null;
     const hr  = a.hr!=null ? Math.round(a.hr) : null;
     const nm  = a.name || a.type || "Activity";
-    const existing = bySid[String(a.id)];
-    if(existing){                                            // already imported → backfill any missing data
-      const lg=state.log[existing]||{}; let ch=false;
+    const memberIds=a.sids||[a.id];
+    // every session that previously claimed any part of this activity (a split import lands on several)
+    const owners=[...new Set(memberIds.map(s=>bySid[String(s)]).filter(x=>x!=null))]
+      .sort((x,y)=> (String(x).startsWith("sv")?1:0)-(String(y).startsWith("sv")?1:0));   // planned session beats an auto-import
+    if(owners.length){
+      const primary=owners[0];
+      const lg=state.log[primary]||{}; let ch=false;
+      if(a.sids){                                            // stitched → the primary carries the WHOLE session now
+        if(km!=null && lg.k!==km){ lg.k=km; ch=true; }
+        if(min!=null && lg.d!==min){ lg.d=min; ch=true; }
+        if(vert!=null && lg.v!==vert){ lg.v=vert; ch=true; }
+        if(hr!=null) lg.hr=hr;
+        lg.sids=memberIds; delete lg.zt;                     // force a zone re-fetch over all parts
+      }
       if(lg.hr==null && hr!=null){ lg.hr=hr; ch=true; }
       if(lg.sid==null) lg.sid=a.id;
-      state.log[existing]=lg;
-      if(!Array.isArray(lg.zones)) imported.push({id:existing, sid:a.id});  // (re)fetch zone breakdown
+      state.log[primary]=lg;
+      owners.slice(1).forEach(oid=>{                         // absorb the spurious auto-imported duplicates
+        if(!String(oid).startsWith("sv")) return;            // never touch a planned session
+        state.custom=(state.custom||[]).filter(x=>x.id!==oid);
+        removeFromBoard(oid); delete state.done[oid]; delete state.log[oid];
+        ch=true;
+      });
+      if(!Array.isArray(lg.zones) || a.sids) imported.push({id:primary, sids:memberIds});
       if(ch) updated++;
       return;
     }
@@ -3153,20 +3286,22 @@ function matchActivities(acts){
                   .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
     const pref=cands.filter(x=> isBike ? x.w.t==="Bike" : x.w.t!=="Bike");
     const pick=pref[0]||cands[0];
+    const stitched = a.sids ? ` (stitched from ${a.sids.length} watch files)` : "";
     if(pick){                                                // fill a planned session
       used.add(pick.id); state.done[pick.id]=true;
       const prev=state.log[pick.id]||{};
       state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, sid:a.id,
-        c:(prev.c?prev.c+" · ":"")+"Strava: "+nm });
-      imported.push({id:pick.id, sid:a.id}); matched++;
+        c:(prev.c?prev.c+" · ":"")+"Strava: "+nm+stitched });
+      if(a.sids) state.log[pick.id].sids=memberIds;
+      imported.push({id:pick.id, sids:memberIds}); matched++;
     } else {                                                 // no planned session that day → log it as a completed extra
       const id="sv"+a.id;
-      const rec={ id, date, t:(isBike?"Bike":"Easy"), n:nm, d:min, k:km, v:vert, z:"—", note:"Imported from Strava.", sid:a.id };
+      const rec={ id, date, t:(isBike?"Bike":"Easy"), n:nm, d:min, k:km, v:vert, z:"—", note:"Imported from Strava."+stitched, sid:a.id };
       (state.custom=state.custom||[]).push(rec);
       (state.board[date]=state.board[date]||[]).push(id);
       state.done[id]=true;
-      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, {sid:a.id});
-      imported.push({id, sid:a.id}); added++;
+      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, {sid:a.id}, a.sids?{sids:memberIds}:{});
+      imported.push({id, sids:memberIds}); added++;
     }
   });
   return {matched,added,updated,imported};
