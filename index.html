@@ -3,52 +3,55 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#f3f5f8" />
-<meta name="app-build" content="2026-06-07i" />
+<meta name="theme-color" content="#f3efe3" />
+<meta name="app-build" content="2026-06-07j" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Plan Tracker" />
 <link rel="manifest" href="manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&display=swap" />
 <title>Grisedale Horseshoe · 13-Week Plan</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxMzE2MWEiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1LjggNCkgc2NhbGUoMC44MikiPjxjaXJjbGUgY3g9IjQ2IiBjeT0iMTgiIHI9IjYiIGZpbGw9IiNmYWNjMTUiLz48cGF0aCBkPSJNNCA1MyBMMjQgMTcgTDM2IDM4IEw0NCAyNSBMNjAgNTMgWiIgZmlsbD0iI2VjNWEyOCIvPjxwYXRoIGQ9Ik0yMC41IDI1IEwyNCAxNyBMMjcuNSAyNSBMMjQgMjguNSBaIiBmaWxsPSIjZjRmNmY5Ii8+PC9nPjwvc3ZnPg==" />
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMTMxNjFhIi8+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNS44IDQpIHNjYWxlKDAuODIpIj48Y2lyY2xlIGN4PSI0NiIgY3k9IjE4IiByPSI2IiBmaWxsPSIjZmFjYzE1Ii8+PHBhdGggZD0iTTQgNTMgTDI0IDE3IEwzNiAzOCBMNDQgMjUgTDYwIDUzIFoiIGZpbGw9IiNlYzVhMjgiLz48cGF0aCBkPSJNMjAuNSAyNSBMMjQgMTcgTDI3LjUgMjUgTDI0IDI4LjUgWiIgZmlsbD0iI2Y0ZjZmOSIvPjwvZz48L3N2Zz4=" />
 <style>
   :root{
     color-scheme:light;
-    /* default = clean light theme */
-    --bg:#f3f5f8; --bg2:#e9edf2; --panel:#ffffff; --panel2:#f6f8fb;
-    --line:#dde3ea; --line2:#cbd3dd;
-    --txt:#18222e; --muted:#586573; --faint:#8a96a4;
-    --accent:#df531d; --accent2:#e86f3e;
-    --good:#2c9c67; --warn:#c1841b; --bad:#cf4b46; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
-    --radius:12px;
-    --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
-    --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
-    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8; --t-strength:#6a61d4;
+    /* CONTOUR — Ordnance-Survey paper: cream, ink, terracotta + moss */
+    --bg:#f3efe3; --bg2:#eae5d4; --panel:#faf7ec; --panel2:#f2eedf;
+    --line:#ded6c0; --line2:#c8bea2;
+    --txt:#262a20; --muted:#6b6a57; --faint:#999378;
+    --accent:#b14a22; --accent2:#c4612f;
+    --good:#5d7350; --warn:#a8762a; --bad:#9c3c2e; --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
+    --radius:8px;
+    --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
+    --t-hills:#9c3c2e; --t-descent:#4f7e87; --t-simulation:#8c5a74;
+    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e;
   }
   [data-theme="dark"]{
     color-scheme:dark;
-    /* softer slate, not stark black, higher contrast */
-    --bg:#1a1e25; --bg2:#222730; --panel:#262b34; --panel2:#2d333d;
-    --line:#363d48; --line2:#454d5a;
-    --txt:#eef1f6; --muted:#aab3c0; --faint:#76818f;
-    --accent:#f2622e; --accent2:#f57f4e;
-    --good:#46b487; --warn:#d8a23f; --bad:#e26b6b; --shadow:0 10px 30px rgba(0,0,0,.38);
-    --t-easy:#5cc497; --t-recovery:#5aacde; --t-threshold:#d7ad4c;
-    --t-hills:#e07887; --t-descent:#54bccb; --t-simulation:#d57fb2;
-    --t-long:#988fe0; --t-race:#d7b84e; --t-rest:#7f8a99; --t-bike:#6f97e0; --t-strength:#8a82e6;
+    /* CONTOUR night — deep ink, paper text, ember accent */
+    --bg:#211f18; --bg2:#2a2820; --panel:#272520; --panel2:#2e2c25;
+    --line:#3b382c; --line2:#4e4a39;
+    --txt:#eae4d1; --muted:#aaa48d; --faint:#7d7864;
+    --accent:#d4683c; --accent2:#df7d52;
+    --good:#8aa379; --warn:#c79a4b; --bad:#c25a48; --shadow:0 10px 30px rgba(0,0,0,.45);
+    --t-easy:#8aa379; --t-recovery:#92aebd; --t-threshold:#c79a4b;
+    --t-hills:#c25a48; --t-descent:#74a4ad; --t-simulation:#b083a0;
+    --t-long:#8d94c0; --t-race:#bda14a; --t-rest:#8f8a78; --t-bike:#7e9ab4; --t-strength:#968dc1;
   }
   [data-theme="light"]{
     color-scheme:light;
-    --bg:#f3f5f8; --bg2:#e9edf2; --panel:#ffffff; --panel2:#f6f8fb;
-    --line:#dde3ea; --line2:#cbd3dd;
-    --txt:#18222e; --muted:#586573; --faint:#8a96a4;
-    --accent:#df531d; --accent2:#e86f3e;
-    --good:#2c9c67; --warn:#c1841b; --bad:#cf4b46; --shadow:0 1px 2px rgba(20,40,70,.06),0 10px 26px rgba(20,40,70,.08);
-    --t-easy:#1f9460; --t-recovery:#2178bf; --t-threshold:#b07d1f;
-    --t-hills:#cc4b5a; --t-descent:#1f8fa6; --t-simulation:#b14e8d;
-    --t-long:#5d54c4; --t-race:#a98e1f; --t-rest:#6b7682; --t-bike:#2f63c8; --t-strength:#6a61d4;
+    --bg:#f3efe3; --bg2:#eae5d4; --panel:#faf7ec; --panel2:#f2eedf;
+    --line:#ded6c0; --line2:#c8bea2;
+    --txt:#262a20; --muted:#6b6a57; --faint:#999378;
+    --accent:#b14a22; --accent2:#c4612f;
+    --good:#5d7350; --warn:#a8762a; --bad:#9c3c2e; --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
+    --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
+    --t-hills:#9c3c2e; --t-descent:#4f7e87; --t-simulation:#8c5a74;
+    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -737,6 +740,26 @@
   ::-webkit-scrollbar-thumb{background:var(--line2);border-radius:6px}
   ::-webkit-scrollbar-thumb:hover{background:var(--faint)}
   ::-webkit-scrollbar-track{background:transparent}
+
+  /* ============ ART DIRECTION · CONTOUR (paper map) ============
+     Placed last so it wins the cascade: serif display face, faint
+     contour-line texture, squared-off paper components. */
+  body{background:
+    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(118,108,82,.05) 56px 57.5px),
+    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(118,108,82,.04) 74px 75.5px),
+    var(--bg)}
+  [data-theme="dark"] body{background:
+    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(222,212,180,.03) 56px 57.5px),
+    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(222,212,180,.022) 74px 75.5px),
+    var(--bg)}
+  h1,h2,h3,.tc-title,.stat .val,.cc-big,.pred .pv,.pg-stat .v,.cp-head-line{font-family:"Fraunces",Georgia,"Times New Roman",serif;font-weight:560;letter-spacing:0}
+  .tc-title{font-style:italic;font-weight:540}
+  .section-label,.section-toggle{font-family:"Fraunces",Georgia,serif;font-style:italic;text-transform:none;letter-spacing:.2px;font-size:15px;font-weight:500}
+  .card,.coach-card,.stat,.pg-card,.pg-stat,.plan-card,.zones-card,.today-card,.coach-prop,.pred,.sd-card,.mv-why,.pg-goal,.hr-box,.day-it,.cal-cell{border-radius:3px}
+  .pill,.cc-badge,.cp-rec,.cp-chip,.cal-evt{border-radius:2px}
+  .btn,.iconbtn,.sd-btn,.s-add-btn,.undobtn,.search,.sd-f,.sd-note,.tab,.seg,.seg button,.zc-in{border-radius:2px}
+  .mark{border-radius:3px}
+  .topbar{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -1292,7 +1315,7 @@ const weeksEl = $("#weeks");
 
 function render(){
   document.documentElement.dataset.theme = state.theme;
-  const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#1a1e25":"#f3f5f8");
+  const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#211f18":"#f3efe3");
   $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
@@ -2283,7 +2306,7 @@ function cardHTML(id){
 }
 
 /* ---- HR-zone distribution (planned from target zones; actual from Strava / avg HR) ---- */
-const ZONES=[{k:"Z1",c:"#5aa6d4"},{k:"Z2",c:"#5bb38a"},{k:"Z3",c:"#cfa23e"},{k:"Z4",c:"#e0833a"},{k:"Z5",c:"#d56e7a"}];
+const ZONES=[{k:"Z1",c:"#7d98a8"},{k:"Z2",c:"#6a7f5f"},{k:"Z3",c:"#b08d3e"},{k:"Z4",c:"#c2602f"},{k:"Z5",c:"#9c3c2e"}];
 function hrThresholds(){ const z=(state.hrZones&&state.hrZones.length===5)?state.hrZones:defaultHrZones(); return [z[0][1],z[1][1],z[2][1],z[3][1]].map(Number); }
 function hrToZoneIdx(h){ if(h==null) return null; const th=hrThresholds(); for(let i=0;i<4;i++){ if(h<th[i]) return i; } return 4; }
 function zoneTextToIdx(z){ if(!z) return null; const m=/z\s*([1-5])/i.exec(z); if(m) return (+m[1])-1; if(/race|cat/i.test(z)) return 3; return null; }
