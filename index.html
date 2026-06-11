@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07l" />
+<meta name="app-build" content="2026-06-07m" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -55,6 +55,7 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
+  html{touch-action:manipulation}   /* kill double-tap zoom on touch (pinch zoom still works) */
   [hidden]{display:none!important}
   body{
     background:var(--bg);
@@ -1396,6 +1397,29 @@ $("#botnav").addEventListener("click", e=>{
   if(n==="plan" && state.activeId && state.tab==="plan" && !$("#planView").hidden){ scrollToToday(); return; }   // already on Plan → jump to today
   gotoTab(n);
 });
+// Swipe left/right anywhere on the page to move between tabs (mobile; mirrors the bottom-nav order).
+(function(){
+  const ORDER=["home","plan","calendar","strength","progress"];
+  let sx=0, sy=0, st=0, ok=false;
+  document.addEventListener("touchstart", e=>{
+    ok=false;
+    if(window.innerWidth>700 || e.touches.length!==1) return;
+    if(e.target.closest("input,textarea,select,.sd-rail,.modal,.menu,#updbar")) return;   // typing / horizontal rails / dropdowns
+    if(document.querySelector(".sd-pick-back") || (backdrop && backdrop.classList.contains("open"))) return;  // a sheet or modal is open
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY; st=Date.now(); ok=true;
+  }, {passive:true});
+  document.addEventListener("touchend", e=>{
+    if(!ok) return; ok=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Date.now()-st>600) return;                                       // a slow drag isn't a swipe
+    if(Math.abs(dx)<70 || Math.abs(dy)>50 || Math.abs(dx)<Math.abs(dy)*1.8) return;  // must be decisively horizontal
+    const cur = !state.activeId ? "home" : (ORDER.includes(state.tab)? state.tab : "plan");
+    const i = ORDER.indexOf(cur) + (dx<0? 1 : -1);
+    if(i<0 || i>=ORDER.length) return;                                  // no wrap-around at the ends
+    if(ORDER[i]==="home") goHome(); else gotoTab(ORDER[i]);
+  }, {passive:true});
+})();
 function newBlankPlan(){ syncActiveToLibrary(); pushUndo(); const rec=blankRecord("New plan"); state.plans.push(rec); state.activeId=rec.id; activateMirror(state); state.tab="plan"; save(); render(); window.scrollTo(0,0); }
 function renamePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; const name=prompt("Plan name:", rec.planName||""); if(name===null) return; pushUndo(); rec.planName=(name.trim()||rec.planName); if(state.activeId===id) state.planName=rec.planName; save(); render(); }
 function deletePlan(id){ const rec=(state.plans||[]).find(p=>p.id===id); if(!rec) return; if(!confirm('Delete "'+(rec.planName||"this plan")+'"? This removes the plan and its progress everywhere it syncs.')) return; pushUndo(); syncActiveToLibrary(); state.plans=state.plans.filter(p=>p.id!==id); if(state.activeId===id){ state.activeId=null; activateMirror(state); } save(); render(); }
