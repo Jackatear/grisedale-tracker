@@ -1,0 +1,57 @@
+date,session,type,duration_min,distance_km,vert_m,surface,structure,zone,phase,block,notes
+2027-07-12,Easy aerobic + strength S1,Easy,60,10.3,,road,,Z2,1,Peak 1 — the block begins,Genuinely easy — this is where the engine grows.
+2027-07-13,Descent skills + strides,Descent,50,6.7,345,fell,,Z2,1,Peak 1 — the block begins,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-07-14,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Peak 1 — the block begins,Engine volume the legs don't pay for.
+2027-07-15,Easy,Easy,55,9.4,,road,,Z2,1,Peak 1 — the block begins,
+2027-07-16,Rest day,Rest,,,,,,,1,Peak 1 — the block begins,
+2027-07-17,Up-down sim 4×(8 min climb + descent),Simulation,82,9.6,1265,fell,WU 15min Z2 | 4x8min Z4 r5m | CD 10min Z2,Z4,1,Peak 1 — the block begins,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-07-18,Easy fell wander,Easy,85,11.3,690,fell,,Z2,1,Peak 1 — the block begins,
+2027-07-19,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Peak 2 — full mountain load,Genuinely easy — this is where the engine grows.
+2027-07-20,Uphill threshold 5×6 min,Threshold,80,10.7,390,fell,WU 15min Z2 | 5x6min Z4 r3m | CD 10min Z2,Z4,1,Peak 2 — full mountain load,On a steady climb — jog/walk down between. Climbing economy at race effort.
+2027-07-21,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Peak 2 — full mountain load,Engine volume the legs don't pay for.
+2027-07-22,Easy,Easy,35,6,,road,,Z2,1,Peak 2 — full mountain load,
+2027-07-23,Rest day,Rest,,,,,,,1,Peak 2 — full mountain load,
+2027-07-24,Long mountain run,Long,140,17.5,1430,fell,,Z2,1,Peak 2 — full mountain load,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-07-25,Easy fell wander,Easy,55,7.3,780,fell,,Z2,1,Peak 2 — full mountain load,
+2027-07-26,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Deload — absorb,Genuinely easy — this is where the engine grows.
+2027-07-27,Easy + 6 relaxed strides,Easy,45,7.7,,road,,Z2,1,Deload — absorb,Strides keep the wheels turning while the base builds.
+2027-07-28,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Deload — absorb,Engine volume the legs don't pay for.
+2027-07-29,Easy,Easy,50,8.5,,road,,Z2,1,Deload — absorb,
+2027-07-30,Rest day,Rest,,,,,,,1,Deload — absorb,
+2027-07-31,Long mountain run,Long,95,11.9,660,fell,,Z2,1,Deload — absorb,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-08-01,Rest or gentle walk,Rest,,,,,,,1,Deload — absorb,Deload week — recovery IS the training.
+2027-08-02,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Peak 3 — biggest fell week,Genuinely easy — this is where the engine grows.
+2027-08-03,Descent skills + strides,Descent,50,6.7,420,fell,,Z2,1,Peak 3 — biggest fell week,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-08-04,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Peak 3 — biggest fell week,Engine volume the legs don't pay for.
+2027-08-05,Easy,Easy,50,8.5,,road,,Z2,1,Peak 3 — biggest fell week,
+2027-08-06,Rest day,Rest,,,,,,,1,Peak 3 — biggest fell week,
+2027-08-07,Up-down sim 6×(10 min climb + descent),Simulation,126,14.7,1540,fell,WU 15min Z2 | 6x10min Z4 r6m | CD 10min Z2,Z4,1,Peak 3 — biggest fell week,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-08-08,Easy fell wander,Easy,75,10,840,fell,,Z2,1,Peak 3 — biggest fell week,
+2027-08-09,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Peak 4 — the season's summit,Genuinely easy — this is where the engine grows.
+2027-08-10,Hill VO₂ 5×2 min,Hills,60,8,435,fell,WU 15min Z2 | 5x2min Z5 r3m | CD 10min Z2,Z5,1,Peak 4 — the season's summit,"Hard drives up, easy descents back. Power, not panic."
+2027-08-11,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Peak 4 — the season's summit,Engine volume the legs don't pay for.
+2027-08-12,Easy,Easy,40,6.8,,road,,Z2,1,Peak 4 — the season's summit,
+2027-08-13,Rest day,Rest,,,,,,,1,Peak 4 — the season's summit,
+2027-08-14,Long mountain run,Long,150,18.8,1595,fell,,Z2,1,Peak 4 — the season's summit,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-08-15,Easy fell wander,Easy,55,7.3,870,fell,,Z2,1,Peak 4 — the season's summit,
+2027-08-16,Easy aerobic + strength S1,Easy,25,4.3,,road,,Z2,2,Taper 1 — sharpen,Genuinely easy — this is where the engine grows.
+2027-08-17,Up-down sim 3×(8 min climb + descent),Simulation,69,12.6,,road,WU 15min Z2 | 3x8min Z4 r5m | CD 10min Z2,Z4,2,Taper 1 — sharpen,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-08-18,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Taper 1 — sharpen,Engine volume the legs don't pay for.
+2027-08-19,Easy,Easy,25,4.3,,road,,Z2,2,Taper 1 — sharpen,
+2027-08-20,Rest day,Rest,,,,,,,2,Taper 1 — sharpen,
+2027-08-21,Long mountain run,Long,90,11.3,935,fell,,Z2,2,Taper 1 — sharpen,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-08-22,Easy fell wander,Easy,40,5.3,680,fell,,Z2,2,Taper 1 — sharpen,
+2027-08-23,Easy aerobic,Easy,15,2.6,,road,,Z2,2,Taper 2 — coiled spring,Genuinely easy — this is where the engine grows.
+2027-08-24,Race-effort primer 3×3 min climb + descent,Simulation,45,6,135,fell,WU 15min Z2 | 3x3min Z4 r3m | CD 10min Z2,Z4,2,Taper 2 — coiled spring,"Short, sharp, confident. Stop while it feels brilliant."
+2027-08-25,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Taper 2 — coiled spring,Engine volume the legs don't pay for.
+2027-08-26,Easy,Easy,15,2.6,,road,,Z2,2,Taper 2 — coiled spring,
+2027-08-27,Rest day,Rest,,,,,,,2,Taper 2 — coiled spring,
+2027-08-28,Long mountain run,Long,70,8.8,495,fell,,Z2,2,Taper 2 — coiled spring,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-08-29,Easy fell wander,Easy,25,3.3,270,fell,,Z2,2,Taper 2 — coiled spring,
+2027-08-30,Easy 30 + 4 strides,Easy,30,5.2,,road,,Z2,2,RACE WEEK,"Legs ticking over, nothing more."
+2027-08-31,Rest,Rest,,,,,,,2,RACE WEEK,
+2027-09-01,Race-effort primer 4×90s climb,Simulation,35,4.5,200,fell,WU 15min Z2 | 4x90s Z4 r2m | CD 8min Z2,Z4,2,RACE WEEK,"Final touch of race effort. Crisp, then stop."
+2027-09-02,Rest or 20 min walk,Rest,,,,,,,2,RACE WEEK,
+2027-09-03,Easy 20 + 3 strides,Easy,20,3.4,,road,,Z2,2,RACE WEEK,"Shakeout. Kit ready, route studied."
+2027-09-04,A-RACE — target fell championship race,Race,,16,1500,fell,,Cat AM,2,RACE WEEK,Placeholder — swap in your chosen championship race. A year of work lands today. Empty the tank.
+2027-09-05,Rest — it's done,Rest,,,,,,,2,RACE WEEK,Recovery starts the next year. Log the result on the Progress tab.

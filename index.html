@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07m" />
+<meta name="app-build" content="2026-06-07n" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -787,6 +787,7 @@
         <button data-act="home">‹ All plans</button>
         <button data-act="rename">Rename this plan</button>
         <button data-act="exportCsv">Export this plan (CSV)</button>
+        <button data-act="library">Season library — next blocks…</button>
         <button data-act="templateCsv">Blank template (CSV)</button>
         <div class="sep"></div>
         <button data-act="importCsv">Import plan (CSV…)</button>
@@ -1480,6 +1481,7 @@ function renderHome(){
     <div class="home-head"><h2>Your plans</h2>
       <div class="home-actions"><button class="btn primary" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New blank plan</button></div></div>
     <div id="coachStrip"></div>
+    ${seasonNudgeHTML()}
     <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>
     ${zonesCard}
     <p class="legend-foot">Each plan keeps its own progress, and your whole library syncs across devices. Tip: drop a <b>.csv</b> anywhere to add a plan.</p>`;
@@ -1490,6 +1492,7 @@ $("#homeView").addEventListener("click", e=>{
   if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
   if(e.target.id==="homeImport"){ $("#importCsvFile").click(); return; }
   if(e.target.id==="homeNew"){ newBlankPlan(); return; }
+  const la=e.target.closest("[data-libadd]"); if(la){ const it=PLAN_LIBRARY.find(p=>p.title===la.dataset.libadd); if(it) importLibraryPlan(it); return; }
   const del=e.target.closest("[data-del]"); if(del){ e.stopPropagation(); deletePlan(del.dataset.del); return; }
   const ren=e.target.closest("[data-rename]"); if(ren){ e.stopPropagation(); renamePlan(ren.dataset.rename); return; }
   const exp=e.target.closest("[data-exp]"); if(exp){ e.stopPropagation(); exportPlanCSV(exp.dataset.exp); return; }
@@ -3128,6 +3131,63 @@ function download(filename, text, type){
   a.href=URL.createObjectURL(b); a.download=filename; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
+/* ============================ SEASON LIBRARY ============================ */
+/* A full year of blocks (built by build-season.js, hosted alongside the app) so the plan never
+   just… ends. When the active block is in its final two weeks, home offers the next one. */
+const PLAN_LIBRARY=[
+  {file:"plan-2026-autumn-foundation.csv", title:"Autumn Reset & Foundation", start:"2026-09-07", end:"2026-11-29", weeks:12,
+   blurb:"Two-week post-race reset, then a gentle aerobic rebuild — strides, hill sprints, first cruise thresholds."},
+  {file:"plan-2026-winter-engine.csv", title:"Winter Engine", start:"2026-11-30", end:"2027-02-28", weeks:13,
+   blurb:"The year's engine room: peak easy volume, weekly sub-threshold, festive deload built in."},
+  {file:"plan-2027-spring-vert.csv", title:"Spring Vert & Threshold", start:"2027-03-01", end:"2027-05-16", weeks:11,
+   blurb:"Vert climbs, threshold sharpens, descents return. Tune-up races optional in deload weeks."},
+  {file:"plan-2027-summer-sharpening.csv", title:"Summer Sharpening", start:"2027-05-17", end:"2027-07-11", weeks:8,
+   blurb:"Race-specific: up-down sims, hill VO₂, descent skills, a B-race rehearsal."},
+  {file:"plan-2027-championship-peak.csv", title:"Championship Peak", start:"2027-07-12", end:"2027-09-05", weeks:8,
+   blurb:"The proven Grisedale structure aimed at next season: biggest fell weeks, two-week taper, race day."},
+];
+function libHave(title){ return (state.plans||[]).some(p=>(p.planName||"").trim().toLowerCase()===title.toLowerCase()); }
+async function importLibraryPlan(item){
+  try{
+    const r=await fetch(item.file+"?v="+Date.now(), {cache:"no-store"});
+    if(!r.ok) throw new Error("http "+r.status);
+    importCSV(await r.text(), item.title);
+  }catch(e){ alert("Couldn't fetch that block — check your connection and try again."); }
+}
+function openLibrarySheet(){
+  closeSdPicker();
+  const yr=s=>s.slice(0,4);
+  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="sdPickBack";
+  back.innerHTML=`<div class="sd-pick"><h3>Season library · 2026–27</h3>
+    <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.5">A full year in the Grisedale style — polarized, a bike and a rest day every week, no volume spikes. Add each block as the previous one ends; the year peaks at next season's championship target.</p>
+    ${PLAN_LIBRARY.map((p,i)=>{ const have=libHave(p.title);
+      return `<button class="opt" data-li="${i}"${have?' style="opacity:.55"':''}><span><b>${esc(p.title)}</b><br><small>${mdShort(p.start)} – ${mdShort(p.end)} ${yr(p.end)} · ${p.weeks} wks — ${esc(p.blurb)}</small></span><small>${have?"✓":"＋"}</small></button>`; }).join("")}</div>`;
+  back.addEventListener("click", ev=>{
+    if(ev.target===back){ closeSdPicker(); return; }
+    const o=ev.target.closest(".opt"); if(!o) return;
+    const it=PLAN_LIBRARY[+o.getAttribute("data-li")]; if(!it) return;
+    if(libHave(it.title) && !confirm(`"${it.title}" is already in your plans. Add another copy?`)) return;
+    closeSdPicker(); importLibraryPlan(it);
+  });
+  document.body.appendChild(back); refreshScrollLock();
+}
+// Home banner: when every plan you own is inside its final 2 weeks, offer the season's next block.
+function seasonNudgeHTML(){
+  let lastDate=null;
+  (state.plans||[]).forEach(rec=>{
+    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
+      if(!w||!w.date) return; if(rec.deleted&&rec.deleted[w.id]) return;
+      if(!lastDate||w.date>lastDate) lastDate=w.date;
+    });
+  });
+  if(!lastDate) return "";
+  if(daysBetween(todayISO(), lastDate) > 14 && lastDate>todayISO()) return "";   // not near the end yet
+  const next=PLAN_LIBRARY.find(p=> !libHave(p.title) && p.end>lastDate);
+  if(!next) return "";
+  const ended = lastDate<todayISO();
+  return `<div class="pg-goal" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🗓 <span style="flex:1;min-width:200px">Your training ${ended?"finished "+mdShort(lastDate):"runs out on "+mdShort(lastDate)} — the season doesn't stop there. Next block: <b>${esc(next.title)}</b> · ${mdShort(next.start)} – ${mdShort(next.end)}.</span><button class="btn primary" data-libadd="${esc(next.title)}">Add next block</button></div>`;
+}
+
 /* ============================ MENU ============================ */
 const menu=$("#menu");
 function toggleMenu(show){ menu.hidden = (show===undefined)? !menu.hidden : !show; }
@@ -3145,6 +3205,7 @@ menu.addEventListener("click", e=>{
     case "rename":     if(state.activeId) renamePlan(state.activeId); break;
     case "exportCsv":  if(state.activeId) exportPlanCSV(state.activeId); break;
     case "templateCsv": download("plan-template.csv", csvTemplate(), "text/csv"); break;
+    case "library":    openLibrarySheet(); break;
     case "importCsv":  $("#importCsvFile").click(); break;
     case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;
     case "importJson": $("#importJsonFile").click(); break;

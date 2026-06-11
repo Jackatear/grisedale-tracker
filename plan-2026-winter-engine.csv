@@ -1,0 +1,92 @@
+date,session,type,duration_min,distance_km,vert_m,surface,structure,zone,phase,block,notes
+2026-11-30,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,1,Engine 1 — settle in,Genuinely easy — this is where the engine grows.
+2026-12-01,Cruise threshold 4×8 min,Threshold,73,13.4,,road,WU 15min Z2 | 4x8min Z3 r90s | CD 10min Z2,Z3,1,Engine 1 — settle in,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-12-02,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 1 — settle in,Engine volume the legs don't pay for.
+2026-12-03,Easy + 8×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,1,Engine 1 — settle in,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-12-04,Rest day,Rest,,,,,,,1,Engine 1 — settle in,
+2026-12-05,Long rolling run,Long,115,18.8,385,trail,,Z2,1,Engine 1 — settle in,Steady and patient; finish feeling you had more.
+2026-12-06,Easy fell wander,Easy,50,6.7,280,fell,,Z2,1,Engine 1 — settle in,
+2026-12-07,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Engine 2 — building,Genuinely easy — this is where the engine grows.
+2026-12-08,Cruise threshold 3×10 min,Threshold,70,12.8,,road,WU 15min Z2 | 3x10min Z3 r90s | CD 10min Z2,Z3,1,Engine 2 — building,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-12-09,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 2 — building,Engine volume the legs don't pay for.
+2026-12-10,Easy + 8×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,1,Engine 2 — building,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-12-11,Rest day,Rest,,,,,,,1,Engine 2 — building,
+2026-12-12,Long rolling run,Long,120,19.6,440,trail,,Z2,1,Engine 2 — building,Steady and patient; finish feeling you had more.
+2026-12-13,Easy fell wander,Easy,55,7.3,320,fell,,Z2,1,Engine 2 — building,
+2026-12-14,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,1,Engine 3 — longer reps,Genuinely easy — this is where the engine grows.
+2026-12-15,Cruise threshold 2×15 min,Threshold,68,12.5,,road,WU 15min Z2 | 2x15min Z3 r90s | CD 10min Z2,Z3,1,Engine 3 — longer reps,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-12-16,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 3 — longer reps,Engine volume the legs don't pay for.
+2026-12-17,Easy + 10×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Engine 3 — longer reps,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-12-18,Rest day,Rest,,,,,,,1,Engine 3 — longer reps,
+2026-12-19,Long mountain run,Long,125,15.6,495,fell,,Z2,1,Engine 3 — longer reps,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2026-12-20,Easy fell wander,Easy,60,8,360,fell,,Z2,1,Engine 3 — longer reps,
+2026-12-21,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Festive deload — recharge,Genuinely easy — this is where the engine grows.
+2026-12-22,Easy + 6 relaxed strides,Easy,35,6,,road,,Z2,1,Festive deload — recharge,Strides keep the wheels turning while the base builds.
+2026-12-23,Easy aerobic spin,Bike,40,,,bike,,Z1,1,Festive deload — recharge,Engine volume the legs don't pay for.
+2026-12-24,Easy,Easy,45,7.7,,road,,Z2,1,Festive deload — recharge,
+2026-12-25,Rest — enjoy the day,Rest,,,,,,,1,Festive deload — recharge,
+2026-12-26,Long rolling run,Long,80,13.1,165,trail,,Z2,1,Festive deload — recharge,Steady and patient; finish feeling you had more.
+2026-12-27,Rest or gentle walk,Rest,,,,,,,1,Festive deload — recharge,Deload week — recovery IS the training.
+2026-12-28,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,"Engine 4 — new year, same engine",Genuinely easy — this is where the engine grows.
+2026-12-29,Cruise threshold 4×8 min,Threshold,73,13.4,,road,WU 15min Z2 | 4x8min Z3 r90s | CD 10min Z2,Z3,1,"Engine 4 — new year, same engine","Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-12-30,Easy aerobic spin,Bike,50,,,bike,,Z1,1,"Engine 4 — new year, same engine",Engine volume the legs don't pay for.
+2026-12-31,Easy + 8×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,1,"Engine 4 — new year, same engine","Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-01-01,Rest day,Rest,,,,,,,1,"Engine 4 — new year, same engine",
+2027-01-02,Long mountain run,Long,125,15.6,495,fell,,Z2,1,"Engine 4 — new year, same engine","Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-01-03,Easy fell wander,Easy,55,7.3,360,fell,,Z2,1,"Engine 4 — new year, same engine",
+2027-01-04,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Engine 5 — the grind,Genuinely easy — this is where the engine grows.
+2027-01-05,Cruise threshold 3×12 min,Threshold,76,13.9,,road,WU 15min Z2 | 3x12min Z3 r90s | CD 10min Z2,Z3,1,Engine 5 — the grind,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-01-06,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 5 — the grind,Engine volume the legs don't pay for.
+2027-01-07,Easy + 10×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Engine 5 — the grind,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-01-08,Rest day,Rest,,,,,,,1,Engine 5 — the grind,
+2027-01-09,Long mountain run,Long,130,16.3,550,fell,,Z2,1,Engine 5 — the grind,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-01-10,Easy fell wander,Easy,60,8,400,fell,,Z2,1,Engine 5 — the grind,
+2027-01-11,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,1,Engine 6 — long sub-threshold,Genuinely easy — this is where the engine grows.
+2027-01-12,Cruise threshold 2×18 min,Threshold,74,13.6,,road,WU 15min Z2 | 2x18min Z3 r90s | CD 10min Z2,Z3,1,Engine 6 — long sub-threshold,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-01-13,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 6 — long sub-threshold,Engine volume the legs don't pay for.
+2027-01-14,Easy + 10×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Engine 6 — long sub-threshold,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-01-15,Rest day,Rest,,,,,,,1,Engine 6 — long sub-threshold,
+2027-01-16,Long mountain run,Long,135,16.9,550,fell,,Z2,1,Engine 6 — long sub-threshold,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-01-17,Easy fell wander,Easy,60,8,400,fell,,Z2,1,Engine 6 — long sub-threshold,
+2027-01-18,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Deload — absorb,Genuinely easy — this is where the engine grows.
+2027-01-19,Easy + 6 relaxed strides,Easy,40,6.9,,road,,Z2,1,Deload — absorb,Strides keep the wheels turning while the base builds.
+2027-01-20,Easy aerobic spin,Bike,45,,,bike,,Z1,1,Deload — absorb,Engine volume the legs don't pay for.
+2027-01-21,Easy,Easy,50,8.5,,road,,Z2,1,Deload — absorb,
+2027-01-22,Rest day,Rest,,,,,,,1,Deload — absorb,
+2027-01-23,Long rolling run,Long,90,14.7,220,trail,,Z2,1,Deload — absorb,Steady and patient; finish feeling you had more.
+2027-01-24,Rest or gentle walk,Rest,,,,,,,1,Deload — absorb,Deload week — recovery IS the training.
+2027-01-25,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Engine 7 — depth,Genuinely easy — this is where the engine grows.
+2027-01-26,Cruise threshold 5×8 min,Threshold,83,15.2,,road,WU 15min Z2 | 5x8min Z3 r90s | CD 10min Z2,Z3,1,Engine 7 — depth,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-01-27,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 7 — depth,Engine volume the legs don't pay for.
+2027-01-28,Easy + 10×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,1,Engine 7 — depth,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-01-29,Rest day,Rest,,,,,,,1,Engine 7 — depth,
+2027-01-30,Long mountain run,Long,135,16.9,550,fell,,Z2,1,Engine 7 — depth,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-01-31,Easy fell wander,Easy,55,7.3,400,fell,,Z2,1,Engine 7 — depth,
+2027-02-01,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Engine 8 — biggest aerobic week,Genuinely easy — this is where the engine grows.
+2027-02-02,Cruise threshold 3×12 min,Threshold,76,13.9,,road,WU 15min Z2 | 3x12min Z3 r90s | CD 10min Z2,Z3,1,Engine 8 — biggest aerobic week,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-02-03,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 8 — biggest aerobic week,Engine volume the legs don't pay for.
+2027-02-04,Easy + 10×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Engine 8 — biggest aerobic week,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-02-05,Rest day,Rest,,,,,,,1,Engine 8 — biggest aerobic week,
+2027-02-06,Long mountain run,Long,140,17.5,605,fell,,Z2,1,Engine 8 — biggest aerobic week,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-02-07,Easy fell wander,Easy,60,8,440,fell,,Z2,1,Engine 8 — biggest aerobic week,
+2027-02-08,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,1,Engine 9 — peak engine,Genuinely easy — this is where the engine grows.
+2027-02-09,Cruise threshold 2×20 min,Threshold,78,14.3,,road,WU 15min Z2 | 2x20min Z3 r90s | CD 10min Z2,Z3,1,Engine 9 — peak engine,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-02-10,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 9 — peak engine,Engine volume the legs don't pay for.
+2027-02-11,Easy + 10×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Engine 9 — peak engine,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-02-12,Rest day,Rest,,,,,,,1,Engine 9 — peak engine,
+2027-02-13,Long mountain run,Long,140,17.5,605,fell,,Z2,1,Engine 9 — peak engine,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-02-14,Easy fell wander,Easy,60,8,440,fell,,Z2,1,Engine 9 — peak engine,
+2027-02-15,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Deload — absorb,Genuinely easy — this is where the engine grows.
+2027-02-16,Easy + 6 relaxed strides,Easy,45,7.7,,road,,Z2,1,Deload — absorb,Strides keep the wheels turning while the base builds.
+2027-02-17,Easy aerobic spin,Bike,45,,,bike,,Z1,1,Deload — absorb,Engine volume the legs don't pay for.
+2027-02-18,Easy,Easy,50,8.5,,road,,Z2,1,Deload — absorb,
+2027-02-19,Rest day,Rest,,,,,,,1,Deload — absorb,
+2027-02-20,Long rolling run,Long,95,15.5,275,trail,,Z2,1,Deload — absorb,Steady and patient; finish feeling you had more.
+2027-02-21,Rest or gentle walk,Rest,,,,,,,1,Deload — absorb,Deload week — recovery IS the training.
+2027-02-22,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,1,Engine 10 — turn toward spring,Genuinely easy — this is where the engine grows.
+2027-02-23,Cruise threshold 4×10 min,Threshold,81,14.9,,road,WU 15min Z2 | 4x10min Z3 r90s | CD 10min Z2,Z3,1,Engine 10 — turn toward spring,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2027-02-24,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Engine 10 — turn toward spring,Engine volume the legs don't pay for.
+2027-02-25,Easy + 8×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,1,Engine 10 — turn toward spring,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-02-26,Rest day,Rest,,,,,,,1,Engine 10 — turn toward spring,
+2027-02-27,Long mountain run,Long,120,15,495,fell,,Z2,1,Engine 10 — turn toward spring,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-02-28,Easy fell wander,Easy,50,6.7,360,fell,,Z2,1,Engine 10 — turn toward spring,

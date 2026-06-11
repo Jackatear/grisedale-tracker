@@ -1,0 +1,85 @@
+date,session,type,duration_min,distance_km,vert_m,surface,structure,zone,phase,block,notes
+2026-09-07,Rest — the season is banked,Rest,,,,,,,1,Reset 1 — absorb the season,Total rest. The adaptations from the whole summer land THIS week — protect it.
+2026-09-08,Walk or gentle 25 min jog,Recovery,25,,,trail,,Z1,1,Reset 1 — absorb the season,"Movement, not training. Stop while it still feels pointless."
+2026-09-09,Easy social spin,Bike,30,,,bike,,Z1,1,Reset 1 — absorb the season,Coffee-pace. Legs only.
+2026-09-10,Rest,Rest,,,,,,,1,Reset 1 — absorb the season,Sleep is the session.
+2026-09-11,Gentle 30 min jog,Recovery,30,4.5,,trail,,Z1,1,Reset 1 — absorb the season,No watch-staring. Niggles get noticed and noted this week.
+2026-09-12,Rest or long walk,Rest,,,,,,,1,Reset 1 — absorb the season,"A fell WALK is perfect — keep the love, skip the load."
+2026-09-13,Easy 35 min wander,Easy,35,5.5,100,trail,,Z1,1,Reset 1 — absorb the season,End of week 1: you should feel restless. That's the sign it worked.
+2026-09-14,Easy unstructured run,Easy,30,5,,road,,Z2,1,Reset 2 — easy return,Run by feel — no targets all week. Strength returns light (60-70%).
+2026-09-15,Easy aerobic,Easy,35,5.8,,road,,Z2,1,Reset 2 — easy return,Conversational throughout.
+2026-09-16,Easy spin,Bike,40,,,bike,,Z1,1,Reset 2 — easy return,
+2026-09-17,Rest,Rest,,,,,,,1,Reset 2 — easy return,
+2026-09-18,Easy + 4 relaxed strides,Easy,30,5,,road,,Z2,1,Reset 2 — easy return,"Strides = smooth 20s, full recovery. Waking the legs, not training them."
+2026-09-19,Easy longer run,Long,55,9.2,150,trail,,Z2,1,Reset 2 — easy return,"First 'long' run back — friendly, flat-ish, fun."
+2026-09-20,Rest or walk,Rest,,,,,,,1,Reset 2 — easy return,Two-week reset complete. The build starts Monday.
+2026-09-21,Easy aerobic + strength S1,Easy,30,5.2,,road,,Z2,2,Foundation 1 — rebuild gently,Genuinely easy — this is where the engine grows.
+2026-09-22,Easy + 6 relaxed strides,Easy,30,5.2,,road,,Z2,2,Foundation 1 — rebuild gently,Strides keep the wheels turning while the base builds.
+2026-09-23,Easy aerobic spin,Bike,40,,,bike,,Z1,2,Foundation 1 — rebuild gently,Engine volume the legs don't pay for.
+2026-09-24,Easy + strength S2,Easy,30,5.1,,road,,Z2,2,Foundation 1 — rebuild gently,
+2026-09-25,Rest day,Rest,,,,,,,2,Foundation 1 — rebuild gently,
+2026-09-26,Long rolling run,Long,60,9.8,110,trail,,Z2,2,Foundation 1 — rebuild gently,Steady and patient; finish feeling you had more.
+2026-09-27,Easy aerobic,Easy,30,5.1,80,road,,Z2,2,Foundation 1 — rebuild gently,
+2026-09-28,Easy aerobic + strength S1,Easy,30,5.2,,road,,Z2,2,Foundation 2 — rhythm returns,Genuinely easy — this is where the engine grows.
+2026-09-29,Easy + 6 relaxed strides,Easy,35,6,,road,,Z2,2,Foundation 2 — rhythm returns,Strides keep the wheels turning while the base builds.
+2026-09-30,Easy aerobic spin,Bike,45,,,bike,,Z1,2,Foundation 2 — rhythm returns,Engine volume the legs don't pay for.
+2026-10-01,Easy + 6×10s hill sprints + strength S2,Easy,30,5.1,,road,,Z2,2,Foundation 2 — rhythm returns,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-10-02,Rest day,Rest,,,,,,,2,Foundation 2 — rhythm returns,
+2026-10-03,Long rolling run,Long,70,11.4,165,trail,,Z2,2,Foundation 2 — rhythm returns,Steady and patient; finish feeling you had more.
+2026-10-04,Easy aerobic,Easy,35,6,120,road,,Z2,2,Foundation 2 — rhythm returns,
+2026-10-05,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,2,Foundation 3 — strides + sprints,Genuinely easy — this is where the engine grows.
+2026-10-06,Easy + 6 relaxed strides,Easy,35,6,,road,,Z2,2,Foundation 3 — strides + sprints,Strides keep the wheels turning while the base builds.
+2026-10-07,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 3 — strides + sprints,Engine volume the legs don't pay for.
+2026-10-08,Easy + 8×10s hill sprints + strength S2,Easy,30,5.1,,road,,Z2,2,Foundation 3 — strides + sprints,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-10-09,Rest day,Rest,,,,,,,2,Foundation 3 — strides + sprints,
+2026-10-10,Long rolling run,Long,80,13.1,220,trail,,Z2,2,Foundation 3 — strides + sprints,Steady and patient; finish feeling you had more.
+2026-10-11,Easy aerobic,Easy,40,6.8,160,road,,Z2,2,Foundation 3 — strides + sprints,
+2026-10-12,Easy aerobic + strength S1,Easy,30,5.2,,road,,Z2,2,Deload — absorb,Genuinely easy — this is where the engine grows.
+2026-10-13,Easy + 6 relaxed strides,Easy,25,4.3,,road,,Z2,2,Deload — absorb,Strides keep the wheels turning while the base builds.
+2026-10-14,Easy aerobic spin,Bike,40,,,bike,,Z1,2,Deload — absorb,Engine volume the legs don't pay for.
+2026-10-15,Easy,Easy,30,5.1,,road,,Z2,2,Deload — absorb,
+2026-10-16,Rest day,Rest,,,,,,,2,Deload — absorb,
+2026-10-17,Long rolling run,Long,60,9.8,110,trail,,Z2,2,Deload — absorb,Steady and patient; finish feeling you had more.
+2026-10-18,Rest or gentle walk,Rest,,,,,,,2,Deload — absorb,Deload week — recovery IS the training.
+2026-10-19,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,2,Foundation 4 — base grows,Genuinely easy — this is where the engine grows.
+2026-10-20,Easy + 6 relaxed strides,Easy,40,6.9,,road,,Z2,2,Foundation 4 — base grows,Strides keep the wheels turning while the base builds.
+2026-10-21,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 4 — base grows,Engine volume the legs don't pay for.
+2026-10-22,Easy + 8×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,2,Foundation 4 — base grows,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-10-23,Rest day,Rest,,,,,,,2,Foundation 4 — base grows,
+2026-10-24,Long rolling run,Long,90,14.7,275,trail,,Z2,2,Foundation 4 — base grows,Steady and patient; finish feeling you had more.
+2026-10-25,Easy aerobic,Easy,40,6.8,200,road,,Z2,2,Foundation 4 — base grows,
+2026-10-26,Easy aerobic + strength S1,Easy,30,5.2,,road,,Z2,2,Foundation 5 — first quality,Genuinely easy — this is where the engine grows.
+2026-10-27,Cruise threshold 4×6 min,Threshold,65,11.9,,road,WU 15min Z2 | 4x6min Z3 r90s | CD 10min Z2,Z3,2,Foundation 5 — first quality,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-10-28,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 5 — first quality,Engine volume the legs don't pay for.
+2026-10-29,Easy + 8×10s hill sprints + strength S2,Easy,25,4.3,,road,,Z2,2,Foundation 5 — first quality,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-10-30,Rest day,Rest,,,,,,,2,Foundation 5 — first quality,
+2026-10-31,Long rolling run,Long,100,16.3,330,trail,,Z2,2,Foundation 5 — first quality,Steady and patient; finish feeling you had more.
+2026-11-01,Easy aerobic,Easy,40,6.8,240,road,,Z2,2,Foundation 5 — first quality,
+2026-11-02,Easy aerobic + strength S1,Easy,30,5.2,,road,,Z2,2,Foundation 6 — steady build,Genuinely easy — this is where the engine grows.
+2026-11-03,Cruise threshold 5×6 min,Threshold,73,13.4,,road,WU 15min Z2 | 5x6min Z3 r90s | CD 10min Z2,Z3,2,Foundation 6 — steady build,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-11-04,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 6 — steady build,Engine volume the legs don't pay for.
+2026-11-05,Easy + 10×10s hill sprints + strength S2,Easy,30,5.1,,road,,Z2,2,Foundation 6 — steady build,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-11-06,Rest day,Rest,,,,,,,2,Foundation 6 — steady build,
+2026-11-07,Long rolling run,Long,105,17.2,385,trail,,Z2,2,Foundation 6 — steady build,Steady and patient; finish feeling you had more.
+2026-11-08,Easy fell wander,Easy,45,6,280,fell,,Z2,2,Foundation 6 — steady build,
+2026-11-09,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,2,Deload — absorb,Genuinely easy — this is where the engine grows.
+2026-11-10,Easy + 6 relaxed strides,Easy,35,6,,road,,Z2,2,Deload — absorb,Strides keep the wheels turning while the base builds.
+2026-11-11,Easy aerobic spin,Bike,40,,,bike,,Z1,2,Deload — absorb,Engine volume the legs don't pay for.
+2026-11-12,Easy,Easy,40,6.8,,road,,Z2,2,Deload — absorb,
+2026-11-13,Rest day,Rest,,,,,,,2,Deload — absorb,
+2026-11-14,Long rolling run,Long,75,12.3,165,trail,,Z2,2,Deload — absorb,Steady and patient; finish feeling you had more.
+2026-11-15,Rest or gentle walk,Rest,,,,,,,2,Deload — absorb,Deload week — recovery IS the training.
+2026-11-16,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,2,Foundation 7 — autumn peak,Genuinely easy — this is where the engine grows.
+2026-11-17,Cruise threshold 3×8 min,Threshold,64,11.7,,road,WU 15min Z2 | 3x8min Z3 r90s | CD 10min Z2,Z3,2,Foundation 7 — autumn peak,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-11-18,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 7 — autumn peak,Engine volume the legs don't pay for.
+2026-11-19,Easy + 10×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,2,Foundation 7 — autumn peak,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-11-20,Rest day,Rest,,,,,,,2,Foundation 7 — autumn peak,
+2026-11-21,Long rolling run,Long,110,18,440,trail,,Z2,2,Foundation 7 — autumn peak,Steady and patient; finish feeling you had more.
+2026-11-22,Easy fell wander,Easy,50,6.7,320,fell,,Z2,2,Foundation 7 — autumn peak,
+2026-11-23,Easy aerobic + strength S1,Easy,35,6,,road,,Z2,2,Foundation 8 — into winter,Genuinely easy — this is where the engine grows.
+2026-11-24,Cruise threshold 4×8 min,Threshold,73,13.4,,road,WU 15min Z2 | 4x8min Z3 r90s | CD 10min Z2,Z3,2,Foundation 8 — into winter,"Controlled sub-threshold — 'comfortably hard', finish knowing you had 2 more reps. The Norwegian engine-builder."
+2026-11-25,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Foundation 8 — into winter,Engine volume the legs don't pay for.
+2026-11-26,Easy + 10×10s hill sprints + strength S2,Easy,35,6,,road,,Z2,2,Foundation 8 — into winter,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2026-11-27,Rest day,Rest,,,,,,,2,Foundation 8 — into winter,
+2026-11-28,Long rolling run,Long,115,18.8,440,trail,,Z2,2,Foundation 8 — into winter,Steady and patient; finish feeling you had more.
+2026-11-29,Easy fell wander,Easy,50,6.7,320,fell,,Z2,2,Foundation 8 — into winter,

@@ -1,0 +1,57 @@
+date,session,type,duration_min,distance_km,vert_m,surface,structure,zone,phase,block,notes
+2027-05-17,Easy aerobic + strength S1,Easy,60,10.3,,road,,Z2,1,Sharpen 1 — race rhythm,Genuinely easy — this is where the engine grows.
+2027-05-18,Descent skills + strides,Descent,50,6.7,285,fell,,Z2,1,Sharpen 1 — race rhythm,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-05-19,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 1 — race rhythm,Engine volume the legs don't pay for.
+2027-05-20,Easy,Easy,55,9.4,,road,,Z2,1,Sharpen 1 — race rhythm,
+2027-05-21,Rest day,Rest,,,,,,,1,Sharpen 1 — race rhythm,
+2027-05-22,Up-down sim 4×(8 min climb + descent),Simulation,82,9.6,1045,fell,WU 15min Z2 | 4x8min Z4 r5m | CD 10min Z2,Z4,1,Sharpen 1 — race rhythm,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-05-23,Easy fell wander,Easy,85,11.3,570,fell,,Z2,1,Sharpen 1 — race rhythm,
+2027-05-24,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Sharpen 2 — climb economy,Genuinely easy — this is where the engine grows.
+2027-05-25,Uphill threshold 5×6 min,Threshold,80,10.7,315,fell,WU 15min Z2 | 5x6min Z4 r3m | CD 10min Z2,Z4,1,Sharpen 2 — climb economy,On a steady climb — jog/walk down between. Climbing economy at race effort.
+2027-05-26,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 2 — climb economy,Engine volume the legs don't pay for.
+2027-05-27,Easy,Easy,35,6,,road,,Z2,1,Sharpen 2 — climb economy,
+2027-05-28,Rest day,Rest,,,,,,,1,Sharpen 2 — climb economy,
+2027-05-29,Long mountain run,Long,130,16.3,1155,fell,,Z2,1,Sharpen 2 — climb economy,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-05-30,Easy fell wander,Easy,55,7.3,630,fell,,Z2,1,Sharpen 2 — climb economy,
+2027-05-31,Easy aerobic + strength S1,Easy,60,10.3,,road,,Z2,1,Sharpen 3 — bigger sim,Genuinely easy — this is where the engine grows.
+2027-06-01,Descent skills + strides,Descent,50,6.7,345,fell,,Z2,1,Sharpen 3 — bigger sim,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-06-02,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 3 — bigger sim,Engine volume the legs don't pay for.
+2027-06-03,Easy,Easy,55,9.4,,road,,Z2,1,Sharpen 3 — bigger sim,
+2027-06-04,Rest day,Rest,,,,,,,1,Sharpen 3 — bigger sim,
+2027-06-05,Up-down sim 5×(8 min climb + descent),Simulation,95,11.1,1265,fell,WU 15min Z2 | 5x8min Z4 r5m | CD 10min Z2,Z4,1,Sharpen 3 — bigger sim,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-06-06,Easy fell wander,Easy,85,11.3,690,fell,,Z2,1,Sharpen 3 — bigger sim,
+2027-06-07,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Deload — absorb,Genuinely easy — this is where the engine grows.
+2027-06-08,Easy + 6 relaxed strides,Easy,40,6.9,,road,,Z2,1,Deload — absorb,Strides keep the wheels turning while the base builds.
+2027-06-09,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Deload — absorb,Engine volume the legs don't pay for.
+2027-06-10,Easy,Easy,50,8.5,,road,,Z2,1,Deload — absorb,
+2027-06-11,Rest day,Rest,,,,,,,1,Deload — absorb,
+2027-06-12,Long mountain run,Long,90,11.3,550,fell,,Z2,1,Deload — absorb,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-06-13,Rest or gentle walk,Rest,,,,,,,1,Deload — absorb,Deload week — recovery IS the training.
+2027-06-14,Easy aerobic + strength S1,Easy,65,11.2,,road,,Z2,1,Sharpen 4 — B-race week,Genuinely easy — this is where the engine grows.
+2027-06-15,Descent skills + strides,Descent,50,6.7,330,fell,,Z2,1,Sharpen 4 — B-race week,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-06-16,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 4 — B-race week,Engine volume the legs don't pay for.
+2027-06-17,Easy,Easy,60,10.2,,road,,Z2,1,Sharpen 4 — B-race week,
+2027-06-18,Rest day,Rest,,,,,,,1,Sharpen 4 — B-race week,
+2027-06-19,B-RACE — enter a local fell race (or full sim),Race,75,8.8,1210,fell,,Race,1,Sharpen 4 — B-race week,Placeholder — swap in a real race. Racing is a skill: practise it before it counts.
+2027-06-20,Easy fell wander,Easy,90,12,660,fell,,Z2,1,Sharpen 4 — B-race week,
+2027-06-21,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,1,Sharpen 5 — speed on tired legs,Genuinely easy — this is where the engine grows.
+2027-06-22,Hill VO₂ 6×2 min,Hills,65,8.7,360,fell,WU 15min Z2 | 6x2min Z5 r3m | CD 10min Z2,Z5,1,Sharpen 5 — speed on tired legs,"Hard drives up, easy descents back. Power, not panic."
+2027-06-23,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 5 — speed on tired legs,Engine volume the legs don't pay for.
+2027-06-24,Easy,Easy,40,6.8,,road,,Z2,1,Sharpen 5 — speed on tired legs,
+2027-06-25,Rest day,Rest,,,,,,,1,Sharpen 5 — speed on tired legs,
+2027-06-26,Long mountain run,Long,130,16.3,1320,fell,,Z2,1,Sharpen 5 — speed on tired legs,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-06-27,Easy fell wander,Easy,65,8.7,720,fell,,Z2,1,Sharpen 5 — speed on tired legs,
+2027-06-28,Easy aerobic + strength S1,Easy,55,9.4,,road,,Z2,1,Sharpen 6 — longest sim,Genuinely easy — this is where the engine grows.
+2027-06-29,Descent skills + strides,Descent,50,6.7,375,fell,,Z2,1,Sharpen 6 — longest sim,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-06-30,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Sharpen 6 — longest sim,Engine volume the legs don't pay for.
+2027-07-01,Easy,Easy,55,9.4,,road,,Z2,1,Sharpen 6 — longest sim,
+2027-07-02,Rest day,Rest,,,,,,,1,Sharpen 6 — longest sim,
+2027-07-03,Up-down sim 5×(10 min climb + descent),Simulation,110,12.8,1375,fell,WU 15min Z2 | 5x10min Z4 r6m | CD 10min Z2,Z4,1,Sharpen 6 — longest sim,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-07-04,Easy fell wander,Easy,80,10.7,750,fell,,Z2,1,Sharpen 6 — longest sim,
+2027-07-05,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Reset before the peak,Genuinely easy — this is where the engine grows.
+2027-07-06,Easy + 6 relaxed strides,Easy,45,7.7,,road,,Z2,1,Reset before the peak,Strides keep the wheels turning while the base builds.
+2027-07-07,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Reset before the peak,Engine volume the legs don't pay for.
+2027-07-08,Easy,Easy,55,9.4,,road,,Z2,1,Reset before the peak,
+2027-07-09,Rest day,Rest,,,,,,,1,Reset before the peak,
+2027-07-10,Long mountain run,Long,100,12.5,660,fell,,Z2,1,Reset before the peak,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-07-11,Rest or gentle walk,Rest,,,,,,,1,Reset before the peak,Deload week — recovery IS the training.

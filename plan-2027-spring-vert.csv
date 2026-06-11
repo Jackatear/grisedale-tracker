@@ -1,0 +1,78 @@
+date,session,type,duration_min,distance_km,vert_m,surface,structure,zone,phase,block,notes
+2027-03-01,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Spring 1 — threshold returns,Genuinely easy — this is where the engine grows.
+2027-03-02,Threshold 4×8 min,Threshold,75,13.8,,road,WU 15min Z2 | 4x8min Z4 r2m | CD 10min Z2,Z4,1,Spring 1 — threshold returns,"Honest threshold — strong but controlled, ~1h-race effort."
+2027-03-03,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Spring 1 — threshold returns,Engine volume the legs don't pay for.
+2027-03-04,Easy + 8×10s hill sprints + strength S2,Easy,40,6.8,,road,,Z2,1,Spring 1 — threshold returns,"Sprints: 8-10s MAX effort uphill, walk-back full recovery. Power + tendon stiffness, zero metabolic cost."
+2027-03-05,Rest day,Rest,,,,,,,1,Spring 1 — threshold returns,
+2027-03-06,Long mountain run,Long,120,15,605,fell,,Z2,1,Spring 1 — threshold returns,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-03-07,Easy fell wander,Easy,55,7.3,440,fell,,Z2,1,Spring 1 — threshold returns,
+2027-03-08,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,1,Spring 2 — vert rising,Genuinely easy — this is where the engine grows.
+2027-03-09,Threshold 5×8 min,Threshold,85,15.6,,road,WU 15min Z2 | 5x8min Z4 r2m | CD 10min Z2,Z4,1,Spring 2 — vert rising,"Honest threshold — strong but controlled, ~1h-race effort."
+2027-03-10,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Spring 2 — vert rising,Engine volume the legs don't pay for.
+2027-03-11,Easy + strength S2,Easy,35,6,,road,,Z2,1,Spring 2 — vert rising,
+2027-03-12,Rest day,Rest,,,,,,,1,Spring 2 — vert rising,
+2027-03-13,Long mountain run,Long,125,15.6,715,fell,,Z2,1,Spring 2 — vert rising,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-03-14,Easy fell wander,Easy,55,7.3,520,fell,,Z2,1,Spring 2 — vert rising,
+2027-03-15,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,1,Spring 3 — to the fells,Genuinely easy — this is where the engine grows.
+2027-03-16,Uphill threshold 4×6 min,Threshold,71,9.5,225,fell,WU 15min Z2 | 4x6min Z4 r3m | CD 10min Z2,Z4,1,Spring 3 — to the fells,On a steady climb — jog/walk down between. Climbing economy at race effort.
+2027-03-17,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Spring 3 — to the fells,Engine volume the legs don't pay for.
+2027-03-18,Easy + strength S2,Easy,45,7.7,,road,,Z2,1,Spring 3 — to the fells,
+2027-03-19,Rest day,Rest,,,,,,,1,Spring 3 — to the fells,
+2027-03-20,Long mountain run,Long,125,15.6,825,fell,,Z2,1,Spring 3 — to the fells,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-03-21,Easy fell wander,Easy,65,8.7,450,fell,,Z2,1,Spring 3 — to the fells,
+2027-03-22,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,1,Deload — absorb,Genuinely easy — this is where the engine grows.
+2027-03-23,Easy + 6 relaxed strides,Easy,40,6.9,,road,,Z2,1,Deload — absorb,Strides keep the wheels turning while the base builds.
+2027-03-24,Easy aerobic spin,Bike,50,,,bike,,Z1,1,Deload — absorb,Engine volume the legs don't pay for.
+2027-03-25,Easy,Easy,50,8.5,,road,,Z2,1,Deload — absorb,
+2027-03-26,Rest day,Rest,,,,,,,1,Deload — absorb,
+2027-03-27,Long rolling run,Long,90,14.7,330,trail,,Z2,1,Deload — absorb,Steady and patient; finish feeling you had more.
+2027-03-28,Rest or gentle walk,Rest,,,,,,,1,Deload — absorb,Deload week — recovery IS the training.
+2027-03-29,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,2,Spring 4 — descents return,Genuinely easy — this is where the engine grows.
+2027-03-30,Descent progression + power 1,Descent,55,7.3,240,fell,,Z3,2,Spring 4 — descents return,"Quick feet, eyes ahead, brake less each rep. The free speed nobody trains."
+2027-03-31,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 4 — descents return,Engine volume the legs don't pay for.
+2027-04-01,Easy,Easy,45,7.7,,road,,Z2,2,Spring 4 — descents return,
+2027-04-02,Rest day,Rest,,,,,,,2,Spring 4 — descents return,
+2027-04-03,Long mountain run,Long,125,15.6,880,fell,,Z2,2,Spring 4 — descents return,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-04-04,Easy fell wander,Easy,70,9.3,480,fell,,Z2,2,Spring 4 — descents return,
+2027-04-05,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,2,Spring 5 — uphill strength,Genuinely easy — this is where the engine grows.
+2027-04-06,Uphill threshold 5×6 min,Threshold,80,10.7,270,fell,WU 15min Z2 | 5x6min Z4 r3m | CD 10min Z2,Z4,2,Spring 5 — uphill strength,On a steady climb — jog/walk down between. Climbing economy at race effort.
+2027-04-07,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 5 — uphill strength,Engine volume the legs don't pay for.
+2027-04-08,Easy,Easy,40,6.8,,road,,Z2,2,Spring 5 — uphill strength,
+2027-04-09,Rest day,Rest,,,,,,,2,Spring 5 — uphill strength,
+2027-04-10,Long mountain run,Long,130,16.3,990,fell,,Z2,2,Spring 5 — uphill strength,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-04-11,Easy fell wander,Easy,60,8,540,fell,,Z2,2,Spring 5 — uphill strength,
+2027-04-12,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,2,Spring 6 — sharpening edge,Genuinely easy — this is where the engine grows.
+2027-04-13,Hill VO₂ 5×2 min,Hills,60,8,300,fell,WU 15min Z2 | 5x2min Z5 r3m | CD 10min Z2,Z5,2,Spring 6 — sharpening edge,"Hard drives up, easy descents back. Power, not panic."
+2027-04-14,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 6 — sharpening edge,Engine volume the legs don't pay for.
+2027-04-15,Easy,Easy,45,7.7,,road,,Z2,2,Spring 6 — sharpening edge,
+2027-04-16,Rest day,Rest,,,,,,,2,Spring 6 — sharpening edge,
+2027-04-17,Long mountain run,Long,130,16.3,1100,fell,,Z2,2,Spring 6 — sharpening edge,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-04-18,Easy fell wander,Easy,70,9.3,600,fell,,Z2,2,Spring 6 — sharpening edge,
+2027-04-19,Easy aerobic + strength S1,Easy,50,8.6,,road,,Z2,2,Deload — tune-up race optional,Genuinely easy — this is where the engine grows.
+2027-04-20,Easy + 6 relaxed strides,Easy,45,7.7,,road,,Z2,2,Deload — tune-up race optional,Strides keep the wheels turning while the base builds.
+2027-04-21,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Deload — tune-up race optional,Engine volume the legs don't pay for.
+2027-04-22,Easy,Easy,50,8.5,,road,,Z2,2,Deload — tune-up race optional,
+2027-04-23,Rest day,Rest,,,,,,,2,Deload — tune-up race optional,
+2027-04-24,Long rolling run,Long,90,14.7,440,trail,,Z2,2,Deload — tune-up race optional,Steady and patient; finish feeling you had more.
+2027-04-25,Rest or gentle walk,Rest,,,,,,,2,Deload — tune-up race optional,Deload week — recovery IS the training.
+2027-04-26,Easy aerobic + strength S1,Easy,40,6.9,,road,,Z2,2,Spring 7 — race effort uphill,Genuinely easy — this is where the engine grows.
+2027-04-27,Uphill threshold 4×8 min,Threshold,79,10.5,315,fell,WU 15min Z2 | 4x8min Z4 r3m | CD 10min Z2,Z4,2,Spring 7 — race effort uphill,On a steady climb — jog/walk down between. Climbing economy at race effort.
+2027-04-28,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 7 — race effort uphill,Engine volume the legs don't pay for.
+2027-04-29,Easy,Easy,40,6.8,,road,,Z2,2,Spring 7 — race effort uphill,
+2027-04-30,Rest day,Rest,,,,,,,2,Spring 7 — race effort uphill,
+2027-05-01,Long mountain run,Long,130,16.3,1155,fell,,Z2,2,Spring 7 — race effort uphill,"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-05-02,Easy fell wander,Easy,60,8,630,fell,,Z2,2,Spring 7 — race effort uphill,
+2027-05-03,Easy aerobic + strength S1,Easy,65,11.2,,road,,Z2,2,Spring 8 — first sim,Genuinely easy — this is where the engine grows.
+2027-05-04,Descent skills + strides,Descent,50,6.7,330,fell,,Z2,2,Spring 8 — first sim,"EASY effort, fast feet: pick lines, relax the brakes, flow. A skill day, not a hammer day — Saturday's sim is the week's hard work."
+2027-05-05,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 8 — first sim,Engine volume the legs don't pay for.
+2027-05-06,Easy,Easy,60,10.2,,road,,Z2,2,Spring 8 — first sim,
+2027-05-07,Rest day,Rest,,,,,,,2,Spring 8 — first sim,
+2027-05-08,Up-down sim 4×(8 min climb + descent),Simulation,82,9.6,1210,fell,WU 15min Z2 | 4x8min Z4 r5m | CD 10min Z2,Z4,2,Spring 8 — first sim,"Race rhythm: climb at effort, descend with intent. Practise eating/drinking."
+2027-05-09,Easy fell wander,Easy,95,12.7,660,fell,,Z2,2,Spring 8 — first sim,
+2027-05-10,Easy aerobic + strength S1,Easy,45,7.7,,road,,Z2,2,Spring 9 — absorb (race optional),Genuinely easy — this is where the engine grows.
+2027-05-11,Easy + 6 relaxed strides,Easy,50,8.6,,road,,Z2,2,Spring 9 — absorb (race optional),Strides keep the wheels turning while the base builds.
+2027-05-12,Easy aerobic spin,Bike,50,,,bike,,Z1,2,Spring 9 — absorb (race optional),Engine volume the legs don't pay for.
+2027-05-13,Easy,Easy,45,7.7,,road,,Z2,2,Spring 9 — absorb (race optional),
+2027-05-14,Rest day,Rest,,,,,,,2,Spring 9 — absorb (race optional),
+2027-05-15,Long mountain run,Long,110,13.8,825,fell,,Z2,2,Spring 9 — absorb (race optional),"Time on feet over terrain — hike the steep stuff, eat every 40 min."
+2027-05-16,Easy fell wander,Easy,50,6.7,600,fell,,Z2,2,Spring 9 — absorb (race optional),
