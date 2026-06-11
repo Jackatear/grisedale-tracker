@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07n" />
+<meta name="app-build" content="2026-06-07o" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -421,6 +421,18 @@
   .ckey{margin-left:6px;color:var(--accent);font-weight:800;letter-spacing:.3px}
   .sd-pick .opt.repeat{border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
   .sd-pick .opt.repeat b{color:var(--accent)}
+  /* RPE quick-tap row (session log) */
+  .rpe-row{display:flex;gap:4px}
+  .rpe-row button{flex:1;min-width:0;padding:8px 0;font:inherit;font-size:12.5px;font-weight:600;background:var(--bg2);border:1px solid var(--line2);color:var(--muted);border-radius:2px;cursor:pointer}
+  .rpe-row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#faf7ec}
+  /* niggle chips (morning check-in): tap cycles severity 0→3 */
+  .nig-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;justify-content:flex-end}
+  .nig{font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border-radius:2px;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);cursor:pointer}
+  .nig b{font-variant-numeric:tabular-nums}
+  .nig[data-sev="1"]{border-color:var(--warn);color:var(--warn)}
+  .nig[data-sev="2"]{background:color-mix(in srgb,var(--accent) 16%,var(--bg2));border-color:var(--accent);color:var(--accent)}
+  .nig[data-sev="3"]{background:var(--bad);border-color:var(--bad);color:#faf7ec}
+  .pg-svg{display:block;width:100%;height:auto;margin-top:6px}
   /* race predictor (home) */
   .pred-row{display:flex;gap:9px;margin-top:10px}
   .pred{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 4px;min-width:0}
@@ -1837,12 +1849,16 @@ function renderDash(){
 
 /* ===== COACH: training load (objective) + readiness (subjective) ===== */
 const LOAD_W=[1,2,3,4,5];                         // per-minute weight for Z1..Z5 (TRIMP-style)
-function loadFrom(w, lg){                          // unified estimator: precise time-in-zone if we have it, else minutes × intensity
+function loadFrom(w, lg){                          // unified estimator, best signal first:
+  // 1) session-RPE × minutes (the athlete's own read — RPE/2 maps onto the Z1..Z5 weights so history stays continuous)
+  // 2) precise time-in-zone from the Strava HR stream
+  // 3) minutes × planned-zone weight (intent-first so intervals aren't undercounted by a warmup-dragged avg HR)
   if(!w||w.t==="Rest") return 0; lg=lg||{};
+  if(lg.rpe>0){ const m = lg.d!=null ? +lg.d : (w.d||0); if(m) return m*(+lg.rpe/2); }
   if(Array.isArray(lg.zones)){ const tot=lg.zones.reduce((a,b)=>a+b,0);
-    if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }   // precise (Strava HR stream)
+    if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }
   const min = lg.d!=null ? lg.d : (w.d||0); if(!min) return 0;
-  let zi = zoneTextToIdx(w.z);                                                         // intent first (so intervals aren't undercounted by avg HR)
+  let zi = zoneTextToIdx(w.z);
   if(zi==null) zi = (lg.hr!=null ? hrToZoneIdx(lg.hr) : 1); if(zi==null) zi=1;
   return min*(LOAD_W[zi]||1);
 }
@@ -2040,19 +2056,26 @@ document.addEventListener("click", e=>{
   if(e.target.closest("[data-coach-apply]")) applyCoachProposal();
   else if(e.target.closest("[data-coach-dismiss]")) dismissCoachProposal();
 });
+const NIGGLE_AREAS=["shin","calf","knee","ankle","hip","foot","other"];
 function openCheckin(){
   closeCheckin();
   const today=todayISO(), cur=(state.readiness&&state.readiness[today])||{};
   const dims=[["sleep","Sleep"],["legs","Legs / freshness"],["energy","Energy"],["mot","Motivation"]];
+  const nig=cur.niggles||{};
   const back=document.createElement("div"); back.className="sd-pick-back"; back.id="ciBack";
   back.innerHTML=`<div class="sd-pick"><h3>How are you today?</h3>
     ${dims.map(d=>`<div class="ci-row"><span class="ci-lab">${d[1]}</span><div class="ci-scale" data-dim="${d[0]}">${[1,2,3,4,5].map(n=>`<button data-n="${n}" aria-pressed="${cur[d[0]]==n}">${n}</button>`).join("")}</div></div>`).join("")}
     <div class="ci-ends"><span>1 · poor</span><span>great · 5</span></div>
+    <div class="ci-row" style="align-items:flex-start"><span class="ci-lab">Niggles <small>tap to cycle 0–3</small></span>
+      <div class="nig-chips">${NIGGLE_AREAS.map(a=>`<button type="button" class="nig" data-nig="${a}" data-sev="${nig[a]||0}">${a[0].toUpperCase()+a.slice(1)}<b>${nig[a]?` ${nig[a]}`:""}</b></button>`).join("")}</div></div>
+    <div class="ci-row"><span class="ci-lab">Sleep hrs <small>optional</small></span><input id="ciSleepH" class="sd-f" type="number" inputmode="decimal" step="0.5" placeholder="7.5" value="${cur.sleepH??""}" style="width:92px;text-align:center"></div>
     <div class="ci-row"><span class="ci-lab">Resting HR <small>optional</small></span><input id="ciRhr" class="sd-f" type="number" inputmode="numeric" placeholder="bpm" value="${cur.rhr??""}" style="width:92px;text-align:center"></div>
     <textarea id="ciNote" class="sd-note" placeholder="Anything notable… (optional)">${esc(cur.note||"")}</textarea>
     <button class="btn primary" id="ciSave" style="width:100%;margin-top:12px">Save check-in</button></div>`;
   back.addEventListener("click", ev=>{
     if(ev.target===back){ closeCheckin(); return; }
+    const ng=ev.target.closest(".nig");
+    if(ng){ const sev=(+ng.dataset.sev+1)%4; ng.dataset.sev=sev; ng.querySelector("b").textContent=sev?` ${sev}`:""; return; }
     const sb=ev.target.closest(".ci-scale button");
     if(sb){ [...sb.parentElement.children].forEach(b=>b.setAttribute("aria-pressed","false")); sb.setAttribute("aria-pressed","true"); return; }
     if(ev.target.id==="ciSave"){ saveCheckin(back); }
@@ -2063,6 +2086,9 @@ function openCheckin(){
 function saveCheckin(back){
   const today=todayISO(), r={};
   back.querySelectorAll(".ci-scale").forEach(sc=>{ const sel=sc.querySelector('[aria-pressed="true"]'); if(sel) r[sc.getAttribute("data-dim")]=+sel.getAttribute("data-n"); });
+  const nig={}; back.querySelectorAll(".nig").forEach(b=>{ const s=+b.dataset.sev; if(s>0) nig[b.dataset.nig]=s; });
+  if(Object.keys(nig).length) r.niggles=nig;
+  const sh=back.querySelector("#ciSleepH").value.trim(); if(sh) r.sleepH=+sh;
   const rhr=back.querySelector("#ciRhr").value.trim(); if(rhr) r.rhr=+rhr;
   const note=back.querySelector("#ciNote").value.trim(); if(note) r.note=note;
   state.readiness=state.readiness||{};
@@ -2074,6 +2100,60 @@ function closeCheckin(){ const b=$("#ciBack"); if(b) b.remove(); refreshScrollLo
 /* ============================ PROGRESS (athlete view) ============================ */
 /* Long-term, cross-plan layer: weekly volume + vert, intensity balance, races, benchmark tests.
    Plans come and go — this is the athlete's permanent record. */
+// date → completed-session load across ALL plans, computed once (rolling ACWR needs many lookups)
+function dayLoadMap(){
+  const m={};
+  (state.plans||[]).forEach(rec=>{
+    for(const date in (rec.board||{})) (rec.board[date]||[]).forEach(id=>{ const l=recSessionLoad(rec,id); if(l) m[date]=(m[date]||0)+l; });
+  });
+  return m;
+}
+// daily ACWR over the last `days` days; null until ~3 weeks of chronic history exist
+function acwrSeries(days){
+  const map=dayLoadMap(), today=todayISO(), out=[];
+  const sum=(end,n)=>{ let s=0; for(let i=0;i<n;i++) s+=(map[addDays(end,-i)]||0); return s; };
+  for(let i=days-1;i>=0;i--){
+    const dte=addDays(today,-i);
+    const c28=sum(dte,28);
+    out.push({date:dte, acwr: c28>=60? sum(dte,7)/(c28/4) : null});
+  }
+  return out;
+}
+function pgACWRChart(series){
+  const W=320,H=104, top=8, bot=14, yMax=2;
+  const xs=i=>(i/(series.length-1))*W;
+  const ys=v=>top+(1-Math.min(v,yMax)/yMax)*(H-top-bot);
+  let d="",started=false; const spikes=[];
+  series.forEach((p,i)=>{ if(p.acwr==null){ started=false; return; }
+    const x=xs(i),y=ys(p.acwr); d+=(started?" L":" M")+x.toFixed(1)+" "+y.toFixed(1); started=true;
+    if(p.acwr>1.5) spikes.push([x,y]); });
+  if(!d) return null;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pg-svg" preserveAspectRatio="none">
+    <rect x="0" y="${ys(1.3).toFixed(1)}" width="${W}" height="${(ys(0.8)-ys(1.3)).toFixed(1)}" fill="color-mix(in srgb,var(--good) 15%,transparent)"/>
+    <line x1="0" x2="${W}" y1="${ys(1.5).toFixed(1)}" y2="${ys(1.5).toFixed(1)}" stroke="var(--bad)" stroke-width="1" stroke-dasharray="4 3" opacity=".55"/>
+    <line x1="0" x2="${W}" y1="${ys(1).toFixed(1)}" y2="${ys(1).toFixed(1)}" stroke="var(--line2)" stroke-width="1" opacity=".7"/>
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    ${spikes.map(s=>`<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="2.6" fill="var(--bad)"/>`).join("")}
+  </svg>`;
+}
+// niggle dots (coloured by worst severity) over faint readiness bars, one column per day
+function pgWellnessChart(days){
+  const today=todayISO(), W=320, H=58, cw=W/days;
+  let bars="", dots="", any=false, anyNig=false;
+  for(let i=0;i<days;i++){
+    const dt=addDays(today,-(days-1-i));
+    const r=state.readiness&&state.readiness[dt];
+    const sc=readinessScore(r);
+    if(sc!=null){ any=true; const h=(sc/100)*(H-18);
+      bars+=`<rect x="${(i*cw+0.5).toFixed(1)}" y="${(H-2-h).toFixed(1)}" width="${Math.max(1,cw-1.2).toFixed(1)}" height="${h.toFixed(1)}" fill="var(--line2)" opacity=".55"><title>${dt} · readiness ${sc}%</title></rect>`; }
+    const sev=r&&r.niggles? Math.max(0,...Object.values(r.niggles)) : 0;
+    if(sev>0){ any=true; anyNig=true;
+      const col=sev>=3?"var(--bad)":sev===2?"var(--accent)":"var(--warn)";
+      const areas=Object.entries(r.niggles).map(([a,s])=>a+" "+s).join(", ");
+      dots+=`<circle cx="${(i*cw+cw/2).toFixed(1)}" cy="7" r="3.1" fill="${col}"><title>${dt} · ${areas}</title></circle>`; }
+  }
+  return any? {svg:`<svg viewBox="0 0 ${W} ${H}" class="pg-svg">${bars}${dots}</svg>`, anyNig} : null;
+}
 function athleteWeeks(n){
   const mons=[]; const thisMon=mondayOf(todayISO());
   for(let i=n-1;i>=0;i--) mons.push(addDays(thisMon,-7*i));
@@ -2158,6 +2238,33 @@ function renderProgress(){
   } else {
     engineBody = `<div class="pg-empty">Unlocks after ~4 weeks of easy runs with heart rate + distance logged (sync from Strava). Then this chart becomes your proof the training is working: the same easy heart rate buying more speed.</div>`;
   }
+  // training load (weekly bars) + ACWR ramp line — the injury-risk view
+  const ldMap=dayLoadMap();
+  const ldWeeks=wks.map(w=>{ let s=0; for(let di=0;di<7;di++) s+=(ldMap[addDays(w.mon,di)]||0); return Math.round(s); });
+  const acwr=acwrSeries(112);
+  const acwrSvg=pgACWRChart(acwr);
+  const lastA=[...acwr].reverse().find(p=>p.acwr!=null);
+  const acwrNow=lastA? Math.round(lastA.acwr*100)/100 : null;
+  const acwrNote = acwrNow==null ? "Building baseline — the ratio needs ~3–4 weeks of logged training before it means anything."
+    : acwrNow>1.5 ? `<b>Now ${acwrNow.toFixed(2)} — spike territory.</b> Sharp ramp = elevated injury risk. Add easy days or cut a hard session.`
+    : acwrNow>1.3 ? `<b>Now ${acwrNow.toFixed(2)} — ramping.</b> Fine briefly; don't stack another big week on top.`
+    : acwrNow<0.8 ? `<b>Now ${acwrNow.toFixed(2)} — easing.</b> Ideal in a taper or recovery week.`
+    : `<b>Now ${acwrNow.toFixed(2)} — in the green band.</b> Load is building at a rate your body can absorb.`;
+  const loadCardBody = ldWeeks.some(v=>v>0)
+    ? pgChart(ldWeeks, wks.map(w=>w.mon), "", v=>Math.round(v)+" load")
+      + (acwrSvg? `<p class="pg-sub" style="margin:12px 0 2px">Ramp rate (ACWR) · last 16 weeks — green band 0.8–1.3 is the safe zone, dashed line 1.5 is spike risk</p>${acwrSvg}`:"")
+      + `<p class="pg-verdict">${acwrNote}</p>`
+    : `<div class="pg-empty">Fills in as you complete sessions. Load = your RPE × minutes when you log effort, else HR time-in-zone, else planned intensity.</div>`;
+  // wellness: niggle flags over readiness
+  const well=pgWellnessChart(56);
+  const nigDays=[]; for(let i=0;i<14;i++){ const r=state.readiness&&state.readiness[addDays(todayISO(),-i)]; if(r&&r.niggles) Object.entries(r.niggles).forEach(([a,s])=>nigDays.push([a,s])); }
+  const worstByArea={}; nigDays.forEach(([a,s])=>{ worstByArea[a]=Math.max(worstByArea[a]||0,s); });
+  const nigSummary=Object.keys(worstByArea).length
+    ? `Last 14 days: ${Object.entries(worstByArea).map(([a,s])=>`<b>${a} ${s}/3`+"</b>").join(" · ")}. ${Object.values(worstByArea).some(s=>s>=2)?"Anything at 2+ that lasts a few days: ease the week and swap impact for the bike — that's how a niggle stays a niggle.":"Low-grade and noted — exactly what the early-warning system is for."}`
+    : "No niggles flagged in the last 14 days.";
+  const wellCardBody = well
+    ? `${well.svg}<div class="pg-zleg" style="margin-top:7px"><span><span class="dot" style="background:var(--warn)"></span>mild 1</span><span><span class="dot" style="background:var(--accent)"></span>sore 2</span><span><span class="dot" style="background:var(--bad)"></span>bad 3</span><span style="margin-left:auto;color:var(--faint)">bars = daily readiness</span></div><p class="pg-verdict">${nigSummary}</p>`
+    : `<div class="pg-empty">Log the morning check-in (home page) — niggles like shin or calf tenderness get a one-tap flag there, and this timeline becomes your early-warning system.</div>`;
   const cur=wks[wks.length-1];
   const l4=wks.slice(-4);
   const avg4min=l4.reduce((a,w)=>a+w.min,0)/4, avg4vert=l4.reduce((a,w)=>a+w.vert,0)/4;
@@ -2211,6 +2318,10 @@ function renderProgress(){
       ${pgChart(wks.map(w=>w.vert), wks.map(w=>w.mon), "vert", v=>fmtVert(Math.round(v)))}</div>
     <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
       ${engineBody}</div>
+    <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
+      ${loadCardBody}</div>
+    <div class="pg-card"><h4>Niggles &amp; readiness · last 8 weeks</h4><p class="pg-sub">The early-warning system: flag tender shins/calves in the morning check-in before they become injuries.</p>
+      ${wellCardBody}</div>
     <div class="pg-card"><h4>Intensity balance · last 28 days</h4>
       ${ztot?`<div class="pg-zbar">${zbar}</div><div class="pg-zleg">${zleg}</div>`:""}
       <p class="pg-verdict">${verdict}</p></div>
@@ -2841,7 +2952,7 @@ function modalViewHTML(w){
   const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null;
   const stat=s=>`<div class="mv-stat"><span class="lab">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`;
   const plan=[]; if(w.d)plan.push(["Duration",fmtDur(w.d)]); if(w.k!=null)plan.push(["Distance",fmtDist(w.k)]); if(w.v!=null)plan.push(["Vert",fmtVert(w.v)]);
-  const act=[]; if(done){ if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Vert",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); }
+  const act=[]; if(done){ if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Vert",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); if(lg.rpe!=null)act.push(["RPE",lg.rpe+" / 10"]); }
   const flag = done
     ? (es?`<span class="pill exec ${es.level}">${es.pct}%</span><span class="mv-flag done">✓ Completed</span>`:`<span class="mv-flag done">✓ Completed</span>`)
     : `<span class="mv-flag">○ To do</span>`;
@@ -2909,6 +3020,8 @@ function modalEditHTML(w){
       <div class="field"><label>Actual vert (m)</label><input id="f_lv" type="number" min="0" placeholder="${w.v??""}" value="${lg.v??""}"></div>
     </div>
     <div class="field"><label>Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
+    <div class="field"><label>Effort — RPE <span style="font-weight:400;color:var(--faint)">(1 easy · 10 max, tap again to clear)</span></label>
+      <div class="rpe-row" id="f_rpe">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-rpe="${n}" aria-pressed="${lg.rpe==n}">${n}</button>`).join("")}</div></div>
     <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
   `;
 }
@@ -2921,6 +3034,13 @@ function wireModalEdit(w){
     elx.hidden=false; elx.innerHTML = execReadoutHTML(es, w);
   };
   $("#f_done").onclick = e=>{ const b=e.currentTarget; b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); refreshExec(); };
+  const rpeRow=$("#f_rpe");
+  if(rpeRow) rpeRow.addEventListener("click", e=>{
+    const b=e.target.closest("[data-rpe]"); if(!b) return;
+    const was=b.getAttribute("aria-pressed")==="true";
+    rpeRow.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));
+    if(!was) b.setAttribute("aria-pressed","true");          // tap the selected one again to clear
+  });
   ["f_ld","f_lk"].forEach(idn=>{ const el=$("#"+idn); if(el) el.addEventListener("input", refreshExec); });
   refreshExec();
   wireStructure();
@@ -3012,8 +3132,10 @@ $("#mSave").onclick = ()=>{
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
     const prev=state.log[id]||{};                  // keep Strava-derived fields (zones/zt/sid) the modal doesn't edit
-    const lg=Object.assign({}, prev, { d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), c:(get("f_lc")||"").trim() });
-    const empty = lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&!lg.c && lg.sid==null && !(Array.isArray(lg.zones)&&lg.zones.length);
+    const rpeSel=document.querySelector('#f_rpe [aria-pressed="true"]');
+    const lg=Object.assign({}, prev, { d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), rpe:rpeSel? +rpeSel.dataset.rpe : null, c:(get("f_lc")||"").trim() });
+    if(lg.rpe==null) delete lg.rpe;
+    const empty = lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&lg.rpe==null&&!lg.c && lg.sid==null && !(Array.isArray(lg.zones)&&lg.zones.length);
     if(empty) delete state.log[id]; else state.log[id]=lg;
     ensureTypeVisible(t);   // never hide the session you just edited behind an off filter
   }
