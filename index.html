@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07u" />
+<meta name="theme-color" content="#f1f3ef" />
+<meta name="app-build" content="2026-06-07v" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -20,9 +20,9 @@
   :root{
     color-scheme:light;
     /* CONTOUR — Ordnance-Survey paper: cream, ink, terracotta + moss */
-    --bg:#f3efe3; --bg2:#eae5d4; --panel:#faf7ec; --panel2:#f2eedf;
-    --line:#ded6c0; --line2:#c8bea2;
-    --txt:#262a20; --muted:#6b6a57; --faint:#999378;
+    --bg:#f1f3ef; --bg2:#e7eae4; --panel:#fbfcfa; --panel2:#f2f4f0;
+    --line:#dfe3db; --line2:#c6ccc0;
+    --txt:#22261f; --muted:#646b5e; --faint:#919889;
     --accent:#b14a22; --accent2:#c4612f;
     --good:#5d7350; --warn:#a8762a; --bad:#9c3c2e; --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
     --radius:8px;
@@ -33,9 +33,9 @@
   [data-theme="dark"]{
     color-scheme:dark;
     /* CONTOUR night — deep ink, paper text, ember accent */
-    --bg:#211f18; --bg2:#2a2820; --panel:#272520; --panel2:#2e2c25;
-    --line:#3b382c; --line2:#4e4a39;
-    --txt:#eae4d1; --muted:#aaa48d; --faint:#7d7864;
+    --bg:#1d201b; --bg2:#262a23; --panel:#232720; --panel2:#2a2e26;
+    --line:#363b32; --line2:#484e42;
+    --txt:#e8ebe3; --muted:#a6ac9c; --faint:#7b8172;
     --accent:#d4683c; --accent2:#df7d52;
     --good:#8aa379; --warn:#c79a4b; --bad:#c25a48; --shadow:0 10px 30px rgba(0,0,0,.45);
     --t-easy:#8aa379; --t-recovery:#92aebd; --t-threshold:#c79a4b;
@@ -44,9 +44,9 @@
   }
   [data-theme="light"]{
     color-scheme:light;
-    --bg:#f3efe3; --bg2:#eae5d4; --panel:#faf7ec; --panel2:#f2eedf;
-    --line:#ded6c0; --line2:#c8bea2;
-    --txt:#262a20; --muted:#6b6a57; --faint:#999378;
+    --bg:#f1f3ef; --bg2:#e7eae4; --panel:#fbfcfa; --panel2:#f2f4f0;
+    --line:#dfe3db; --line2:#c6ccc0;
+    --txt:#22261f; --muted:#646b5e; --faint:#919889;
     --accent:#b14a22; --accent2:#c4612f;
     --good:#5d7350; --warn:#a8762a; --bad:#9c3c2e; --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
     --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
@@ -424,14 +424,14 @@
   /* RPE quick-tap row (session log) */
   .rpe-row{display:flex;gap:4px}
   .rpe-row button{flex:1;min-width:0;padding:8px 0;font:inherit;font-size:12.5px;font-weight:600;background:var(--bg2);border:1px solid var(--line2);color:var(--muted);border-radius:2px;cursor:pointer}
-  .rpe-row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#faf7ec}
+  .rpe-row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fbfcfa}
   /* niggle chips (morning check-in): tap cycles severity 0→3 */
   .nig-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;justify-content:flex-end}
   .nig{font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border-radius:2px;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);cursor:pointer}
   .nig b{font-variant-numeric:tabular-nums}
   .nig[data-sev="1"]{border-color:var(--warn);color:var(--warn)}
   .nig[data-sev="2"]{background:color-mix(in srgb,var(--accent) 16%,var(--bg2));border-color:var(--accent);color:var(--accent)}
-  .nig[data-sev="3"]{background:var(--bad);border-color:var(--bad);color:#faf7ec}
+  .nig[data-sev="3"]{background:var(--bad);border-color:var(--bad);color:#fbfcfa}
   .pg-svg{display:block;width:100%;height:auto;margin-top:6px}
   /* "This week" strip — planned vs done at the very top of the plan page */
   .weekstrip{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin-bottom:12px}
@@ -777,12 +777,12 @@
      Placed last so it wins the cascade: serif display face, faint
      contour-line texture, squared-off paper components. */
   body{background:
-    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(118,108,82,.05) 56px 57.5px),
-    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(118,108,82,.04) 74px 75.5px),
+    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(100,112,95,.045) 56px 57.5px),
+    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(100,112,95,.035) 74px 75.5px),
     var(--bg)}
   [data-theme="dark"] body{background:
-    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(222,212,180,.03) 56px 57.5px),
-    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(222,212,180,.022) 74px 75.5px),
+    repeating-radial-gradient(circle at 12% -22%, transparent 0 56px, rgba(205,215,195,.03) 56px 57.5px),
+    repeating-radial-gradient(circle at 108% 38%, transparent 0 74px, rgba(205,215,195,.022) 74px 75.5px),
     var(--bg)}
   h1,h2,h3,.tc-title,.stat .val,.cc-big,.pred .pv,.pg-stat .v,.cp-head-line{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;letter-spacing:-.02em}
   .tc-title{font-weight:500}
@@ -796,7 +796,7 @@
   /* "you are here" — the current training week */
   .week.current{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
   .week.current>.week-head{background:color-mix(in srgb,var(--accent) 7%,var(--bg));border-left:3px solid var(--accent)}
-  .wn.now{background:var(--accent);border-color:var(--accent);color:#faf7ec;font-weight:700;letter-spacing:.02em}
+  .wn.now{background:var(--accent);border-color:var(--accent);color:#fbfcfa;font-weight:700;letter-spacing:.02em}
 
   /* ============ POLISH LAYER · Contour v2 ============
      De-boxed, soft, hierarchical. Rules: separate with SPACE not lines;
@@ -1447,7 +1447,7 @@ const weeksEl = $("#weeks");
 
 function render(){
   document.documentElement.dataset.theme = state.theme;
-  const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#211f18":"#f3efe3");
+  const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#1d201b":"#f1f3ef");
   $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
