@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07q" />
+<meta name="app-build" content="2026-06-07r" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -812,12 +812,16 @@
   .cc-big,.pred .pv,.pg-stat .v,.ws-meta b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
   /* 2 · de-box the metadata: chips become quiet "40m · 8.5 km · Z2" text */
   .pill{background:transparent;border:0;padding:0;font-size:11.5px;color:var(--muted);font-weight:550}
-  .cmeta .pill+.pill::before,.tc-meta .pill+.pill::before{content:"·";margin-right:7px;color:var(--faint)}
+  /* dot separators ride the END of each chip (::after), so a wrapped line never starts with an orphan "·" */
+  .cmeta .pill:not(:last-child):not(.exec)::after,.tc-meta .pill:not(:last-child):not(.exec)::after{content:"·";margin-left:7px;color:var(--faint)}
   .card .cmeta{gap:7px;row-gap:3px}
   .tc-meta{gap:8px;margin-top:10px}
   .tc-meta .pill{font-size:13px}
   .pill.exec{padding:1px 7px;border-radius:6px}                     /* scores stay badges */
-  .pill.exec::before,.mv-chips .pill::before{content:none!important}
+  .mv-chips .pill::after{content:none!important}
+  /* long session names: clear the corner checkbox, wrap to max two tidy lines */
+  .card .ctype,.card .cname{padding-right:24px}
+  .card .cname{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
   .pill.type{padding:2px 9px;border-radius:6px;color:#fff}
   .mv-chips .pill{background:var(--bg2);border:1px solid var(--line);padding:3px 9px;border-radius:6px}
   .mv-chips .pill.type{border:0}
