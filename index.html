@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07p" />
+<meta name="app-build" content="2026-06-07q" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -797,6 +797,50 @@
   .week.current{border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
   .week.current>.week-head{background:color-mix(in srgb,var(--accent) 7%,var(--bg));border-left:3px solid var(--accent)}
   .wn.now{background:var(--accent);border-color:var(--accent);color:#faf7ec;font-weight:700;letter-spacing:.02em}
+
+  /* ============ POLISH LAYER · Contour v2 ============
+     De-boxed, soft, hierarchical. Rules: separate with SPACE not lines;
+     mono is for DATA (numbers, micro-labels) — titles are humanist sans;
+     one hero per screen (the Today card); 8–10px radii, one whisper of shadow. */
+  :root{ --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,sans-serif;
+         --shadow-soft:0 1px 2px rgba(38,41,31,.05),0 6px 18px rgba(38,41,31,.06) }
+  [data-theme="dark"]{ --shadow-soft:0 1px 2px rgba(0,0,0,.25),0 6px 18px rgba(0,0,0,.28) }
+  /* 1 · typography: titles back to sans (bold, tight); mono stays on numerals + micro-labels */
+  h1,h2,h3,.tc-title,.cp-head-line{font-family:var(--sans);font-weight:700;letter-spacing:-.015em}
+  .cname{font-weight:650}
+  .tc-title{font-size:23px}
+  .cc-big,.pred .pv,.pg-stat .v,.ws-meta b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  /* 2 · de-box the metadata: chips become quiet "40m · 8.5 km · Z2" text */
+  .pill{background:transparent;border:0;padding:0;font-size:11.5px;color:var(--muted);font-weight:550}
+  .cmeta .pill+.pill::before,.tc-meta .pill+.pill::before{content:"·";margin-right:7px;color:var(--faint)}
+  .card .cmeta{gap:7px;row-gap:3px}
+  .tc-meta{gap:8px;margin-top:10px}
+  .tc-meta .pill{font-size:13px}
+  .pill.exec{padding:1px 7px;border-radius:6px}                     /* scores stay badges */
+  .pill.exec::before,.mv-chips .pill::before{content:none!important}
+  .pill.type{padding:2px 9px;border-radius:6px;color:#fff}
+  .mv-chips .pill{background:var(--bg2);border:1px solid var(--line);padding:3px 9px;border-radius:6px}
+  .mv-chips .pill.type{border:0}
+  /* 3 · soften containment: bigger radii, lighter lines, cards float on shadow not border */
+  .card,.today-card,.weekstrip,.coach-card,.stat,.pg-card,.pg-stat,.plan-card,.zones-card,.coach-prop,.pred,.sd-card,.mv-why,.pg-goal,.hr-box,.day-it{border-radius:10px}
+  .week{border-radius:12px;border-color:color-mix(in srgb,var(--line) 80%,transparent)}
+  .card{border:0;box-shadow:0 1px 2px rgba(38,41,31,.07);border-left:3px solid var(--c);background:var(--panel)}
+  [data-theme="dark"] .card{box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .day-cell{border-right-color:transparent}
+  @media (max-width:700px){ .day-cell{border-bottom-color:color-mix(in srgb,var(--line) 55%,transparent)} }
+  .btn,.iconbtn,.sd-btn,.s-add-btn,.undobtn,.search,.sd-f,.sd-note,.tab,.seg,.seg button,.zc-in,.nig,.rpe-row button,.ws-day{border-radius:8px}
+  .btn.primary,.tc-do,.sd-btn.primary,.s-add-btn{border-radius:9px}
+  /* 4 · the hero: Today card gets presence nothing else has */
+  .today-card{border:0;border-left:4px solid var(--c);box-shadow:var(--shadow-soft);
+    background:linear-gradient(135deg, color-mix(in srgb,var(--c) 7%,var(--panel)), var(--panel) 58%);padding:18px 18px 15px}
+  /* 5 · ghost toolbar: utilities shouldn't compete with content */
+  .toolbar .iconbtn,.undobtn{background:transparent;border-color:transparent;color:var(--muted)}
+  .toolbar .iconbtn:hover,.undobtn:hover:not(:disabled){border-color:var(--line2)}
+  .seg{background:var(--bg2);border:0}
+  /* 6 · breathing room */
+  .week-head{padding:13px 15px}
+  .day-cell{padding:11px 13px}
+  .card{padding:11px 13px}
 </style>
 </head>
 <body>
