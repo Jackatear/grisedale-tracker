@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f3efe3" />
-<meta name="app-build" content="2026-06-07o" />
+<meta name="app-build" content="2026-06-07p" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -433,6 +433,25 @@
   .nig[data-sev="2"]{background:color-mix(in srgb,var(--accent) 16%,var(--bg2));border-color:var(--accent);color:var(--accent)}
   .nig[data-sev="3"]{background:var(--bad);border-color:var(--bad);color:#faf7ec}
   .pg-svg{display:block;width:100%;height:auto;margin-top:6px}
+  /* "This week" strip — planned vs done at the very top of the plan page */
+  .weekstrip{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin-bottom:12px}
+  .ws-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin-bottom:10px}
+  .ws-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:600;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ws-meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .ws-meta b{color:var(--txt)}
+  .ws-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .ws-day{display:flex;flex-direction:column;align-items:center;gap:6px;padding:7px 2px 8px;background:var(--bg2);border:1px solid var(--line);border-radius:3px;cursor:pointer;font:inherit;min-width:0}
+  .ws-day:hover{border-color:var(--line2)}
+  .ws-day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:color-mix(in srgb,var(--accent) 6%,var(--bg2))}
+  .ws-dn{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--faint);font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ws-day.today .ws-dn{color:var(--accent)}
+  .ws-dots{display:flex;gap:3px;min-height:9px;align-items:center}
+  .ws-dots i{width:8px;height:8px;border-radius:50%;border:1.6px solid var(--c);background:transparent;display:block;flex:0 0 auto}
+  .ws-dots i.done{background:var(--c)}
+  .ws-rest{color:var(--faint);font-size:14px;line-height:9px}
+  .ws-none{width:8px;height:2px;background:var(--line2);display:block;border-radius:1px}
+  .ws-bar{height:4px;border-radius:999px;background:var(--bg2);margin-top:10px;overflow:hidden}
+  .ws-bar i{display:block;height:100%;background:var(--good);border-radius:999px}
   /* race predictor (home) */
   .pred-row{display:flex;gap:9px;margin-top:10px}
   .pred{flex:1;text-align:center;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 4px;min-width:0}
@@ -835,9 +854,8 @@
     </div>
 
     <div id="planView">
+    <div id="weekStrip"></div>
     <div id="todayCard"></div>
-    <button class="section-toggle" id="dashToggle" aria-expanded="true">Overview<span class="caret">▾</span></button>
-    <div class="dash" id="dash"></div>
 
     <div class="toolbar">
       <div class="menuwrap">
@@ -1356,7 +1374,7 @@ function render(){
   ensureBoard(); save();
   renderCountdown();
   renderToday();
-  renderDash();
+  renderWeekStrip();
   renderChips();
   renderToolbarState();
   renderWeeks();
@@ -1819,33 +1837,44 @@ $("#todayCard").addEventListener("click", e=>{
   const op=e.target.closest("[data-open]"); if(op) openModal(op.dataset.open);
 });
 
-function renderDash(){
-  const open = state.dashOpen!==false;
-  const dt=$("#dashToggle"); if(dt) dt.setAttribute("aria-expanded", open);
-  $("#dash").classList.toggle("collapsed", !open);
-  const ids = Object.keys(woMap());
-  const T = totals(ids);
-  const pct = T.total? Math.round(T.done/T.total*100):0;
-  const ftUnit = state.unit==="mi"?"ft":"m";
-  $("#dash").innerHTML = `
-    <div class="stat"><div class="lab">Run · distance</div>
-      <div class="val">${fmtDist(T.runDist,false)} <small>${state.unit}</small></div>
-      <div class="sub">${fmtDist(T.runDoneDist,false)} ${state.unit} logged</div></div>
-    <div class="stat"><div class="lab">Run · time</div>
-      <div class="val">${fmtDur(T.runDur)}</div>
-      <div class="sub">${fmtDur(T.runDoneDur)} logged</div></div>
-    <div class="stat" style="--c:var(--t-bike)"><div class="lab" style="color:var(--t-bike)">Bike · time</div>
-      <div class="val">${fmtDur(T.bikeDur)}</div>
-      <div class="sub">${T.bikeDist?fmtDist(T.bikeDist)+" · ":""}${fmtDur(T.bikeDoneDur)} logged</div></div>
-    <div class="stat"><div class="lab">Total vert</div>
-      <div class="val">${fmtVert(T.vert,false)} <small>${ftUnit}</small></div>
-      <div class="sub">${fmtVert(T.dVert,false)} ${ftUnit} logged</div></div>
-    <div class="stat progress"><div class="lab">Sessions completed</div>
-      <div class="val">${T.done}<small> / ${T.total}</small></div>
-      <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="prow"><span>${pct}% of the plan done</span><b>${T.total-T.done} to go</b></div></div>
-  `;
+/* This week at a glance — planned vs done, one tappable column per day. Replaces the old
+   whole-plan Overview dash (those totals live on Progress and in the footer now). */
+function renderWeekStrip(){
+  const host=$("#weekStrip"); if(!host) return;
+  const t=todayISO(), mon=mondayOf(t);
+  let plannedMin=0, doneMin=0, plannedV=0, doneV=0, nTot=0, nDone=0;
+  const days=[];
+  for(let di=0; di<7; di++){
+    const date=addDays(mon,di);
+    const items=(state.board[date]||[]).map(id=>({id,w:getWO(id)})).filter(x=>x.w);
+    const sess=items.filter(x=>x.w.t!=="Rest");
+    sess.forEach(x=>{
+      const lg=state.log[x.id]||{};
+      nTot++; plannedMin+=x.w.d||0; plannedV+=x.w.v||0;
+      if(state.done[x.id]){ nDone++; doneMin+=(lg.d!=null&&lg.d!==""?+lg.d:(x.w.d||0)); doneV+=(lg.v!=null&&lg.v!==""?+lg.v:(x.w.v||0)); }
+    });
+    days.push({date, sess, restOnly: items.length>0 && sess.length===0});
+  }
+  const pct=nTot? Math.round(nDone/nTot*100):0;
+  const dayHTML=days.map(dy=>{
+    const isToday=dy.date===t;
+    const dots = dy.sess.slice(0,3).map(x=>
+      `<i class="${state.done[x.id]?'done':''}" style="--c:${(TYPES[x.w.t]||TYPES.Rest).c}" title="${esc(x.w.n)}"></i>`).join("")
+      || (dy.restOnly? `<span class="ws-rest">·</span>` : `<span class="ws-none"></span>`);
+    return `<button class="ws-day ${isToday?'today':''}" data-wsday="${dy.date}" title="${dy.date}">
+      <span class="ws-dn">${WD[d(dy.date).getDay()][0]}</span>
+      <span class="ws-dots">${dots}</span></button>`;
+  }).join("");
+  host.innerHTML=`<div class="weekstrip">
+    <div class="ws-head"><span class="ws-title">This week</span>
+      <span class="ws-meta">${nTot? `<b>${nDone}/${nTot}</b> done · <b>${fmtDur(doneMin)}</b> / ${fmtDur(plannedMin)}${plannedV?` · ↗ <b>${fmtVert(doneV,false)}</b> / ${fmtVert(plannedV)}`:""}` : `Nothing planned this week`}</span></div>
+    <div class="ws-days">${dayHTML}</div>
+    ${nTot?`<div class="ws-bar"><i style="width:${pct}%"></i></div>`:""}
+  </div>`;
 }
+$("#weekStrip").addEventListener("click", e=>{
+  const b=e.target.closest("[data-wsday]"); if(b) openDaySheet(b.dataset.wsday);
+});
 
 /* ===== COACH: training load (objective) + readiness (subjective) ===== */
 const LOAD_W=[1,2,3,4,5];                         // per-minute weight for Z1..Z5 (TRIMP-style)
@@ -2748,7 +2777,6 @@ $("#themeBtn").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"
 $("#unitBtn").onclick  = ()=>{ state.unit  = state.unit==="km"?"mi":"km"; save(); render(); };
 $("#undoBtn").onclick  = undo;
 document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; if(b.dataset.tab==="plan" && state.tab==="plan"){ scrollToToday(); return; } state.tab=b.dataset.tab; save(); applyTab(); });
-$("#dashToggle").addEventListener("click", ()=>{ state.dashOpen = !(state.dashOpen!==false); save(); renderDash(); });
 
 /* ===== Calendar (month grid) view ===== */
 const MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
