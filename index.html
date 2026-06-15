@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08c" />
+<meta name="app-build" content="2026-06-08d" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -954,6 +954,27 @@
   .hero-cta.done,.hero-cta.ghost{background:rgba(255,255,255,.18);color:#fff}
   .hero-rest{font-size:14px;color:rgba(255,255,255,.9);line-height:1.5}
   .hero.rest .hero-title{margin-bottom:8px}
+  .hero-coach{background:rgba(255,255,255,.16);border-radius:13px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;line-height:1.5;color:#fff}
+  .hero-coach span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:3px}
+
+  /* morning check-in card — single Wiped→Flying feeling scale */
+  .rd-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 17px;margin-bottom:16px;box-shadow:var(--shadow-soft)}
+  .rd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .rd-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:700;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .rd-hint{font-size:12px;color:var(--muted)}
+  .rd-word{font-family:var(--sans);font-size:27px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .rd-word.unset{color:var(--faint)}
+  .rd-word.f1{color:var(--bad)} .rd-word.f2{color:var(--warn)} .rd-word.f3{color:var(--txt)} .rd-word.f4{color:var(--good)} .rd-word.f5{color:var(--accent)}
+  .rd-sub{font-size:12.5px;color:var(--muted);margin:3px 0 14px}
+  .rd-track{position:relative;height:6px;border-radius:999px;background:var(--bg2);margin:0 4px 14px}
+  .rd-fill{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--accent);transition:width .25s ease}
+  .rd-knob{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.2);transform:translate(-50%,-50%);transition:left .25s ease}
+  .rd-knob.off{display:none}
+  .rd-labels{display:flex;gap:2px}
+  .rd-lab{flex:1;min-width:0;background:none;border:0;font:inherit;font-size:11.5px;color:var(--faint);font-weight:600;cursor:pointer;padding:4px 0;text-align:center;-webkit-tap-highlight-color:transparent}
+  .rd-lab.on{color:var(--accent);font-weight:700}
+  .rd-more{display:block;width:100%;text-align:center;margin-top:12px;padding-top:11px;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
+  .rd-more:hover{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -1012,6 +1033,7 @@
     <div id="planView">
     <div id="raceBanner"></div>
     <div id="weekStrip"></div>
+    <div id="readinessCard"></div>
     <div id="todayCard"></div>
 
     <div class="toolbar">
@@ -1537,8 +1559,9 @@ function render(){
   ensureBoard(); save();
   renderCountdown();
   renderRaceBanner();
-  renderToday();
   renderWeekStrip();
+  renderReadinessCard();
+  renderToday();
   renderChips();
   renderToolbarState();
   renderWeeks();
@@ -1996,6 +2019,34 @@ function efWeekly(n){
   });
   return mons.map(m=>{ const a=byWeek[m].slice().sort((x,y)=>x-y); return {mon:m, ef:a.length? a[Math.floor(a.length/2)] : null}; });
 }
+const FEEL_WORDS=["Wiped","Tired","Okay","Good","Flying"];
+function todayFeel(){
+  const r=(state.readiness&&state.readiness[todayISO()])||{};
+  if(r.feel) return r.feel;
+  const sc=readinessScore(r);                        // derive from a detailed check-in if no quick feel
+  return sc!=null ? Math.max(1,Math.min(5,Math.round(sc/20))) : null;
+}
+// Inline "morning check-in" — one tap on a Wiped→Flying scale, the day's readiness in 2 seconds.
+function renderReadinessCard(){
+  const host=$("#readinessCard"); if(!host) return;
+  const feel=todayFeel(), set=feel!=null;
+  const pct = set ? ((feel-1)/4*100) : 50;
+  const word = set ? FEEL_WORDS[feel-1] : "How are you?";
+  host.innerHTML=`<div class="rd-card">
+    <div class="rd-head"><span class="rd-title">Morning check-in</span><span class="rd-hint">${set?"✓ Logged today":"Adapts your run"}</span></div>
+    <div class="rd-word ${set?("f"+feel):"unset"}">${esc(word)}</div>
+    <div class="rd-sub">How you're feeling today</div>
+    <div class="rd-track"><span class="rd-fill" style="width:${set?pct:0}%"></span><span class="rd-knob ${set?"":"off"}" style="left:${pct}%"></span></div>
+    <div class="rd-labels">${FEEL_WORDS.map((w,i)=>`<button class="rd-lab ${feel===i+1?"on":""}" data-feel="${i+1}">${w}</button>`).join("")}</div>
+    <button class="rd-more" data-ci="1">Add detail — sleep, niggles, resting HR ›</button>
+  </div>`;
+}
+$("#readinessCard").addEventListener("click", e=>{
+  const b=e.target.closest("[data-feel]"); if(!b) return;
+  const t=todayISO(); state.readiness=state.readiness||{};
+  const r=state.readiness[t]||{}; r.feel=+b.dataset.feel; state.readiness[t]=r;
+  save(); renderReadinessCard(); renderToday();   // re-render so the hero's readiness nudge updates too
+});
 function renderToday(){
   const host=$("#todayCard"); if(!host) return;
   const t=todayISO();
@@ -2047,6 +2098,17 @@ function renderToday(){
   else if(w.z&&w.z!=="—") tiles.push(["Effort", w.z]);
   const surf=surfaceLabel(w); if(surf) tiles.push(["Terrain", surf[0].toUpperCase()+surf.slice(1)]);
   const tilesHTML = (!isRest && tiles.length)? `<div class="hero-tiles">${tiles.slice(0,3).map(t=>`<div class="ht"><b>${esc(t[1])}</b><i>${esc(t[0])}</i></div>`).join("")}</div>` : "";
+  // readiness-aware coach note (the "adapts your run" payoff) — advisory, doesn't change the plan
+  let coach="";
+  const feel=(mode==="today" && !done && !isRest) ? todayFeel() : null;
+  if(feel!=null){
+    const msg = feel>=5 ? "Feeling Flying — green light to attack the quality. Capitalize on a good day."
+      : feel===4 ? "Feeling Good — run it as planned and press where it counts."
+      : feel===3 ? "Feeling Okay — steady as prescribed; let the legs warm into it."
+      : feel===2 ? "Feeling Tired — keep it honest-easy and cut a rep if the legs argue."
+      : "Feeling Wiped — easy or off today. Adaptation happens in recovery, not in a forced session.";
+    coach=`<div class="hero-coach"><span>Coach</span>${esc(msg)}</div>`;
+  }
   // call to action
   let cta="";
   if(isRest) cta=`<div class="hero-rest">Rest day — recovery is where the gains land.</div>`;
@@ -2058,7 +2120,7 @@ function renderToday(){
       <div class="hero-title">${esc(w.n)}</div>
       ${stats}${tilesHTML}
       ${why?`<div class="hero-desc">${esc(why)}</div>`:""}
-      ${cta}
+      ${coach}${cta}
     </div>`;
 }
 function renderRaceBanner(){
@@ -2167,7 +2229,7 @@ function loadBand(acwr, ready){
   if(acwr<0.8) return {lvl:"neutral", label:"Easing · "+acwr.toFixed(2), note:"Load is dropping — ideal in a taper/recovery week, watch for detraining otherwise."};
   return {lvl:"good", label:"On track · "+acwr.toFixed(2), note:"Load is building in the safe zone. Keep it rolling."};
 }
-function readinessScore(r){ if(!r) return null; const v=[r.sleep,r.legs,r.energy,r.mot].filter(x=>x!=null); return v.length? Math.round(v.reduce((a,b)=>a+b,0)/(v.length*5)*100):null; }
+function readinessScore(r){ if(!r) return null; const v=[r.sleep,r.legs,r.energy,r.mot].filter(x=>x!=null); if(v.length) return Math.round(v.reduce((a,b)=>a+b,0)/(v.length*5)*100); if(r.feel) return r.feel*20; return null; }
 function coachNudge(score, acwr){
   if(score<=45) return "You're flagging — keep today easy or trim the hard bits. Adaptation happens in recovery.";
   if(acwr!=null && acwr>1.5) return "Feeling ok, but load is spiking — resist piling more on today.";
