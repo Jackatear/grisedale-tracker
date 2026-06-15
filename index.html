@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08b" />
+<meta name="app-build" content="2026-06-08c" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -2160,8 +2160,8 @@ function recSessionLoad(rec,id){
 }
 function dayLoad(date){ let s=0; (state.plans||[]).forEach(rec=>{ ((rec.board&&rec.board[date])||[]).forEach(id=>{ s+=recSessionLoad(rec,id); }); }); return s; }
 function rollingLoad(end, days){ let s=0; for(let i=0;i<days;i++) s+=dayLoad(addDays(end,-i)); return s; }
-function loadBand(acwr, c28){
-  if(c28<60 || acwr==null) return {lvl:"neutral", label:"Building baseline", note:"A few weeks of logged sessions unlock the ramp guardrail."};
+function loadBand(acwr, ready){
+  if(!ready || acwr==null) return {lvl:"neutral", label:"Building baseline", note:"A couple of weeks of logged sessions unlock the ramp guardrail."};
   if(acwr>1.5) return {lvl:"bad",  label:"Spike · "+acwr.toFixed(2), note:"Sharp jump in load — elevated injury risk. Add easy days or cut a hard session."};
   if(acwr>1.3) return {lvl:"warn", label:"Ramping · "+acwr.toFixed(2), note:"Climbing fast. Fine briefly — just don't stack another big week on top."};
   if(acwr<0.8) return {lvl:"neutral", label:"Easing · "+acwr.toFixed(2), note:"Load is dropping — ideal in a taper/recovery week, watch for detraining otherwise."};
@@ -2191,7 +2191,7 @@ function coachPropHTML(){
   const REC={ ease:{label:"Ease next week",cls:"warn"}, hold:{label:"Hold — as planned",cls:"good"}, push:{label:"Push next week",cls:"accent"} };
   const rc=REC[p.recommendation]||REC.hold;
   const chips=[];
-  if(m.acwr!=null){ const band=loadBand(+m.acwr, m.chronic28||0); chips.push(`<span class="cp-chip ${band.lvl==="neutral"?"":band.lvl}">ACWR <b>${(+m.acwr).toFixed(2)}</b></span>`); }
+  if(m.acwr!=null){ const band=loadBand(+m.acwr, true); chips.push(`<span class="cp-chip ${band.lvl==="neutral"?"":band.lvl}">ACWR <b>${(+m.acwr).toFixed(2)}</b></span>`); }
   if(m.acute7!=null){ const tr=(m.prev7>0)?Math.round((m.acute7-m.prev7)/m.prev7*100):null; chips.push(`<span class="cp-chip">Load 7d <b>${m.acute7}</b>${tr!=null?` (${tr>=0?"+":""}${tr}%)`:""}</span>`); }
   if(m.readiness7!=null) chips.push(`<span class="cp-chip">Readiness <b>${m.readiness7}%</b></span>`);
   if(m.lastWeek && m.lastWeek.planned){ const lw=m.lastWeek; chips.push(`<span class="cp-chip">Last wk <b>${lw.done}/${lw.planned}</b>${lw.execAvg!=null?` · ${lw.execAvg}%`:""}</span>`); }
@@ -2297,10 +2297,11 @@ function renderCoach(){
   const host=$("#coachStrip"); if(!host) return;
   const today=todayISO();
   // ---- load ----
-  const acute=rollingLoad(today,7), prev=rollingLoad(addDays(today,-7),7), c28=rollingLoad(today,28), chronic=c28/4;
-  const acwr = chronic>0 ? acute/chronic : null;
+  const acute=rollingLoad(today,7), prev=rollingLoad(addDays(today,-7),7);
+  const acwr = currentAcwr();                       // smooth EWMA ratio (no cold-start spike)
+  const ready = acwrLoadDays()>=10;                 // ~10 logged training days before the ratio means anything
   const trend = prev>0 ? Math.round((acute-prev)/prev*100) : null;
-  const band = loadBand(acwr, c28);
+  const band = loadBand(ready?acwr:null, ready);
   const wkLoads=[], wkLabels=[];
   for(let i=5;i>=0;i--){ const mon=addDays(mondayOf(today),-7*i); let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); wkLoads.push(Math.round(l)); wkLabels.push(i===0?"now":String(d(mon).getDate())); }
   const loadChart = miniChart("Weekly load · last 6 wks", wkLoads, Math.max(...wkLoads,1), wkLabels, 5, "Builds as you train — your last 6 weeks of load will chart here.");
@@ -2395,15 +2396,31 @@ function dayLoadMap(){
   });
   return m;
 }
-// daily ACWR over the last `days` days; null until ~3 weeks of chronic history exist
-function acwrSeries(days){
-  const map=dayLoadMap(), today=todayISO(), out=[];
-  const sum=(end,n)=>{ let s=0; for(let i=0;i<n;i++) s+=(map[addDays(end,-i)]||0); return s; };
-  for(let i=days-1;i>=0;i--){
-    const dte=addDays(today,-i);
-    const c28=sum(dte,28);
-    out.push({date:dte, acwr: c28>=60? sum(dte,7)/(c28/4) : null});
+/* EWMA ACWR (Williams 2017) — exponentially-weighted acute & chronic, seeded to the opening
+   week's baseline so it starts near 1.0 instead of dividing by ~zero. Far smoother than rolling
+   averages and no cold-start spike when training begins. */
+function ewmaAcwrFull(){
+  const map=dayLoadMap();
+  const ds=Object.keys(map).filter(k=>map[k]>0).sort();
+  if(ds.length<2) return [];
+  const start=ds[0], end=todayISO();
+  let seed=0; for(let i=0;i<7;i++) seed+=(map[addDays(start,i)]||0); seed/=7;   // baseline = mean daily load, first week
+  if(seed<=0) seed=map[start]||1;
+  const la=2/8, lc=2/29; let a=seed, c=seed; const out=[];           // λ: acute≈7d, chronic≈28d
+  for(let dte=start; dte<=end; dte=addDays(dte,1)){
+    const L=map[dte]||0;
+    a=L*la+a*(1-la); c=L*lc+c*(1-lc);
+    out.push({date:dte, acwr: c>0? a/c : null});
   }
+  return out;
+}
+function acwrLoadDays(){ const m=dayLoadMap(); return Object.keys(m).filter(k=>m[k]>0).length; }
+function currentAcwr(){ const f=ewmaAcwrFull(); for(let i=f.length-1;i>=0;i--) if(f[i].acwr!=null) return Math.round(f[i].acwr*100)/100; return null; }
+// last `days` days of the EWMA series for the chart (null before training history begins)
+function acwrSeries(days){
+  const byDate={}; ewmaAcwrFull().forEach(p=>byDate[p.date]=p.acwr);
+  const today=todayISO(), out=[];
+  for(let i=days-1;i>=0;i--){ const dte=addDays(today,-i); out.push({date:dte, acwr: (dte in byDate)?byDate[dte]:null}); }
   return out;
 }
 function pgACWRChart(series){
@@ -2529,10 +2546,10 @@ function renderProgress(){
   const ldMap=dayLoadMap();
   const ldWeeks=wks.map(w=>{ let s=0; for(let di=0;di<7;di++) s+=(ldMap[addDays(w.mon,di)]||0); return Math.round(s); });
   const acwr=acwrSeries(112);
-  const acwrSvg=pgACWRChart(acwr);
-  const lastA=[...acwr].reverse().find(p=>p.acwr!=null);
-  const acwrNow=lastA? Math.round(lastA.acwr*100)/100 : null;
-  const acwrNote = acwrNow==null ? "Building baseline — the ratio needs ~3–4 weeks of logged training before it means anything."
+  const acwrReady=acwrLoadDays()>=10;
+  const acwrSvg=acwrReady? pgACWRChart(acwr) : null;
+  const acwrNow=acwrReady? currentAcwr() : null;
+  const acwrNote = acwrNow==null ? "Building baseline — a couple of weeks of logged training and the ramp ratio settles in here (smoothed, so it won't false-spike when you start)."
     : acwrNow>1.5 ? `<b>Now ${acwrNow.toFixed(2)} — spike territory.</b> Sharp ramp = elevated injury risk. Add easy days or cut a hard session.`
     : acwrNow>1.3 ? `<b>Now ${acwrNow.toFixed(2)} — ramping.</b> Fine briefly; don't stack another big week on top.`
     : acwrNow<0.8 ? `<b>Now ${acwrNow.toFixed(2)} — easing.</b> Ideal in a taper or recovery week.`
