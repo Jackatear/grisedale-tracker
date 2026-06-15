@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-07w" />
+<meta name="app-build" content="2026-06-07x" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -892,6 +892,68 @@
   .week-head{padding:13px 15px}
   .day-cell{padding:11px 13px}
   .card{padding:11px 13px}
+
+  /* ============ TODAY REDESIGN · greeting · race banner · day pills · filled hero ============ */
+  /* greeting-style topbar when a plan is open */
+  body.athlete .topbar{align-items:flex-start}
+  body.athlete .brand>div{display:flex;flex-direction:column}
+  body.athlete #countdown{order:-1;font-size:12.5px;color:var(--muted);margin:0 0 1px}
+  body.athlete #planTitle{font-size:21px;font-weight:700;letter-spacing:-.02em;color:var(--txt);line-height:1.15;white-space:normal}
+  @media(max-width:700px){ body.athlete .mark{display:none} body.athlete .brand{gap:0} }
+
+  /* race countdown banner */
+  .racebanner{display:block;width:100%;text-align:left;font:inherit;color:var(--txt);cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px 16px;margin-bottom:16px;box-shadow:var(--shadow-soft)}
+  .rb-top{display:flex;align-items:center;gap:12px}
+  .rb-icon{width:42px;height:42px;border-radius:12px;background:color-mix(in srgb,var(--accent) 13%,var(--panel));display:grid;place-items:center;font-size:19px;flex:0 0 auto}
+  .rb-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .rb-name{font-weight:700;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rb-date{font-size:12.5px;color:var(--muted)}
+  .rb-dd{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;line-height:1}
+  .rb-dd b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:25px;font-weight:700;color:var(--accent)}
+  .rb-dd i{font-size:10.5px;color:var(--muted);font-style:normal;margin-top:3px}
+  .rb-bar{height:6px;border-radius:999px;background:var(--bg2);margin:13px 0 8px;overflow:hidden}
+  .rb-bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+  .rb-foot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+
+  /* week-strip → tall date pills, today filled & lifted */
+  .ws-days{gap:6px}
+  .ws-day{flex-direction:column;gap:3px;min-height:62px;justify-content:center;background:var(--bg2);border:1px solid transparent;border-radius:14px;padding:8px 0}
+  .ws-dn{font-size:11px;font-weight:600;color:var(--faint);letter-spacing:0;text-transform:none;font-family:var(--sans)}
+  .ws-num{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--txt);font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .ws-dots{min-height:8px}
+  .ws-day.today{background:var(--accent);border-color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 14px color-mix(in srgb,var(--accent) 35%,transparent)}
+  .ws-day.today .ws-dn,.ws-day.today .ws-num{color:#fff}
+  .ws-day.today .ws-dots i{border-color:rgba(255,255,255,.9)}
+  .ws-day.today .ws-dots i.done{background:#fff}
+  .ws-day.today .ws-rest,.ws-day.today .ws-none{color:rgba(255,255,255,.7);background:rgba(255,255,255,.6)}
+  .weekstrip{box-shadow:var(--shadow-soft)}
+
+  /* THE HERO — bold filled session card */
+  #todayCard .hero{position:relative;display:block;width:100%;text-align:left;border:0;border-radius:20px;padding:20px;margin-bottom:18px;cursor:pointer;color:#fff;font:inherit;
+    background-color:color-mix(in srgb,var(--c) 84%,#14150e);
+    background-image:linear-gradient(160deg,rgba(255,255,255,.09),rgba(0,0,0,.07));
+    box-shadow:0 12px 30px color-mix(in srgb,var(--c) 28%,transparent)}
+  .hero.done{filter:saturate(.6) brightness(.92)}
+  .hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+  .hero-day{background:rgba(255,255,255,.22);font-size:12px;font-weight:700;padding:5px 13px;border-radius:999px}
+  .hero-type{font-size:11px;font-weight:700;color:rgba(255,255,255,.85);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+  .hero-title{font-family:var(--sans);font-size:25px;font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:16px}
+  .hero-stats{display:flex;align-items:baseline;gap:16px;margin-bottom:16px}
+  .hero-stats .hs{display:flex;align-items:baseline;gap:5px;min-width:0}
+  .hero-stats .hs b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:32px;font-weight:700;line-height:1}
+  .hero-stats .hs i{font-size:14px;font-style:normal;color:rgba(255,255,255,.8)}
+  .hs-div{width:1px;align-self:stretch;background:rgba(255,255,255,.3)}
+  .hero-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}
+  .ht{background:rgba(255,255,255,.16);border-radius:13px;padding:11px 6px;text-align:center;min-width:0}
+  .ht b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ht i{font-size:10.5px;font-style:normal;color:rgba(255,255,255,.75)}
+  .hero-desc{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88);margin-bottom:16px}
+  .hero-cta{display:block;width:100%;text-align:center;border:0;font:inherit;font-size:15px;font-weight:700;border-radius:14px;padding:14px;cursor:pointer;
+    background:var(--panel);color:color-mix(in srgb,var(--c) 72%,#15160f)}
+  .hero-cta.done,.hero-cta.ghost{background:rgba(255,255,255,.18);color:#fff}
+  .hero-rest{font-size:14px;color:rgba(255,255,255,.9);line-height:1.5}
+  .hero.rest .hero-title{margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -949,6 +1011,7 @@
     </div>
 
     <div id="planView">
+    <div id="raceBanner"></div>
     <div id="weekStrip"></div>
     <div id="todayCard"></div>
 
@@ -1291,6 +1354,11 @@ function iso(x){ const p=n=>String(n).padStart(2,"0"); return `${x.getFullYear()
 function mondayOf(s){ const x=d(s); const k=(x.getDay()+6)%7; x.setDate(x.getDate()-k); return iso(x); }
 function addDays(s,n){ const x=d(s); x.setDate(x.getDate()+n); return iso(x); }
 const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const WD_FULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const EFFORT_WORD=["Recovery","Easy","Steady","Hard","Max"];
+function paceStr(min,km){ if(!min||!km) return null; const s=Math.round(min/km*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function athleteName(){ try{ return (strava.name||"").trim().split(/\s+/)[0]||""; }catch(_){ return ""; } }
+function greetWord(){ const h=new Date().getHours(); return h<12?"Good morning":h<18?"Good afternoon":"Good evening"; }
 function dayShort(iso){ const x=d(iso); return WD[x.getDay()]+" "+x.getDate(); }
 function dayLong(iso){ const x=d(iso); return WD[x.getDay()]+", "+x.getDate()+" "+MO[x.getMonth()]+" "+x.getFullYear(); }
 function mdShort(iso){ const x=d(iso); return MO[x.getMonth()]+" "+x.getDate(); }
@@ -1452,6 +1520,7 @@ function render(){
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
   if(state.activeId) lastActivePlanId = state.activeId;
+  document.body.classList.toggle("athlete", !home);   // greeting-style topbar when a plan is open
   updateBotnav(home);
   $("#homeView").hidden = !home;
   $("#tabsRow").hidden = home;
@@ -1468,6 +1537,7 @@ function render(){
   }
   ensureBoard(); save();
   renderCountdown();
+  renderRaceBanner();
   renderToday();
   renderWeekStrip();
   renderChips();
@@ -1822,24 +1892,19 @@ function renderCountdown(){
   const mondays = weekMondays(), nWeeks = mondays.length;
   const _pd=(state.plan||[]).filter(w=>!(state.deleted&&state.deleted[w.id])).map(w=>w.date).filter(Boolean).sort();
   const planWeeks = _pd.length ? Math.round((d(mondayOf(_pd[_pd.length-1]))-d(planStartMonday()))/(7*86400000))+1 : nWeeks;
-  $("#planTitle").textContent = (state.planName||"Training Plan") + (planWeeks?` · ${planWeeks}-Week Plan`:"");
   document.title = (state.planName||"Training Plan") + " · Tracker";
   const t = todayISO();
-  const clean = n => (n||"Race").replace(/^\s*RACE\s*[—–-]\s*/i,"").trim();
-  const races = allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race")
-                  .sort((a,b)=>a.date<b.date?-1:(a.date>b.date?1:0));
-  const parts = [];
-  if(races.length){
-    const upcoming = races.filter(r=>daysBetween(t,r.date)>=0);
-    if(upcoming.length) upcoming.slice(0,2).forEach(r=>{ const dd=daysBetween(t,r.date); parts.push(dd===0?`${clean(r.n)} today 🏁`:`${dd}d to ${clean(r.n)}`); });
-    else parts.push("Plan complete 🏁");
-  }else if(nWeeks){
+  // topbar becomes a greeting; race + plan progress now live in the race banner below
+  const nm = athleteName();
+  $("#planTitle").textContent = greetWord() + (nm?`, ${nm}`:"");
+  let eyebrow = WD_FULL[d(t).getDay()];
+  if(nWeeks){
     const firstD=mondays[0], lastD=addDays(mondays[nWeeks-1],6), start=daysBetween(t,firstD);
-    if(start>0) parts.push(`Starts in ${start}d`);
-    else if(daysBetween(t,lastD)>=0) parts.push(`Week ${Math.min(Math.max(Math.floor(daysBetween(firstD,t)/7)+1,1),nWeeks)} of ${nWeeks}`);
-    else parts.push("Plan complete");
+    if(start>0) eyebrow += ` · plan starts in ${start}d`;
+    else if(daysBetween(t,lastD)>=0 && planWeeks) eyebrow += ` · week ${Math.min(Math.max(Math.floor(daysBetween(planStartMonday(),t)/7)+1,1),planWeeks)} of ${planWeeks}`;
+    else eyebrow += " · plan complete";
   }
-  $("#countdown").textContent = parts.join("  ·  ");
+  $("#countdown").textContent = eyebrow;
 }
 
 /* "Today" coach brief — what to run now, the why, the target zone, one-tap done. */
@@ -1919,14 +1984,71 @@ function renderToday(){
     : done ? `<span class="tc-doneflag ${es?es.level:""}" title="${es?execLabel(es)+" vs your planned target":""}">${es?("✓ "+es.pct+"%"):"✓ Done"}</span>`
     : mode==="today" ? `<button class="btn primary tc-do" data-done="${focus.id}">Mark done</button>`
     : `<span class="tc-view">View ›</span>`;
-  host.innerHTML = `<div class="today-card ${done?'done':''}" style="--c:${ty.c}" data-open="${focus.id}">
-      <div class="tc-eyebrow">${eyebrow}${isRest?"":` · <span style="color:var(--c)">${esc(ty.label)}</span>`}${isKey?` · <span class="tc-key">★ Key session of the week</span>`:""}${w.s?` · + strength`:""}</div>
-      <div class="tc-title">${esc(w.n)}</div>
-      ${meta.length?`<div class="tc-meta">${meta.map(x=>`<span class="pill">${esc(x)}</span>`).join("")}</div>`:""}
-      ${why?`<div class="tc-why">${esc(why)}</div>`:""}
-      <div class="tc-foot"><span class="tc-prog">${T.total?`This week · ${T.done}/${T.total} done`:""}</span>${right}</div>
+  // ---- bold filled hero (mockup style) ----
+  const dayPill = mode==="today" ? "Today" : (dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]);
+  const lg = state.log[focus.id]||{};
+  const zi = zoneTextToIdx(w.z);
+  const fell = isFellSurface(w);
+  const pace = paceStr(w.d, w.k);
+  // two headline stats, adapted to the session
+  let stats="";
+  if(!isRest){
+    let a=null,b=null;
+    if(w.k!=null && pace && !fell){ a=[fmtDist(w.k,false), state.unit]; b=[pace, "/"+state.unit]; }
+    else if(w.d && w.v!=null && w.v>0){ a=[fmtDur(w.d), ""]; b=["↗ "+fmtVert(w.v,false), state.unit==="mi"?"ft":"m"]; }
+    else if(w.d){ a=[fmtDur(w.d), ""]; b=(w.z&&w.z!=="—")? [w.z,""] : null; }
+    else if(w.k!=null){ a=[fmtDist(w.k,false), state.unit]; b=null; }
+    if(a) stats=`<div class="hero-stats"><div class="hs"><b>${esc(a[0])}</b>${a[1]?`<i>${esc(a[1])}</i>`:""}</div>${b?`<span class="hs-div"></span><div class="hs"><b>${esc(b[0])}</b>${b[1]?`<i>${esc(b[1])}</i>`:""}</div>`:""}</div>`;
+  }
+  // up to three sub-stat tiles
+  const tiles=[];
+  if(w.d) tiles.push(["Duration", fmtDur(w.d)]);
+  if(zi!=null) tiles.push(["Effort", EFFORT_WORD[zi]||w.z]);
+  else if(w.z&&w.z!=="—") tiles.push(["Effort", w.z]);
+  const surf=surfaceLabel(w); if(surf) tiles.push(["Terrain", surf[0].toUpperCase()+surf.slice(1)]);
+  const tilesHTML = (!isRest && tiles.length)? `<div class="hero-tiles">${tiles.slice(0,3).map(t=>`<div class="ht"><b>${esc(t[1])}</b><i>${esc(t[0])}</i></div>`).join("")}</div>` : "";
+  // call to action
+  let cta="";
+  if(isRest) cta=`<div class="hero-rest">Rest day — recovery is where the gains land.</div>`;
+  else if(done) cta=`<div class="hero-cta done">✓ Completed${es?` · ${es.pct}%`:""}</div>`;
+  else if(mode==="today") cta=`<button class="hero-cta" data-done="${focus.id}">Mark done</button>`;
+  else cta=`<div class="hero-cta ghost">View session →</div>`;
+  host.innerHTML = `<div class="hero ${done?'done':''} ${isRest?'rest':''}" style="--c:${ty.c}" data-open="${focus.id}">
+      <div class="hero-top"><span class="hero-day">${esc(dayPill)}</span><span class="hero-type">${esc(ty.label)}${isKey?" ★":""}</span></div>
+      <div class="hero-title">${esc(w.n)}</div>
+      ${stats}${tilesHTML}
+      ${why?`<div class="hero-desc">${esc(why)}</div>`:""}
+      ${cta}
     </div>`;
 }
+function renderRaceBanner(){
+  const host=$("#raceBanner"); if(!host) return;
+  const t=todayISO();
+  const races=allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race").sort((a,b)=>a.date<b.date?-1:1);
+  const future=races.filter(r=>daysBetween(t,r.date)>=0);
+  const goal=future.length? future[future.length-1] : null;     // the A-race = final upcoming race
+  if(!goal){ host.hidden=true; host.innerHTML=""; return; }
+  host.hidden=false;
+  const dd=daysBetween(t,goal.date);
+  const startMon=planStartMonday();
+  const totalDays=Math.max(1, daysBetween(startMon, goal.date));
+  const elapsed=Math.min(totalDays, Math.max(0, daysBetween(startMon,t)));
+  const pct=Math.round(elapsed/totalDays*100);
+  const totWeeks=Math.max(1, Math.round(totalDays/7)), curWeek=Math.min(totWeeks, Math.max(1, Math.floor(elapsed/7)+1));
+  const gd=d(goal.date);
+  const dlong=`${WD_FULL[gd.getDay()]} ${gd.getDate()} ${MONTHS_FULL[gd.getMonth()]}`;
+  const name=(goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim();
+  host.innerHTML=`<button class="racebanner" data-open="${goal.id}">
+    <div class="rb-top">
+      <span class="rb-icon">🏁</span>
+      <span class="rb-main"><span class="rb-name">${esc(name)}</span><span class="rb-date">${esc(dlong)}</span></span>
+      <span class="rb-dd"><b>${dd}</b><i>${dd===1?"day":"days"} to go</i></span>
+    </div>
+    <div class="rb-bar"><i style="width:${pct}%"></i></div>
+    <div class="rb-foot"><span>Week ${curWeek} of ${totWeeks}</span><span>${pct}% complete</span></div>
+  </button>`;
+}
+$("#raceBanner").addEventListener("click", e=>{ const o=e.target.closest("[data-open]"); if(o) openModal(o.dataset.open); });
 $("#todayCard").addEventListener("click", e=>{
   const dn=e.target.closest("[data-done]"); if(dn){ e.stopPropagation(); pushUndo(); state.done[dn.dataset.done]=!state.done[dn.dataset.done]; save(); render(); return; }
   const op=e.target.closest("[data-open]"); if(op) openModal(op.dataset.open);
@@ -1958,6 +2080,7 @@ function renderWeekStrip(){
       || (dy.restOnly? `<span class="ws-rest">·</span>` : `<span class="ws-none"></span>`);
     return `<button class="ws-day ${isToday?'today':''}" data-wsday="${dy.date}" title="${dy.date}">
       <span class="ws-dn">${WD[d(dy.date).getDay()][0]}</span>
+      <span class="ws-num">${d(dy.date).getDate()}</span>
       <span class="ws-dots">${dots}</span></button>`;
   }).join("");
   host.innerHTML=`<div class="weekstrip">
