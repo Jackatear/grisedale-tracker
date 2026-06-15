@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08a" />
+<meta name="app-build" content="2026-06-08b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1625,34 +1625,34 @@ $("#botnav").addEventListener("click", e=>{
     e.preventDefault();                                        // we own this horizontal gesture
     const dir = dx<0? 1 : -1;
     const move = targetTab(dir) ? dx : dx*0.28;                // resistance at the ends
-    el.style.transform="translateX("+move+"px)";
-    el.style.opacity = String(1 - Math.min(Math.abs(move)/W(),1)*0.35);
+    el.style.transform="translateX("+move+"px)";               // 1:1 finger tracking, no fade
   }, {passive:false});
   document.addEventListener("touchend", e=>{
     if(!active || !el || axis!=="x"){ bail(); return; }
+    const wv=W();
     const dx=e.changedTouches[0].clientX-x0, dt=Date.now()-t0;
     const dir = dx<0? 1 : -1, target=targetTab(dir);
-    const commit = target && (Math.abs(dx) > W()*0.32 || (Math.abs(dx)>55 && dt<320));
+    const commit = target && (Math.abs(dx) > wv*0.24 || (Math.abs(dx)>45 && dt<360));
     const out=el; el=null; active=false; axis=0;
+    const SLIDE="transform .3s "+EASE;
     if(commit){
-      out.style.transition="transform .22s ease, opacity .22s ease";
-      out.style.transform="translateX("+(-dir*W())+"px)"; out.style.opacity="0.3";
-      setTimeout(()=>{
-        clear(out);
-        if(target==="home") goHome(); else gotoTab(target);   // re-renders + scrolls new view to top
-        const ne=curEl(); if(!ne) return;
-        ne.style.willChange="transform,opacity"; ne.style.transition="none";
-        ne.style.transform="translateX("+(dir*W()*0.3)+"px)"; ne.style.opacity="0.45";
-        requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          ne.style.transition="transform .26s "+EASE+", opacity .26s "+EASE;
-          ne.style.transform="translateX(0)"; ne.style.opacity="1";
-          setTimeout(()=>clear(ne), 300);
-        }));
-      }, 200);
-    } else {                                                   // didn't go far enough → spring back
-      out.style.transition="transform .2s ease, opacity .2s ease";
-      out.style.transform="translateX(0)"; out.style.opacity="1";
-      setTimeout(()=>clear(out), 220);
+      // glue the two screens into one filmstrip and slide from EXACTLY where the finger let go —
+      // outgoing and incoming move locked together, so there's no jump between drag and animation
+      const top=out.getBoundingClientRect().top;
+      out.style.transition="none"; out.style.position="fixed"; out.style.top=top+"px";
+      out.style.left="0"; out.style.right="0"; out.style.zIndex="30"; out.style.transform="translateX("+dx+"px)";
+      if(target==="home") goHome(); else gotoTab(target);      // switches + scrolls new view to top
+      out.hidden=false;                                        // keep the parked outgoing on screen to animate out
+      const ne=curEl();
+      if(ne){ ne.style.willChange="transform"; ne.style.transition="none"; ne.style.transform="translateX("+(dx+dir*wv)+"px)"; }  // flush against the outgoing
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        out.style.transition=SLIDE; out.style.transform="translateX("+(-dir*wv)+"px)";
+        if(ne){ ne.style.transition=SLIDE; ne.style.transform="translateX(0)"; }
+        setTimeout(()=>{ out.hidden=true; out.style.position="";out.style.top="";out.style.left="";out.style.right="";out.style.zIndex=""; clear(out); clear(ne); }, 340);
+      }));
+    } else {                                                   // didn't go far enough → ease back
+      out.style.transition=SLIDE; out.style.transform="translateX(0)";
+      setTimeout(()=>clear(out), 330);
     }
   }, {passive:true});
 })();
