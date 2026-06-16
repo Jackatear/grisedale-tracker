@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08k" />
+<meta name="app-build" content="2026-06-08l" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -57,6 +57,15 @@
   html,body{margin:0;padding:0}
   html{touch-action:manipulation}   /* kill double-tap zoom on touch (pinch zoom still works) */
   [hidden]{display:none!important}
+  /* ===== Living UI — entrance stagger + tactile press feedback ===== */
+  @keyframes vwIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .vw-in{animation:vwIn .52s cubic-bezier(.22,.61,.36,1) backwards;animation-delay:calc(var(--si,0)*55ms)}
+  .hero,.dt,.rs-tile,.sd-deck,.plan-card,.s-add-btn,.btn,.iconbtn,.tab,.bn,.ws-day,.day-it,.racebanner{transition:transform .13s cubic-bezier(.22,.61,.36,1)}
+  .hero:active,.dt:active,.rs-tile:active,.sd-deck:active,.plan-card:active,.s-add-btn:active,.btn:active,.iconbtn:active,.tab:active,.bn:active,.ws-day:active,.day-it:active,.racebanner:active{transform:scale(.975)}
+  @media (prefers-reduced-motion: reduce){
+    .vw-in{animation:none!important}
+    .hero:active,.dt:active,.rs-tile:active,.sd-deck:active,.plan-card:active,.s-add-btn:active,.btn:active,.iconbtn:active,.tab:active,.bn:active,.ws-day:active,.day-it:active,.racebanner:active{transform:none}
+  }
   body{
     background:var(--bg);
     color:var(--txt);
@@ -1686,8 +1695,35 @@ function planStats(rec){
   let weeks=0; if(start&&end) weeks=Math.round((d(mondayOf(end))-d(mondayOf(start)))/(7*86400000))+1;
   return { total:sess.length, done, pct: sess.length?Math.round(done/sess.length*100):0, start, end, weeks };
 }
-function loadPlan(id){ syncActiveToLibrary(); if(!(state.plans||[]).some(p=>p.id===id)) return; state.activeId=id; activateMirror(state); state.tab="plan"; _lastDataSer=planSig(); render(); window.scrollTo(0,0); }
-function goHome(){ syncActiveToLibrary(); state.activeId=null; _lastDataSer=planSig(); render(); window.scrollTo(0,0); }
+function loadPlan(id){ syncActiveToLibrary(); if(!(state.plans||[]).some(p=>p.id===id)) return; state.activeId=id; activateMirror(state); state.tab="plan"; _lastDataSer=planSig(); render(); window.scrollTo(0,0); maybeAnimateView(); }
+function goHome(){ syncActiveToLibrary(); state.activeId=null; _lastDataSer=planSig(); render(); window.scrollTo(0,0); maybeAnimateView(); }
+/* ===== Living UI — gentle entrance motion on real navigation (not on in-tab re-renders,
+   suppressed during finger-swipes, and fully off under prefers-reduced-motion). ===== */
+let _navAnimSkip=false;
+const _VIEWSEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView",progress:"#progressView"};
+function currentViewEl(){ return !state.activeId ? $("#homeView") : ($(_VIEWSEL[state.tab]||"#planView")); }
+function reduceMotion(){ return matchMedia("(prefers-reduced-motion: reduce)").matches; }
+function maybeAnimateView(){ if(_navAnimSkip || reduceMotion()) return; requestAnimationFrame(()=>animateViewIn(currentViewEl())); }
+function animateViewIn(el){
+  if(!el || el.hidden || reduceMotion()) return;
+  const kids=[...el.children].filter(c=>c.nodeType===1 && !c.hidden && c.offsetHeight>0);
+  kids.forEach((c,i)=>{ c.classList.remove("vw-in"); c.style.setProperty("--si", Math.min(i,9)); });
+  void el.offsetWidth;
+  kids.forEach(c=>c.classList.add("vw-in"));
+  setTimeout(()=>kids.forEach(c=>{ c.classList.remove("vw-in"); c.style.removeProperty("--si"); }), 1500);
+  const svg=el.querySelector(".rs-svg"); if(svg) rsAnimate(svg);
+}
+// The race-shape chart comes alive: the fitness line draws itself, bars rise, area + projection fade in.
+function rsAnimate(svg){
+  if(reduceMotion()) return;
+  const solid=svg.querySelector(".rs-line:not(.fut)");
+  if(solid){ const len=solid.getTotalLength(); solid.style.transition="none"; solid.style.strokeDasharray=len; solid.style.strokeDashoffset=len;
+    void solid.getBoundingClientRect(); solid.style.transition="stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)"; solid.style.strokeDashoffset="0"; }
+  const fut=svg.querySelector(".rs-line.fut"); if(fut){ fut.style.opacity="0"; fut.style.transition="opacity .55s ease .85s"; requestAnimationFrame(()=>{ fut.style.opacity=""; }); }
+  const area=svg.querySelector(".rs-area"); if(area){ area.style.opacity="0"; area.style.transition="opacity .8s ease .25s"; requestAnimationFrame(()=>{ area.style.opacity=""; }); }
+  svg.querySelectorAll(".rs-bar").forEach((b,i)=>{ b.style.transformBox="fill-box"; b.style.transformOrigin="center bottom"; b.style.transition="none"; b.style.transform="scaleY(.001)";
+    void b.getBoundingClientRect(); b.style.transition=`transform .5s cubic-bezier(.22,.61,.36,1) ${30+i*22}ms`; requestAnimationFrame(()=>{ b.style.transform=""; }); });
+}
 let lastActivePlanId=null;
 // Bottom-nav: jump to a tab, opening the last-used (or first) plan if we're on the home screen
 function gotoTab(tab){
@@ -1697,7 +1733,7 @@ function gotoTab(tab){
     if(!id) return;
     state.activeId=id; activateMirror(state); _lastDataSer=planSig();
   }
-  state.tab=tab; save(); render(); window.scrollTo(0,0);
+  state.tab=tab; save(); render(); window.scrollTo(0,0); maybeAnimateView();
 }
 function updateBotnav(home){
   const cur = home ? "home" : (["plan","strength","calendar","progress"].includes(state.tab)?state.tab:"plan");
@@ -1768,7 +1804,7 @@ $("#botnav").addEventListener("click", e=>{
       const top=out.getBoundingClientRect().top;
       out.style.transition="none"; out.style.position="fixed"; out.style.top=top+"px";
       out.style.left="0"; out.style.right="0"; out.style.zIndex="30"; out.style.transform="translateX("+dx+"px)";
-      if(target==="home") goHome(); else gotoTab(target);      // switches + scrolls new view to top
+      _navAnimSkip=true; if(target==="home") goHome(); else gotoTab(target); _navAnimSkip=false;   // the slide IS the motion — skip the stagger
       out.hidden=false;                                        // keep the parked outgoing on screen to animate out
       const ne=curEl();
       if(ne){ ne.style.willChange="transform"; ne.style.transition="none"; ne.style.transform="translateX("+(dx+dir*wv)+"px)"; }  // flush against the outgoing
@@ -4466,7 +4502,7 @@ function matchActivities(acts){
 
 /* ============================ GO ============================ */
 let _rendered=false;
-function firstRender(){ if(_rendered) return; _rendered=true; render(); }
+function firstRender(){ if(_rendered) return; _rendered=true; render(); maybeAnimateView(); }
 hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); renderCloud(); if(cloudOn()) cloudConnect(cloud.token,{silent:true}); }).catch(firstRender);
 setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
 </script>
