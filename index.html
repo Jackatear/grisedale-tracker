@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08f" />
+<meta name="app-build" content="2026-06-08g" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -831,18 +831,16 @@
   .wh-title b{font-weight:inherit}
   .wh-dates{font-size:12px;color:var(--muted)}
   .wh-stats{display:flex;margin:12px -16px 0;padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-  .whs{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;padding:1px 3px}
+  .whs{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:1px 3px}
   .whs+.whs{border-left:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-  .whs svg{width:15px;height:15px;color:var(--faint);flex:0 0 auto}
+  .whl{font-style:normal;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
   .whs b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .whs i{font-style:normal;font-size:10px;color:var(--faint);white-space:nowrap}
   .week.current{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 4%,var(--panel))}
   .week.current>.week-head{background:transparent;border-left:0}
   @media (max-width:700px){
-    .whs{gap:4px}
+    .whs{gap:2px}
     .whs b{font-size:11px}
-    .whs i{font-size:9px}
-    .whs svg{width:13px;height:13px}
+    .whl{font-size:8.5px}
   }
   /* 8 · AIR pass (mobile): sessions become agenda ROWS — a type-colour dot, a name, quiet meta.
      No boxes inside weeks; days are small floating labels; grouping by whitespace alone. */
@@ -931,9 +929,8 @@
 
   /* THE HERO — bold filled session card */
   .hero{position:relative;display:block;width:100%;text-align:left;border:0;border-radius:20px;padding:20px;margin-bottom:18px;cursor:pointer;color:#fff;font:inherit;
-    background-color:color-mix(in srgb,var(--c) 84%,#14150e);
-    background-image:linear-gradient(160deg,rgba(255,255,255,.09),rgba(0,0,0,.07));
-    box-shadow:0 12px 30px color-mix(in srgb,var(--c) 28%,transparent)}
+    background-image:linear-gradient(155deg,#f2a878 0%,#ea905c 52%,#df7c48 100%);   /* soft peach, consistent (not session-tinted) */
+    box-shadow:0 12px 30px rgba(223,124,72,.26)}
   .hero.done{filter:saturate(.6) brightness(.92)}
   .hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
   .hero-day{background:rgba(255,255,255,.22);font-size:12px;font-weight:700;padding:5px 13px;border-radius:999px}
@@ -950,7 +947,7 @@
   .ht i{font-size:10.5px;font-style:normal;color:rgba(255,255,255,.75)}
   .hero-desc{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.88);margin-bottom:16px}
   .hero-cta{display:block;width:100%;text-align:center;border:0;font:inherit;font-size:15px;font-weight:700;border-radius:14px;padding:14px;cursor:pointer;
-    background:var(--panel);color:color-mix(in srgb,var(--c) 72%,#15160f)}
+    background:var(--panel);color:#bd5a2c}
   .hero-cta.done,.hero-cta.ghost{background:rgba(255,255,255,.18);color:#fff}
   .hero-rest{font-size:14px;color:rgba(255,255,255,.9);line-height:1.5}
   .hero.rest .hero-title{margin-bottom:8px}
@@ -1790,6 +1787,25 @@ function homeHeroHTML(rec){
       <div class="hero-top"><span class="hero-day">${esc(dayPill)}</span><span class="hero-type">${esc(ty.label)}</span></div>
       <div class="hero-title">${esc(w.n)}</div>${stats}${coach}${cta}</div>`;
 }
+const TILE_INFO={
+  readiness:{t:"Readiness", d:"Your own 'how I feel today' score (0–100, higher = fresher). Tap the morning check-in to set it. It tunes today's session note and the weekly coach's call.", action:true},
+  load:{t:"Training load · 7 days", d:"How much training you've banked in the last 7 days — a TRIMP-style score where harder and longer count more (your RPE × minutes when you log effort, otherwise heart-rate time-in-zone). The bars show the last 6 weeks.", action:false},
+  balance:{t:"Balance — acute : chronic ratio", d:"This week's load compared with your recent average. About 0.8–1.3 is the safe 'building' zone; above ~1.5 means you're ramping up too fast (raised injury risk); below ~0.8 is easing or tapering. Smoothed so it won't false-spike when you start logging.", action:false}
+};
+function openTileInfo(key){
+  const it=TILE_INFO[key]; if(!it) return;
+  const back=document.querySelector("#tileInfoBack"); if(back) back.remove();
+  const b=document.createElement("div"); b.className="sd-pick-back"; b.id="tileInfoBack";
+  b.innerHTML=`<div class="sd-pick"><h3>${esc(it.t)}</h3>
+    <p style="font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 14px">${esc(it.d)}</p>
+    ${it.action?`<button class="btn primary" id="tiAction" style="width:100%;margin-bottom:8px">Log morning check-in</button>`:""}
+    <button class="btn" id="tiOk" style="width:100%">Got it</button></div>`;
+  b.addEventListener("click", ev=>{
+    if(ev.target.id==="tiAction"){ b.remove(); refreshScrollLock(); openCheckin(); return; }
+    if(ev.target===b || ev.target.id==="tiOk"){ b.remove(); refreshScrollLock(); }
+  });
+  document.body.appendChild(b); refreshScrollLock();
+}
 function homeTilesHTML(){
   const t=todayISO(), map=dayLoadMap();
   let load7=0; for(let i=0;i<7;i++) load7+=(map[addDays(t,-i)]||0); load7=Math.round(load7);
@@ -1802,9 +1818,9 @@ function homeTilesHTML(){
   const bandCol = band.lvl==="good"?"var(--good)": band.lvl==="warn"?"var(--warn)": band.lvl==="bad"?"var(--bad)":"var(--faint)";
   const bandWord = band.label.split(" ·")[0];
   return `<div class="dash-tiles">
-    <button class="dt" data-ci="1"><div class="dt-l">Readiness</div><div class="dt-v">${sc==null?"—":sc}</div><div class="dt-s"><span class="dt-dot" style="background:${scCol}"></span>${scWord}</div></button>
-    <div class="dt"><div class="dt-l">Load · 7d</div><div class="dt-v">${load7||"—"}</div><div class="dt-bars">${bars}</div></div>
-    <div class="dt"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></div>
+    <button class="dt" data-tile="readiness" title="${esc(TILE_INFO.readiness.d)}"><div class="dt-l">Readiness</div><div class="dt-v">${sc==null?"—":sc}</div><div class="dt-s"><span class="dt-dot" style="background:${scCol}"></span>${scWord}</div></button>
+    <button class="dt" data-tile="load" title="${esc(TILE_INFO.load.d)}"><div class="dt-l">Load · 7d</div><div class="dt-v">${load7||"—"}</div><div class="dt-bars">${bars}</div></button>
+    <button class="dt" data-tile="balance" title="${esc(TILE_INFO.balance.d)}"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></button>
   </div>`;
 }
 function renderHome(){
@@ -1856,6 +1872,7 @@ $("#homeView").addEventListener("click", e=>{
   if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
   if(e.target.closest("#homeImport")){ $("#importCsvFile").click(); return; }
   if(e.target.closest("#homeNew")){ newBlankPlan(); return; }
+  const tile=e.target.closest("[data-tile]"); if(tile){ openTileInfo(tile.dataset.tile); return; }
   const hd=e.target.closest("[data-homedone]"); if(hd){ e.stopPropagation(); const r=primaryPlanRec(); if(r){ pushUndo(); r.done=r.done||{}; r.done[hd.dataset.homedone]=!r.done[hd.dataset.homedone]; save(); render(); } return; }
   const ho=e.target.closest("[data-homeopen]"); if(ho){ const r=primaryPlanRec(); if(r){ const id=ho.dataset.homeopen; loadPlan(r.id); requestAnimationFrame(()=>{ if(typeof openModal==="function") openModal(id); }); } return; }
   const la=e.target.closest("[data-libadd]"); if(la){ const it=PLAN_LIBRARY.find(p=>p.title===la.dataset.libadd); if(it) importLibraryPlan(it); return; }
@@ -3164,18 +3181,12 @@ function renderWeeks(){
         ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
         <div class="zbreak">${Z.planTot?`<span><b>Plan</b> ${planTxt}</span>`:""}${Z.hasAct?`<span><b>Done</b> ${doneTxt}</span>`:""}</div>
       </div>` : "";
-    const IC={
-      run:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5c4.5 0 5.5-4 8.5-4 1.8 0 2.1 1.7 4.5 2 2.6.3 5 1 5 2.7 0 .9-.7 1.6-2 1.6H4.2c-.7 0-1.2-.5-1.2-1.2z"/><path d="M11 13.5l1.2 1.8M13.6 13l1 1.7"/></svg>`,
-      clock:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
-      bike:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="16.5" r="3.6"/><circle cx="17.5" cy="16.5" r="3.6"/><path d="M6.5 16.5L10 9h4M14 9l3.5 7.5M10 9l3.5 7.5h-7"/></svg>`,
-      mtn:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L9 7l4 6.5L16 9l5 9z"/></svg>`,
-      check:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.4 2.4 4.6-4.9"/></svg>`};
     const whStats=`
-      <span class="whs">${IC.run}<b>${fmtDist(T.runDist,false)}</b><i>${state.unit}</i></span>
-      <span class="whs">${IC.clock}<b>${fmtDur(T.runDur)}</b></span>
-      <span class="whs">${IC.bike}<b>${T.bikeDur?fmtDur(T.bikeDur):"—"}</b><i>bike</i></span>
-      <span class="whs">${IC.mtn}<b>${fmtVert(T.vert,false)}</b><i>${state.unit==="mi"?"ft":"m"} ↗</i></span>
-      <span class="whs">${IC.check}<b>${T.done}/${T.total}</b><i>done</i></span>`;
+      <span class="whs"><i class="whl">Run</i><b>${fmtDist(T.runDist,false)} ${state.unit}</b></span>
+      <span class="whs"><i class="whl">Time</i><b>${fmtDur(T.runDur)}</b></span>
+      <span class="whs"><i class="whl">Bike</i><b>${T.bikeDur?fmtDur(T.bikeDur):"—"}</b></span>
+      <span class="whs"><i class="whl">Vert</i><b>${fmtVert(T.vert,false)} ${state.unit==="mi"?"ft":"m"}</b></span>
+      <span class="whs"><i class="whl">Done</i><b>${T.done}/${T.total}</b></span>`;
     html += `<div class="week ${collapsed?'collapsed':''} ${isCurrent?'current':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
           <div class="wh-top">
