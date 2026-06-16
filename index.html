@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08g" />
+<meta name="app-build" content="2026-06-08h" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -585,10 +585,8 @@
   .s-sub{color:var(--muted);font-size:12px;margin-top:4px;font-variant-numeric:tabular-nums}
   .s-add-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line2);background:var(--panel);color:var(--txt);border-radius:9px;padding:8px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
   .s-add-btn:hover{border-color:var(--accent);color:var(--accent)}
-  .sd-rail{display:flex;align-items:flex-start;gap:13px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:2px 2px 14px;margin:0 -2px;scrollbar-width:thin}
-  .sd-rail::-webkit-scrollbar{height:7px}
-  .sd-rail::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
-  .sd-card{flex:0 0 auto;width:min(88vw,344px);scroll-snap-align:start;background:var(--panel);border:1px solid var(--line);border-radius:13px;display:flex;flex-direction:column;overflow:hidden}
+  .sd-list{display:flex;flex-direction:column;gap:12px;margin:0 0 10px}
+  .sd-card{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:13px;display:flex;flex-direction:column;overflow:hidden}
   .sd-chead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px 15px 0}
   .sd-htext{min-width:0;flex:1}
   .sd-title{font-size:15px;font-weight:700;line-height:1.25;letter-spacing:-.1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -612,19 +610,60 @@
   .sd-dose{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:center;overflow-wrap:anywhere;line-height:1.35}
   .sd-log{font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere;line-height:1.35}
   .sd-log.empty{color:var(--faint);font-weight:400}
-  .sd-erow{display:flex;align-items:center;gap:7px;padding:5px 0}
+  .sd-erow{display:block;padding:9px 0;border-top:1px solid var(--line)}
+  .sd-erow:first-of-type{border-top:0}
+  .sd-erow-head{display:flex;align-items:center;gap:7px}
   .sd-f{font:inherit;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 8px}
   .sd-f:focus{outline:none;border-color:var(--accent)}
   .sd-f::placeholder{color:var(--faint)}
-  .sd-erow .sd-f.nm{flex:1;min-width:0;font-size:12.5px}
-  .sd-erow .sd-f.ds{width:56px;flex:0 0 auto;font-size:12px;text-align:center}
-  .sd-erow .sd-f.lg{width:64px;flex:0 0 auto;font-size:12.5px;text-align:center;font-weight:600}
+  .sd-erow-head .sd-f.nm{flex:1;min-width:0;font-size:12.5px}
+  .sd-erow-head .sd-f.ds{width:62px;flex:0 0 auto;font-size:12px;text-align:center}
+  .sd-skipbtn{flex:0 0 auto;font:inherit;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer}
+  .sd-skipbtn.on{color:var(--warn);border-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+  .sd-sets-edit{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;padding-left:1px}
+  .sd-set{width:46px;flex:0 0 auto;font:inherit;font-size:12.5px;text-align:center;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 4px;font-variant-numeric:tabular-nums}
+  .sd-set:focus{outline:none;border-color:var(--accent)}
+  .sd-set::placeholder{color:var(--faint)}
+  .sd-prevhint{font-size:11px;color:var(--faint);margin-left:3px;white-space:nowrap}
+  .sd-skipnote{margin-top:8px;width:100%;font:inherit;font-size:12px;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 9px}
+  .sd-skipnote:focus{outline:none;border-color:var(--accent)}
   .sd-addrow{display:inline-flex;margin:8px 0 2px;background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:2px 0}
   .sd-note{margin-top:10px;width:100%;min-height:38px;resize:vertical;font:inherit;font-size:12.5px;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:8px 9px}
   .sd-note:focus{outline:none;border-color:var(--accent)}
   .sd-noteRO{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.5}
   .sd-noteRO .lab{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);font-weight:600;margin-bottom:4px}
   .sd-empty-row{color:var(--faint);font-size:12.5px;padding:9px 0}
+  /* done card: collapse + progress bar + per-set weight pills */
+  .sd-card.done .sd-chead{cursor:pointer}
+  .sd-caret{flex:0 0 auto;align-self:center;color:var(--faint);transition:transform .18s}
+  .sd-caret svg{width:16px;height:16px;display:block}
+  .sd-card.collapsed .sd-caret{transform:rotate(-90deg)}
+  .sd-card.collapsed .sd-chead{padding-bottom:14px}
+  .sd-card.collapsed .sd-body,.sd-card.collapsed .sd-foot{display:none}
+  .sd-prog{padding:4px 0 13px}
+  .sd-prog-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:11.5px;color:var(--muted);margin-bottom:7px}
+  .sd-prog-skip{color:var(--warn);font-weight:600;white-space:nowrap}
+  .sd-prog-bar{height:5px;border-radius:999px;background:var(--bg2);overflow:hidden}
+  .sd-prog-bar i{display:block;height:100%;border-radius:999px;background:var(--good)}
+  .sd-ex{padding:11px 0;border-top:1px solid var(--line)}
+  .sd-ex:first-child{border-top:0}
+  .sd-ex-top{display:flex;align-items:center;gap:9px}
+  .sd-ex-box{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);display:inline-flex;align-items:center;justify-content:center;color:#fff}
+  .sd-ex-box.done{background:var(--good);border-color:var(--good)}
+  .sd-ex-box.done svg{width:11px;height:11px}
+  .sd-ex-box.skip{border-style:dashed}
+  .sd-ex-name{flex:1;min-width:0;font-size:13.5px;font-weight:600;color:var(--txt);overflow-wrap:anywhere;line-height:1.3}
+  .sd-ex.skip .sd-ex-name{color:var(--muted);font-weight:500}
+  .sd-ex-dose{flex:0 0 auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .sd-sets{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 0 27px}
+  .sd-pill{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:4px 9px;border-radius:8px;background:color-mix(in srgb,var(--good) 13%,transparent);color:var(--good);font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+  .sd-pill.empty{background:var(--bg2);color:var(--faint)}
+  .sd-unit{font-size:11.5px;color:var(--muted);margin-left:1px}
+  .sd-exnote{font-size:11.5px;color:var(--muted);margin-left:4px}
+  .sd-ex-skip{margin:7px 0 0 27px;display:inline-block;font-size:11.5px;color:var(--muted);background:var(--bg2);padding:4px 11px;border-radius:8px}
+  .sd-icon{flex:0 0 auto;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:9px;cursor:pointer;padding:0}
+  .sd-icon:hover{border-color:var(--faint);color:var(--txt)}
+  .sd-icon svg{width:16px;height:16px}
   .sd-foot{display:flex;gap:8px;align-items:center;padding:12px 15px;border-top:1px solid var(--line);margin-top:8px}
   .sd-btn{border-radius:9px;padding:9px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line2);background:var(--panel);color:var(--txt)}
   .sd-btn:hover{border-color:var(--faint)}
@@ -663,13 +702,11 @@
   .sd-ref li{margin:8px 0;font-size:13px;line-height:1.55;color:var(--muted)}
   .sd-ref li b{color:var(--txt);font-weight:600}
   @media (max-width:700px){
-    .sd-card{width:min(90vw,360px)}
-    .sd-titin,.sd-datein,.sd-note{font-size:16px}
-    .sd-erow{flex-wrap:wrap;gap:7px 8px}
-    .sd-erow .sd-f{font-size:16px;padding:9px 10px}
-    .sd-erow .sd-f.nm{flex:1 1 100%;min-width:0}
-    .sd-erow .sd-f.ds{flex:1 1 0;width:auto;min-width:0;text-align:left}
-    .sd-erow .sd-f.lg{flex:1 1 0;width:auto;min-width:0;text-align:left}
+    .sd-card{width:100%}
+    .sd-titin,.sd-datein,.sd-note,.sd-skipnote{font-size:16px}
+    .sd-erow-head .sd-f{font-size:16px;padding:9px 10px}
+    .sd-erow-head .sd-f.ds{width:74px}
+    .sd-set{width:54px;font-size:16px;padding:9px 4px}
   }
 
   /* HR-zone intensity strips */
@@ -753,16 +790,11 @@
     .tabsrow{margin-bottom:14px}
     .home-head h2{font-size:17px}
     .plan-grid{grid-template-columns:1fr}
-    /* Strength cards: roomier, and edit rows restack (name on its own line, dose+weight below) */
-    .sd-card{width:min(89vw,360px);padding:16px 16px}
+    /* Strength cards: full width, comfy tap targets */
+    .sd-card{width:100%}
     .sd-titin{font-size:16px;padding:9px 10px}
     .sd-datein{font-size:15px;padding:7px 9px;width:auto;align-self:flex-start}
     .sd-note{font-size:16px}
-    .sd-row{flex-wrap:wrap;gap:7px 8px}
-    .sd-row .sd-f{padding:10px 11px}
-    .sd-row .sd-f.nm{flex:1 1 100%;min-width:0;font-size:16px}
-    .sd-row .sd-f.ds{flex:1 1 0;width:auto;min-width:0;text-align:left;font-size:16px}
-    .sd-row .sd-f.lg{flex:1 1 0;width:auto;min-width:0;text-align:left;font-size:16px}
     .sd-addrow{font-size:14px;padding:6px 0}
     .sd-btn{padding:11px 8px;font-size:14px}
     .sd-pick .opt{padding:13px}
@@ -1652,7 +1684,7 @@ $("#botnav").addEventListener("click", e=>{
   document.addEventListener("touchstart", e=>{
     bail();
     if(W()>700 || e.touches.length!==1) return;
-    if(e.target.closest("input,textarea,select,.sd-rail,.modal,.menu,#updbar,.hr-svg,.pg-svg")) return;
+    if(e.target.closest("input,textarea,select,.modal,.menu,#updbar,.hr-svg,.pg-svg")) return;
     if(document.querySelector(".sd-pick-back") || (backdrop && backdrop.classList.contains("open"))) return;
     x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now(); axis=0; active=true; el=curEl();
   }, {passive:true});
@@ -1930,10 +1962,19 @@ function normStrengthDay(c){ c=c||{};
     title: typeof c.title==="string" && c.title ? c.title : "Strength session",
     focus: typeof c.focus==="string" ? c.focus : "",
     mins: c.mins!=null ? c.mins : null,
-    rows: Array.isArray(c.rows) ? c.rows.map(r=>({ name:(r&&r.name)||"", dose:(r&&r.dose)||"", log:(r&&r.log)||"" })) : [],
+    rows: Array.isArray(c.rows) ? c.rows.map(r=>{ r=r||{};
+      const sets = Array.isArray(r.sets) ? r.sets.map(x=>x==null?"":String(x)) : (r.log?[String(r.log)]:[]);
+      return { name:r.name||"", dose:r.dose||"", sets, note:typeof r.note==="string"?r.note:"", skip:!!r.skip, log:r.log||"" }; }) : [],
     note: typeof c.note==="string" ? c.note : "",
     done: !!c.done, date: c.date||null };
 }
+// Per-set helpers (each exercise logs one value per set → the weight pills)
+function doseSets(dose){ const s=String(dose||""); let m=s.match(/(\d+)\s*[×x*]/); let n=m?+m[1]:0; if(!n){ m=s.match(/^\s*(\d+)/); n=m?+m[1]:0; } if(!n) n=3; return Math.max(1,Math.min(8,n)); }
+function rowSets(r){ return Array.isArray(r.sets)?r.sets.map(x=>x==null?"":String(x)):(r.log?[String(r.log)]:[]); }
+function rowSetsFilled(r){ return rowSets(r).map(s=>s.trim()).filter(Boolean); }
+function rowLogged(r){ return rowSetsFilled(r).length>0; }
+function setsUnit(filled){ return filled.length && filled.every(s=>/^[\d.]+$/.test(s)) ? "kg" : ""; }
+function setsSummary(r){ const f=rowSetsFilled(r); if(!f.length) return ""; const u=setsUnit(f); return f.join(" / ")+(u?(" "+u):""); }
 function strengthTemplates(){ const out=[]; STRENGTH.sections.forEach(s=>s.routines.forEach(r=>out.push(r))); return out; }
 // One-time: turn any earlier flat strengthLog ({"Routine::Exercise":"40kg"}) into day cards so nothing is lost.
 function synthStrengthDays(log){
@@ -1948,13 +1989,17 @@ function synthStrengthDays(log){
 function sdFmtDate(isoStr){ if(!isoStr) return ""; const dt=d(isoStr); return `${WD[dt.getDay()]} ${dt.getDate()} ${MO[dt.getMonth()]}`; }
 
 const SD_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+const SD_CARET=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+const SD_EDIT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
+const SD_TRASH=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
+let _sdToggle={};   // card id -> explicit open/closed override for done cards (transient, per-device)
 // What you lifted last time, per exercise (done sessions, newest first) — fuels the "↻ last" hints.
 function lastStrengthLogs(){
   const m={};
   (state.strengthDays||[]).filter(c=>c.done&&c.date).sort((a,b)=>a.date<b.date?1:-1).forEach(c=>{
     (c.rows||[]).forEach(r=>{
-      const k=(r.name||"").trim().toLowerCase(); if(!k||!(r.log||"").trim()) return;
-      (m[k]=m[k]||[]).push({date:c.date, id:c.id, log:r.log, dose:r.dose});
+      const k=(r.name||"").trim().toLowerCase(); const sum=setsSummary(r); if(!k||!sum) return;
+      (m[k]=m[k]||[]).push({date:c.date, id:c.id, log:sum, dose:r.dose});
     });
   });
   return m;
@@ -1968,33 +2013,53 @@ function renderStrength(){
     ? `${days.length} session${days.length===1?"":"s"} · ${thisWeek} this week${lastDone?` · last ${sdFmtDate(lastDone)}`:""}`
     : `Track your gym work — weights, sets and how it felt.`;
   const lastBy = lastStrengthLogs();
-  const doneRow = r => `<div class="sd-row"><span class="sd-name">${esc(r.name)}</span><span class="sd-dose">${esc(r.dose||"—")}</span><span class="sd-log ${r.log?"":"empty"}">${esc(r.log||"—")}</span></div>`;
-  const editRow = (r,c) => {
+  const recentDoneId = (done.map(c=>c).sort((a,b)=>(a.date||"")<(b.date||"")?1:-1)[0]||{}).id;
+  // DONE: one exercise block — checkbox, name, dose, and the per-set weight pills (or a skip note)
+  const doneExHTML = r => {
+    const filled = rowSetsFilled(r);
+    const head = `<div class="sd-ex-top"><span class="sd-ex-box ${r.skip?"skip":(filled.length?"done":"")}">${(!r.skip&&filled.length)?SD_CHECK:""}</span><span class="sd-ex-name">${esc(r.name)}</span>${r.dose?`<span class="sd-ex-dose">${esc(r.dose)}</span>`:""}</div>`;
+    if(r.skip) return `<div class="sd-ex skip">${head}<div class="sd-ex-skip">Skipped${r.note?` — ${esc(r.note)}`:""}</div></div>`;
+    const unit = setsUnit(filled);
+    const pills = filled.length
+      ? `${filled.map(s=>`<span class="sd-pill">${esc(s)}</span>`).join("")}${unit?`<span class="sd-unit">${unit}</span>`:""}${r.note?`<span class="sd-exnote">${esc(r.note)}</span>`:""}`
+      : `<span class="sd-pill empty">—</span>${r.note?`<span class="sd-exnote">${esc(r.note)}</span>`:""}`;
+    return `<div class="sd-ex">${head}<div class="sd-sets">${pills}</div></div>`;
+  };
+  // EDIT: one editable exercise row — name, dose, skip toggle, and N set inputs (N from the dose)
+  const editRow = (r,i,c) => {
     const k=(r.name||"").trim().toLowerCase();
     const prev=(lastBy[k]||[]).find(e=>e.id!==c.id && e.date<=(c.date||todayISO()));
-    return `<div class="sd-erow"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="${prev&&prev.dose?esc(prev.dose):"sets"}" value="${esc(r.dose)}"><input class="sd-f lg" data-f="log" placeholder="${prev?("↻ "+esc(prev.log)):"kg"}" value="${esc(r.log)}" title="${prev?("Last time ("+sdFmtDate(prev.date)+"): "+esc(prev.log)+" — beat it"):""}"></div>`;
+    const head=`<div class="sd-erow-head"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="${prev&&prev.dose?esc(prev.dose):"sets"}" value="${esc(r.dose)}"><button class="sd-skipbtn${r.skip?" on":""}" data-act="skiprow" data-row="${i}" title="${r.skip?"Skipped — tap to restore":"Mark skipped"}">skip</button></div>`;
+    if(r.skip) return `<div class="sd-erow skip" data-row="${i}">${head}<input class="sd-skipnote" data-f="skipnote" placeholder="why skipped (optional)" value="${esc(r.note)}"></div>`;
+    const setsArr=rowSets(r), n=Math.min(8,Math.max(doseSets(r.dose), setsArr.length, 1));
+    const setInputs=Array.from({length:n},(_,j)=>`<input class="sd-set" data-set="${j}" inputmode="decimal" placeholder="${j+1}" value="${esc(setsArr[j]||"")}">`).join("");
+    return `<div class="sd-erow" data-row="${i}">${head}<div class="sd-sets-edit">${setInputs}${prev?`<span class="sd-prevhint" title="Last time (${esc(sdFmtDate(prev.date))})">↻ ${esc(prev.log)}</span>`:""}</div></div>`;
   };
   const cardHTML = c => {
     const d=!!c.done, rows=c.rows||[];
     const sub = [c.focus, c.mins?`${c.mins} min`:""].filter(Boolean).join(" · ");
     if(d){
-      const tbl = rows.length
-        ? `<div class="sd-colh"><span>Exercise</span><span>Target</span><span>Logged</span></div>${rows.map(doneRow).join("")}`
-        : `<div class="sd-empty-row">No exercises recorded.</div>`;
+      const exRows=rows.filter(r=>r.name);
+      const nSkip=exRows.filter(r=>r.skip).length, total=exRows.length;
+      const nDone=exRows.filter(r=>!r.skip&&rowLogged(r)).length;
+      const pct=total?Math.round(nDone/total*100):0;
+      const prog=total?`<div class="sd-prog"><div class="sd-prog-top"><span>${nDone} of ${total} exercise${total===1?"":"s"} done</span>${nSkip?`<span class="sd-prog-skip">${nSkip} skipped</span>`:""}</div><div class="sd-prog-bar"><i style="width:${pct}%"></i></div></div>`:"";
+      const exHTML = exRows.length ? exRows.map(doneExHTML).join("") : `<div class="sd-empty-row">No exercises recorded.</div>`;
       const note = c.note ? `<div class="sd-noteRO"><span class="lab">Notes</span>${esc(c.note)}</div>` : "";
-      return `<div class="sd-card done" data-sd="${esc(c.id)}">
-        <div class="sd-chead"><div class="sd-htext"><div class="sd-title">${esc(c.title)}</div>${sub?`<div class="sd-sub">${esc(sub)}</div>`:""}</div><span class="sd-badge done">${SD_CHECK}${esc(sdFmtDate(c.date))}</span></div>
-        <div class="sd-body">${tbl}${note}</div>
-        <div class="sd-foot"><button class="sd-btn primary" data-act="edit">Edit</button><button class="sd-btn ghost" data-act="del">Delete</button></div></div>`;
+      const open = (c.id in _sdToggle) ? _sdToggle[c.id] : (c.id===recentDoneId);
+      return `<div class="sd-card done${open?"":" collapsed"}" data-sd="${esc(c.id)}">
+        <div class="sd-chead" data-act="toggle"><div class="sd-htext"><div class="sd-title">${esc(c.title)}</div>${sub?`<div class="sd-sub">${esc(sub)}</div>`:""}</div><span class="sd-badge done">${SD_CHECK}${esc(sdFmtDate(c.date))}</span><span class="sd-caret">${SD_CARET}</span></div>
+        <div class="sd-body">${prog}<div class="sd-exwrap">${exHTML}</div>${note}</div>
+        <div class="sd-foot"><button class="sd-btn primary" data-act="repeat">↻ Repeat session</button><button class="sd-icon" data-act="edit" title="Edit" aria-label="Edit">${SD_EDIT}</button><button class="sd-icon" data-act="del" title="Delete" aria-label="Delete">${SD_TRASH}</button></div></div>`;
     }
-    return `<div class="sd-card" data-sd="${esc(c.id)}">
+    return `<div class="sd-card draft" data-sd="${esc(c.id)}">
       <div class="sd-chead"><div class="sd-htext"><input class="sd-titin" data-f="title" value="${esc(c.title)}" placeholder="Session name">${sub?`<div class="sd-sub" style="margin-top:6px">${esc(sub)}</div>`:""}</div><span class="sd-badge draft">Draft</span></div>
       <div class="sd-dateline"><label>Date</label><input class="sd-datein" data-f="date" type="date" value="${esc(c.date||todayISO())}"></div>
-      <div class="sd-body">${rows.map(r=>editRow(r,c)).join("")}<button class="sd-addrow" data-act="addrow">＋ Add exercise</button><textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea></div>
+      <div class="sd-body">${rows.map((r,i)=>editRow(r,i,c)).join("")}<button class="sd-addrow" data-act="addrow">＋ Add exercise</button><textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea></div>
       <div class="sd-foot"><button class="sd-btn primary" data-act="done">Mark done</button><button class="sd-btn ghost" data-act="del">Delete</button></div></div>`;
   };
   const body = days.length
-    ? `<div class="sd-rail">${days.map(cardHTML).join("")}</div>`
+    ? `<div class="sd-list">${days.map(cardHTML).join("")}</div>`
     : `<div class="sd-empty2"><h3>No strength sessions yet</h3><p>Add your first session to start logging weights and tracking progression.</p><button class="s-add-btn" data-act="add">＋ New session</button></div>`;
   $("#strengthView").innerHTML = `
     <div class="s-top"><div><h2>Strength</h2><div class="s-sub">${esc(summary)}</div></div><button class="s-add-btn" data-act="add">＋ New session</button></div>
@@ -2008,10 +2073,16 @@ function readStrengthCard(cardEl, c){
   const dt=cardEl.querySelector('[data-f="date"]'); if(dt && dt.value) c.date=dt.value;
   const nt=cardEl.querySelector('[data-f="note"]'); if(nt) c.note=nt.value;
   const rowEls=[...cardEl.querySelectorAll('.sd-erow')];
-  if(rowEls.length){ c.rows = rowEls.map(re=>({
-    name:(re.querySelector('[data-f="name"]')||{}).value?.trim()||"",
-    dose:(re.querySelector('[data-f="dose"]')||{}).value?.trim()||"",
-    log:(re.querySelector('[data-f="log"]')||{}).value?.trim()||"" })); }
+  if(rowEls.length){ c.rows = rowEls.map(re=>{
+    const skip=re.classList.contains("skip");
+    const sets=[...re.querySelectorAll('.sd-set')].map(s=>s.value.trim());
+    while(sets.length && !sets[sets.length-1]) sets.pop();   // drop trailing empty sets
+    return {
+      name:(re.querySelector('[data-f="name"]')||{}).value?.trim()||"",
+      dose:(re.querySelector('[data-f="dose"]')||{}).value?.trim()||"",
+      sets, skip,
+      note:(re.querySelector('[data-f="skipnote"]')||{}).value?.trim()||"", log:"" };
+  }); }
 }
 function openSdPicker(){
   closeSdPicker();
@@ -2028,14 +2099,14 @@ function openSdPicker(){
     const o=ev.target.closest(".opt"); if(!o) return;
     const ri=o.getAttribute("data-ri");
     const card = ri==="repeat"
-      ? normStrengthDay({ title:lastDone.title, focus:lastDone.focus, mins:lastDone.mins, rows:(lastDone.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,log:""})) })
+      ? normStrengthDay({ title:lastDone.title, focus:lastDone.focus, mins:lastDone.mins, rows:(lastDone.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,sets:[]})) })
       : ri==="blank"
-      ? normStrengthDay({ title:"Strength session", rows:[{name:"",dose:"",log:""},{name:"",dose:"",log:""}] })
-      : (r=>normStrengthDay({ title:r.name, focus:r.focus, mins:r.mins, rows:r.ex.map(e=>({name:e[0],dose:e[1],log:""})) }))(opts[+ri]);
+      ? normStrengthDay({ title:"Strength session", rows:[{name:"",dose:"",sets:[]},{name:"",dose:"",sets:[]}] })
+      : (r=>normStrengthDay({ title:r.name, focus:r.focus, mins:r.mins, rows:r.ex.map(e=>({name:e[0],dose:e[1],sets:[]})) }))(opts[+ri]);
     card.date=todayISO();
     state.strengthDays=state.strengthDays||[]; state.strengthDays.unshift(card);
     closeSdPicker(); save(); renderStrength();
-    requestAnimationFrame(()=>{ const rail=$(".sd-rail"); if(rail) rail.scrollLeft=0; });
+    requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${card.id}"]`); if(el) el.scrollIntoView({block:"start"}); });
   });
   document.body.appendChild(back);
   refreshScrollLock();
@@ -2059,9 +2130,13 @@ $("#strengthView").addEventListener("click", e=>{
   if(act==="add"){ openSdPicker(); return; }
   const cardEl=btn.closest(".sd-card"); const id=cardEl&&cardEl.getAttribute("data-sd");
   const c=(state.strengthDays||[]).find(x=>x.id===id); if(!c) return;
-  if(act==="addrow"){ readStrengthCard(cardEl,c); c.rows.push({name:"",dose:"",log:""}); save(); renderStrength();
+  if(act==="toggle"){ _sdToggle[id]=cardEl.classList.contains("collapsed"); renderStrength(); return; }
+  if(act==="addrow"){ readStrengthCard(cardEl,c); c.rows.push({name:"",dose:"",sets:[],note:"",skip:false}); save(); renderStrength();
     requestAnimationFrame(()=>{ const ins=$$(`[data-sd="${id}"] .sd-erow .sd-f.nm`); const el=ins[ins.length-1]; if(el) el.focus(); }); return; }
-  if(act==="done"){ readStrengthCard(cardEl,c); c.rows=c.rows.filter(r=>r.name||r.dose||r.log); c.done=true; if(!c.date) c.date=todayISO(); save(); renderStrength(); return; }
+  if(act==="skiprow"){ readStrengthCard(cardEl,c); const i=+btn.getAttribute("data-row"); if(c.rows[i]) c.rows[i].skip=!c.rows[i].skip; save(); renderStrength(); return; }
+  if(act==="done"){ readStrengthCard(cardEl,c); c.rows=c.rows.filter(r=>r.name||r.dose||rowLogged(r)||r.skip); c.done=true; if(!c.date) c.date=todayISO(); _sdToggle[id]=true; save(); renderStrength(); return; }
+  if(act==="repeat"){ const clone=normStrengthDay({ title:c.title, focus:c.focus, mins:c.mins, rows:(c.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,sets:[],note:"",skip:false})) }); clone.date=todayISO(); clone.done=false; state.strengthDays.unshift(clone); save(); renderStrength();
+    requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${clone.id}"]`); if(el) el.scrollIntoView({block:"center"}); }); return; }
   if(act==="edit"){ c.done=false; save(); renderStrength(); return; }
   if(act==="del"){ if(confirm("Delete this strength card?")){ state.strengthDays=(state.strengthDays||[]).filter(x=>x.id!==id); save(); renderStrength(); } return; }
 });
@@ -2070,6 +2145,8 @@ let _sdSaveT=null;
 function _sdLive(e){
   const cardEl=e.target.closest(".sd-card"); if(!cardEl) return;
   const id=cardEl.getAttribute("data-sd"); const c=(state.strengthDays||[]).find(x=>x.id===id); if(!c||c.done) return;
+  // dose drives how many set boxes show — re-render once they leave the field (change, not every keystroke)
+  if(e.type==="change" && e.target.matches('.sd-erow [data-f="dose"]')){ readStrengthCard(cardEl,c); save(); renderStrength(); return; }
   if(_sdSaveT) clearTimeout(_sdSaveT);
   _sdSaveT=setTimeout(()=>{ readStrengthCard(cardEl,c); save(); }, 350);
 }
@@ -3108,7 +3185,7 @@ function weekZones(weekIds){
 /* Completed strength sessions surface as cards on the plan board / calendar for their date */
 function strengthDaysOn(date){ return (state.strengthDays||[]).filter(c=>c.done && c.date===date); }
 function strengthCardHTML(c){
-  const rows=c.rows||[]; const logged=rows.filter(r=>r.log).length;
+  const rows=c.rows||[]; const logged=rows.filter(r=>rowLogged(r)).length;
   const meta=[];
   if(c.mins) meta.push(`<span class="pill">${c.mins} min</span>`);
   meta.push(`<span class="pill">${rows.length} exercise${rows.length===1?"":"s"}</span>`);
@@ -3122,7 +3199,8 @@ function strengthCardHTML(c){
 }
 function openStrengthFromBoard(id){
   state.tab="strength"; save(); render();
-  requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${id}"]`); if(el){ el.scrollIntoView({inline:"center",block:"nearest"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } });
+  _sdToggle[id]=true;
+  requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${id}"]`); if(el){ el.scrollIntoView({block:"center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } });
 }
 function renderWeeks(){
   const mondays = weekMondays();
