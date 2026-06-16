@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08h" />
+<meta name="app-build" content="2026-06-08i" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -585,7 +585,7 @@
   .s-sub{color:var(--muted);font-size:12px;margin-top:4px;font-variant-numeric:tabular-nums}
   .s-add-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line2);background:var(--panel);color:var(--txt);border-radius:9px;padding:8px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
   .s-add-btn:hover{border-color:var(--accent);color:var(--accent)}
-  .sd-list{display:flex;flex-direction:column;gap:12px;margin:0 0 10px}
+  .sd-list{display:flex;flex-direction:column;gap:18px;margin:0 0 10px}
   .sd-card{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:13px;display:flex;flex-direction:column;overflow:hidden}
   .sd-chead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px 15px 0}
   .sd-htext{min-width:0;flex:1}
@@ -664,6 +664,21 @@
   .sd-icon{flex:0 0 auto;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:9px;cursor:pointer;padding:0}
   .sd-icon:hover{border-color:var(--faint);color:var(--txt)}
   .sd-icon svg{width:16px;height:16px}
+  /* type stacks — each workout type is a tappable deck of its sessions */
+  .sd-stack{position:relative}
+  .sd-deck{position:relative;cursor:pointer}
+  .sd-deck-layer{position:absolute;left:11px;right:11px;bottom:-6px;height:16px;background:var(--panel);border:1px solid var(--line2);border-radius:0 0 13px 13px;z-index:0}
+  .sd-deck-layer.l2{left:21px;right:21px;bottom:-12px;opacity:.5}
+  .sd-deck-face{position:relative;z-index:2;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px}
+  .sd-stack:not(.open) .sd-deck-face{box-shadow:0 2px 7px rgba(0,0,0,.055)}
+  .sd-deck:hover .sd-deck-face{border-color:var(--line2)}
+  .sd-deck-top{display:flex;align-items:center;gap:9px}
+  .sd-deck-title{flex:1;min-width:0;font-size:15.5px;font-weight:700;letter-spacing:-.1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sd-deck-count{flex:0 0 auto;min-width:24px;height:22px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--muted);font-size:12px;font-weight:700;border-radius:999px;font-variant-numeric:tabular-nums;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .sd-deck-sub{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.35}
+  .sd-deck-meta{color:var(--faint);font-size:11px;margin-top:6px;font-variant-numeric:tabular-nums}
+  .sd-stack:not(.open) .sd-deck .sd-caret{transform:rotate(-90deg)}
+  .sd-stack-body{display:flex;flex-direction:column;gap:10px;margin:11px 0 2px 7px;padding-left:13px;border-left:2px solid var(--line)}
   .sd-foot{display:flex;gap:8px;align-items:center;padding:12px 15px;border-top:1px solid var(--line);margin-top:8px}
   .sd-btn{border-radius:9px;padding:9px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line2);background:var(--panel);color:var(--txt)}
   .sd-btn:hover{border-color:var(--faint)}
@@ -1993,6 +2008,7 @@ const SD_CARET=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const SD_EDIT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
 const SD_TRASH=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>`;
 let _sdToggle={};   // card id -> explicit open/closed override for done cards (transient, per-device)
+let _sdStackOpen={};   // stack key (workout type) -> explicit open/closed override (transient, per-device)
 // What you lifted last time, per exercise (done sessions, newest first) — fuels the "↻ last" hints.
 function lastStrengthLogs(){
   const m={};
@@ -2013,7 +2029,18 @@ function renderStrength(){
     ? `${days.length} session${days.length===1?"":"s"} · ${thisWeek} this week${lastDone?` · last ${sdFmtDate(lastDone)}`:""}`
     : `Track your gym work — weights, sets and how it felt.`;
   const lastBy = lastStrengthLogs();
-  const recentDoneId = (done.map(c=>c).sort((a,b)=>(a.date||"")<(b.date||"")?1:-1)[0]||{}).id;
+  // Group sessions into stacks by workout TYPE (title) — each stack is a tappable deck of that type's history
+  const stacks=[], byKey={};
+  days.forEach(c=>{ const key=(c.title||"Session").trim().toLowerCase(); let s=byKey[key]; if(!s){ s=byKey[key]={key,title:c.title||"Session",items:[]}; stacks.push(s); } s.items.push(c); });
+  stacks.forEach(s=>{
+    s.items.sort((a,b)=> (a.done!==b.done) ? (a.done?1:-1) : ((b.date||"")<(a.date||"")?-1:1) );  // drafts first, then newest done
+    s.hasDraft=s.items.some(c=>!c.done);
+    s.lastDate=s.items.filter(c=>c.done&&c.date).map(c=>c.date).sort().pop()||null;
+    s.rep=s.items.find(c=>c.done)||s.items[0];
+  });
+  stacks.sort((a,b)=> ((b.hasDraft?1:0)-(a.hasDraft?1:0)) || (((b.lastDate||"")<(a.lastDate||"")) ? -1 : 1) );
+  const mostRecentKey = stacks[0] && stacks[0].key;
+  const defaultOpenIds = new Set(stacks.map(s=>(s.items.find(c=>c.done)||{}).id).filter(Boolean));   // newest done per stack shows expanded
   // DONE: one exercise block — checkbox, name, dose, and the per-set weight pills (or a skip note)
   const doneExHTML = r => {
     const filled = rowSetsFilled(r);
@@ -2046,9 +2073,9 @@ function renderStrength(){
       const prog=total?`<div class="sd-prog"><div class="sd-prog-top"><span>${nDone} of ${total} exercise${total===1?"":"s"} done</span>${nSkip?`<span class="sd-prog-skip">${nSkip} skipped</span>`:""}</div><div class="sd-prog-bar"><i style="width:${pct}%"></i></div></div>`:"";
       const exHTML = exRows.length ? exRows.map(doneExHTML).join("") : `<div class="sd-empty-row">No exercises recorded.</div>`;
       const note = c.note ? `<div class="sd-noteRO"><span class="lab">Notes</span>${esc(c.note)}</div>` : "";
-      const open = (c.id in _sdToggle) ? _sdToggle[c.id] : (c.id===recentDoneId);
+      const open = (c.id in _sdToggle) ? _sdToggle[c.id] : defaultOpenIds.has(c.id);
       return `<div class="sd-card done${open?"":" collapsed"}" data-sd="${esc(c.id)}">
-        <div class="sd-chead" data-act="toggle"><div class="sd-htext"><div class="sd-title">${esc(c.title)}</div>${sub?`<div class="sd-sub">${esc(sub)}</div>`:""}</div><span class="sd-badge done">${SD_CHECK}${esc(sdFmtDate(c.date))}</span><span class="sd-caret">${SD_CARET}</span></div>
+        <div class="sd-chead" data-act="toggle"><div class="sd-htext"><div class="sd-title">${esc(c.date?sdFmtDate(c.date):c.title)}</div></div><span class="sd-badge done">${SD_CHECK}Done</span><span class="sd-caret">${SD_CARET}</span></div>
         <div class="sd-body">${prog}<div class="sd-exwrap">${exHTML}</div>${note}</div>
         <div class="sd-foot"><button class="sd-btn primary" data-act="repeat">↻ Repeat session</button><button class="sd-icon" data-act="edit" title="Edit" aria-label="Edit">${SD_EDIT}</button><button class="sd-icon" data-act="del" title="Delete" aria-label="Delete">${SD_TRASH}</button></div></div>`;
     }
@@ -2058,8 +2085,20 @@ function renderStrength(){
       <div class="sd-body">${rows.map((r,i)=>editRow(r,i,c)).join("")}<button class="sd-addrow" data-act="addrow">＋ Add exercise</button><textarea class="sd-note" data-f="note" placeholder="How it went…">${esc(c.note||"")}</textarea></div>
       <div class="sd-foot"><button class="sd-btn primary" data-act="done">Mark done</button><button class="sd-btn ghost" data-act="del">Delete</button></div></div>`;
   };
+  // A deck = the collapsed face of a workout-type stack; tap to fan it open into its session cards
+  const stackHTML = s => {
+    const open = s.hasDraft || ((s.key in _sdStackOpen) ? _sdStackOpen[s.key] : (s.key===mostRecentKey));
+    const n=s.items.length;
+    const sub=[s.rep.focus, s.rep.mins?`${s.rep.mins} min`:""].filter(Boolean).join(" · ");
+    const layers = (!open && n>1) ? `<span class="sd-deck-layer l2"></span><span class="sd-deck-layer l1"></span>` : "";
+    const metaBits=[]; if(s.lastDate) metaBits.push("Last "+sdFmtDate(s.lastDate)); metaBits.push(`${n} session${n===1?"":"s"}`);
+    const tag = s.hasDraft ? `<span class="sd-badge draft">In progress</span>` : `<span class="sd-deck-count">${n}</span>`;
+    const deck = `<div class="sd-deck" data-act="stacktoggle">${layers}<div class="sd-deck-face"><div class="sd-deck-top"><div class="sd-deck-title">${esc(s.title)}</div>${tag}<span class="sd-caret">${SD_CARET}</span></div>${sub?`<div class="sd-deck-sub">${esc(sub)}</div>`:""}<div class="sd-deck-meta">${esc(metaBits.join(" · "))}</div></div></div>`;
+    const inner = open ? `<div class="sd-stack-body">${s.items.map(cardHTML).join("")}</div>` : "";
+    return `<div class="sd-stack${open?" open":""}" data-stack="${esc(s.key)}">${deck}${inner}</div>`;
+  };
   const body = days.length
-    ? `<div class="sd-list">${days.map(cardHTML).join("")}</div>`
+    ? `<div class="sd-list">${stacks.map(stackHTML).join("")}</div>`
     : `<div class="sd-empty2"><h3>No strength sessions yet</h3><p>Add your first session to start logging weights and tracking progression.</p><button class="s-add-btn" data-act="add">＋ New session</button></div>`;
   $("#strengthView").innerHTML = `
     <div class="s-top"><div><h2>Strength</h2><div class="s-sub">${esc(summary)}</div></div><button class="s-add-btn" data-act="add">＋ New session</button></div>
@@ -2105,8 +2144,9 @@ function openSdPicker(){
       : (r=>normStrengthDay({ title:r.name, focus:r.focus, mins:r.mins, rows:r.ex.map(e=>({name:e[0],dose:e[1],sets:[]})) }))(opts[+ri]);
     card.date=todayISO();
     state.strengthDays=state.strengthDays||[]; state.strengthDays.unshift(card);
+    _sdStackOpen[(card.title||"Session").trim().toLowerCase()]=true;
     closeSdPicker(); save(); renderStrength();
-    requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${card.id}"]`); if(el) el.scrollIntoView({block:"start"}); });
+    requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${card.id}"]`); if(el) el.scrollIntoView({block:"center"}); });
   });
   document.body.appendChild(back);
   refreshScrollLock();
@@ -2128,14 +2168,16 @@ $("#strengthView").addEventListener("click", e=>{
   const btn=e.target.closest("[data-act]"); if(!btn) return;
   const act=btn.getAttribute("data-act");
   if(act==="add"){ openSdPicker(); return; }
+  if(act==="stacktoggle"){ const st=btn.closest(".sd-stack"); if(!st) return; const key=st.getAttribute("data-stack"); _sdStackOpen[key]=!st.classList.contains("open"); renderStrength(); return; }
   const cardEl=btn.closest(".sd-card"); const id=cardEl&&cardEl.getAttribute("data-sd");
   const c=(state.strengthDays||[]).find(x=>x.id===id); if(!c) return;
+  const stackKey=(c.title||"Session").trim().toLowerCase();
   if(act==="toggle"){ _sdToggle[id]=cardEl.classList.contains("collapsed"); renderStrength(); return; }
   if(act==="addrow"){ readStrengthCard(cardEl,c); c.rows.push({name:"",dose:"",sets:[],note:"",skip:false}); save(); renderStrength();
     requestAnimationFrame(()=>{ const ins=$$(`[data-sd="${id}"] .sd-erow .sd-f.nm`); const el=ins[ins.length-1]; if(el) el.focus(); }); return; }
   if(act==="skiprow"){ readStrengthCard(cardEl,c); const i=+btn.getAttribute("data-row"); if(c.rows[i]) c.rows[i].skip=!c.rows[i].skip; save(); renderStrength(); return; }
-  if(act==="done"){ readStrengthCard(cardEl,c); c.rows=c.rows.filter(r=>r.name||r.dose||rowLogged(r)||r.skip); c.done=true; if(!c.date) c.date=todayISO(); _sdToggle[id]=true; save(); renderStrength(); return; }
-  if(act==="repeat"){ const clone=normStrengthDay({ title:c.title, focus:c.focus, mins:c.mins, rows:(c.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,sets:[],note:"",skip:false})) }); clone.date=todayISO(); clone.done=false; state.strengthDays.unshift(clone); save(); renderStrength();
+  if(act==="done"){ readStrengthCard(cardEl,c); c.rows=c.rows.filter(r=>r.name||r.dose||rowLogged(r)||r.skip); c.done=true; if(!c.date) c.date=todayISO(); _sdToggle[id]=true; _sdStackOpen[stackKey]=true; save(); renderStrength(); return; }
+  if(act==="repeat"){ const clone=normStrengthDay({ title:c.title, focus:c.focus, mins:c.mins, rows:(c.rows||[]).filter(r=>r.name).map(r=>({name:r.name,dose:r.dose,sets:[],note:"",skip:false})) }); clone.date=todayISO(); clone.done=false; state.strengthDays.unshift(clone); _sdStackOpen[stackKey]=true; save(); renderStrength();
     requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${clone.id}"]`); if(el) el.scrollIntoView({block:"center"}); }); return; }
   if(act==="edit"){ c.done=false; save(); renderStrength(); return; }
   if(act==="del"){ if(confirm("Delete this strength card?")){ state.strengthDays=(state.strengthDays||[]).filter(x=>x.id!==id); save(); renderStrength(); } return; }
@@ -3198,8 +3240,10 @@ function strengthCardHTML(c){
     </div>`;
 }
 function openStrengthFromBoard(id){
-  state.tab="strength"; save(); render();
+  const c=(state.strengthDays||[]).find(x=>x.id===id);
+  if(c) _sdStackOpen[(c.title||"Session").trim().toLowerCase()]=true;   // fan open its type's stack
   _sdToggle[id]=true;
+  state.tab="strength"; save(); render();
   requestAnimationFrame(()=>{ const el=$(`#strengthView .sd-card[data-sd="${id}"]`); if(el){ el.scrollIntoView({block:"center"}); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); } });
 }
 function renderWeeks(){
