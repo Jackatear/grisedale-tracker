@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08d" />
+<meta name="app-build" content="2026-06-08f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -930,7 +930,7 @@
   .weekstrip{box-shadow:var(--shadow-soft)}
 
   /* THE HERO — bold filled session card */
-  #todayCard .hero{position:relative;display:block;width:100%;text-align:left;border:0;border-radius:20px;padding:20px;margin-bottom:18px;cursor:pointer;color:#fff;font:inherit;
+  .hero{position:relative;display:block;width:100%;text-align:left;border:0;border-radius:20px;padding:20px;margin-bottom:18px;cursor:pointer;color:#fff;font:inherit;
     background-color:color-mix(in srgb,var(--c) 84%,#14150e);
     background-image:linear-gradient(160deg,rgba(255,255,255,.09),rgba(0,0,0,.07));
     box-shadow:0 12px 30px color-mix(in srgb,var(--c) 28%,transparent)}
@@ -975,6 +975,24 @@
   .rd-lab.on{color:var(--accent);font-weight:700}
   .rd-more{display:block;width:100%;text-align:center;margin-top:12px;padding-top:11px;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
   .rd-more:hover{color:var(--txt)}
+
+  /* home dashboard: Readiness / Load / Balance tiles + plans footer */
+  .dash-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .dt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 12px 12px;text-align:left;min-width:0;box-shadow:var(--shadow-soft);font:inherit;color:var(--txt);display:block;cursor:default}
+  button.dt{cursor:pointer}
+  .dt-l{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dt-v{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:23px;font-weight:700;line-height:1;margin:7px 0}
+  .dt-s{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:5px}
+  .dt-dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+  .dt-bars{display:flex;align-items:flex-end;gap:2px;height:20px}
+  .dt-bars i{flex:1;background:var(--good);border-radius:1.5px;min-height:2px}
+  .home-plans-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 11px}
+  .home-plans-head>span{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:700;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .home-plans-head .btn{font-size:12.5px;padding:7px 12px}
+  .home-empty{text-align:center;padding:48px 16px}
+  .home-empty h2{font-size:20px;margin:0 0 6px}
+  .home-empty p{color:var(--muted);margin:0 0 18px}
+  .home-empty .home-actions{justify-content:center;display:flex;gap:10px}
 </style>
 </head>
 <body>
@@ -1547,12 +1565,18 @@ function render(){
   $("#tabsRow").hidden = home;
   if(home){
     $("#planView").hidden=true; $("#strengthView").hidden=true; $("#calendarView").hidden=true; $("#progressView").hidden=true;
-    const n=(state.plans||[]).length;
-    $("#planTitle").textContent = "Training plans";
-    $("#countdown").textContent = n+" plan"+(n===1?"":"s");
+    const n=(state.plans||[]).length, t=todayISO();
+    if(n){
+      document.body.classList.add("athlete");
+      $("#planTitle").textContent = greetWord()+(athleteName()?`, ${athleteName()}`:"");
+      $("#countdown").textContent = `${WD_FULL[d(t).getDay()]}, ${d(t).getDate()} ${MONTHS_FULL[d(t).getMonth()]}`;
+    } else {
+      document.body.classList.remove("athlete");
+      $("#planTitle").textContent = "Training tracker"; $("#countdown").textContent = "Let's get started";
+    }
     $("#miniStats").innerHTML = "";
     document.title = "Training Tracker";
-    renderHome(); renderCoach(); save();
+    renderHome(); save();
     if(typeof renderCloud==="function") renderCloud();
     return;
   }
@@ -1710,7 +1734,86 @@ function csvTemplate(){
   ];
   return [head.join(",")].concat(ex.map(r=>r.map(csvCell).join(","))).join("\n");
 }
+/* ---- HOME = daily cockpit, computed record-scoped from the primary plan (no active mirror) ---- */
+function primaryPlanRec(){
+  const ps=state.plans||[]; if(!ps.length) return null;
+  if(lastActivePlanId){ const r=ps.find(p=>p.id===lastActivePlanId); if(r) return r; }
+  const t=todayISO(), hz=addDays(t,28), pa=addDays(t,-28); let best=null,bs=-1;
+  ps.forEach(rec=>{ let near=0,rc=0; (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{ if(!w.date)return; if(w.date>=t&&w.date<=hz)near++; if(w.date>=pa&&w.date<=t)rc++; }); const sc=near*100+rc; if(sc>bs){bs=sc;best=rec;} });
+  return best||ps[0];
+}
+function recStartMon(rec){ const ds=(rec.plan||[]).filter(w=>w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>w.date).sort(); return ds.length? mondayOf(ds[0]) : mondayOf(todayISO()); }
+function homeRaceBannerHTML(rec){
+  const t=todayISO();
+  const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
+  const future=races.filter(r=>daysBetween(t,r.date)>=0); const goal=future.length?future[future.length-1]:null;
+  if(!goal) return "";
+  const dd=daysBetween(t,goal.date), wks=Math.round(dd/7), farWk=dd>=14;
+  const startMon=recStartMon(rec), totalDays=Math.max(1,daysBetween(startMon,goal.date)), elapsed=Math.min(totalDays,Math.max(0,daysBetween(startMon,t))), pct=Math.round(elapsed/totalDays*100);
+  const totWk=Math.max(1,Math.round(totalDays/7)), curWk=Math.min(totWk,Math.max(1,Math.floor(elapsed/7)+1));
+  const gd=d(goal.date), name=(goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim();
+  return `<button class="racebanner" data-homeopen="${esc(goal.id)}">
+    <div class="rb-top"><span class="rb-icon">🏁</span><span class="rb-main"><span class="rb-name">${esc(name)}</span><span class="rb-date">${WD_FULL[gd.getDay()]} ${gd.getDate()} ${MONTHS_FULL[gd.getMonth()]}</span></span>
+      <span class="rb-dd"><b>${farWk?wks:dd}</b><i>${farWk?"weeks to go":(dd===1?"day to go":"days to go")}</i></span></div>
+    <div class="rb-bar"><i style="width:${pct}%"></i></div>
+    <div class="rb-foot"><span>Week ${curWk} of ${totWk}</span><span>${pct}% complete</span></div></button>`;
+}
+function homeHeroHTML(rec){
+  const t=todayISO();
+  const on=date=>((rec.board&&rec.board[date])||[]).map(id=>({id,w:recWO(rec,id)})).filter(x=>x.w);
+  let focus=null, mode="today", fdate=t; const today=on(t);
+  focus = today.find(x=>x.w.t!=="Rest" && !(rec.done&&rec.done[x.id])) || today.find(x=>x.w.t!=="Rest") || today.find(x=>x.w.t==="Rest");
+  if(!focus){ const up=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date>t&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])).sort((a,b)=>a.date<b.date?-1:1); if(up.length){ focus={id:up[0].id,w:recWO(rec,up[0].id)}; mode="next"; fdate=up[0].date; } }
+  if(!focus) return "";
+  const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!(rec.done&&rec.done[focus.id]), isRest=w.t==="Rest";
+  const dd=daysBetween(t,fdate), zi=zoneTextToIdx(w.z), fell=isFellSurface(w), pace=paceStr(w.d,w.k);
+  const dayPill = mode==="today"?"Today's run":(dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]);
+  let stats="";
+  if(!isRest){ let a=null,b=null;
+    if(w.k!=null && pace && !fell){ a=[fmtDist(w.k,false),state.unit]; b=[pace,"/"+state.unit]; }
+    else if(w.d && w.v!=null && w.v>0){ a=[fmtDur(w.d),""]; b=["↗ "+fmtVert(w.v,false),state.unit==="mi"?"ft":"m"]; }
+    else if(w.d){ a=[fmtDur(w.d),""]; b=(w.z&&w.z!=="—")?[w.z,""]:null; }
+    else if(w.k!=null){ a=[fmtDist(w.k,false),state.unit]; b=null; }
+    if(a) stats=`<div class="hero-stats"><div class="hs"><b>${esc(a[0])}</b>${a[1]?`<i>${esc(a[1])}</i>`:""}</div>${b?`<span class="hs-div"></span><div class="hs"><b>${esc(b[0])}</b>${b[1]?`<i>${esc(b[1])}</i>`:""}</div>`:""}</div>`;
+  }
+  const sc=readinessScore(state.readiness&&state.readiness[t]);
+  let coach="";
+  if(sc!=null && mode==="today" && !done && !isRest){
+    const msg = sc>=80?"good to run as planned": sc>=60?"good to go — run as planned": sc>=45?"a bit tired — keep it controlled":"run down — ease right back or rest";
+    coach=`<div class="hero-coach"><span>Readiness ${sc}</span>${msg}</div>`;
+  }
+  const cta = isRest ? `<div class="hero-rest">Rest day — recovery is where the gains land.</div>`
+    : done ? `<div class="hero-cta done">✓ Completed</div>`
+    : mode==="today" ? `<button class="hero-cta" data-homedone="${esc(focus.id)}">Mark done</button>`
+    : `<div class="hero-cta ghost">View session →</div>`;
+  return `<div class="hero ${done?'done':''} ${isRest?'rest':''}" style="--c:${ty.c}" data-homeopen="${esc(focus.id)}">
+      <div class="hero-top"><span class="hero-day">${esc(dayPill)}</span><span class="hero-type">${esc(ty.label)}</span></div>
+      <div class="hero-title">${esc(w.n)}</div>${stats}${coach}${cta}</div>`;
+}
+function homeTilesHTML(){
+  const t=todayISO(), map=dayLoadMap();
+  let load7=0; for(let i=0;i<7;i++) load7+=(map[addDays(t,-i)]||0); load7=Math.round(load7);
+  const wkL=[]; for(let i=5;i>=0;i--){ let l=0; const mon=addDays(mondayOf(t),-7*i); for(let di=0;di<7;di++) l+=(map[addDays(mon,di)]||0); wkL.push(l); }
+  const mx=Math.max(...wkL,1); const bars=wkL.map((v,i)=>`<i style="height:${Math.max(12,Math.round(v/mx*100))}%;opacity:${i===5?1:.5}"></i>`).join("");
+  const sc=readinessScore(state.readiness&&state.readiness[t]);
+  const scWord = sc==null?"Tap to log": sc>=80?"Fresh": sc>=60?"Good": sc>=45?"Tired":"Low";
+  const scCol = sc==null?"var(--faint)": sc>=60?"var(--good)": sc>=45?"var(--warn)":"var(--bad)";
+  const ready=acwrLoadDays()>=10, acwr=ready?currentAcwr():null, band=loadBand(acwr, ready);
+  const bandCol = band.lvl==="good"?"var(--good)": band.lvl==="warn"?"var(--warn)": band.lvl==="bad"?"var(--bad)":"var(--faint)";
+  const bandWord = band.label.split(" ·")[0];
+  return `<div class="dash-tiles">
+    <button class="dt" data-ci="1"><div class="dt-l">Readiness</div><div class="dt-v">${sc==null?"—":sc}</div><div class="dt-s"><span class="dt-dot" style="background:${scCol}"></span>${scWord}</div></button>
+    <div class="dt"><div class="dt-l">Load · 7d</div><div class="dt-v">${load7||"—"}</div><div class="dt-bars">${bars}</div></div>
+    <div class="dt"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></div>
+  </div>`;
+}
 function renderHome(){
+  const rec=primaryPlanRec();
+  if(!(state.plans||[]).length){
+    $("#homeView").innerHTML=`<div class="home-empty"><h2>No plans yet</h2><p>Import a training CSV or start a blank plan to begin.</p>
+      <div class="home-actions"><button class="btn primary" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New plan</button></div></div>`;
+    return;
+  }
   const cards=(state.plans||[]).map(rec=>{
     const st=planStats(rec);
     const range = st.start? `${mdShort(st.start)} – ${mdShort(st.end)} · ${st.weeks} wk${st.weeks===1?"":"s"}` : "Empty plan";
@@ -1736,20 +1839,25 @@ function renderHome(){
       </div>
     </div>`;
   $("#homeView").innerHTML = `
-    <div class="home-head"><h2>Your plans</h2>
-      <div class="home-actions"><button class="btn primary" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New blank plan</button></div></div>
-    <div id="coachStrip"></div>
+    ${rec? homeRaceBannerHTML(rec):""}
+    ${rec? homeHeroHTML(rec):""}
+    ${homeTilesHTML()}
+    ${coachPropHTML()}
     ${seasonNudgeHTML()}
+    ${typeof predictorHTML==="function"? predictorHTML():""}
+    <div class="home-plans-head"><span>Your plans · ${(state.plans||[]).length}</span>
+      <div class="home-actions"><button class="btn" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New plan</button></div></div>
     <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>
-    ${zonesCard}
-    <p class="legend-foot">Each plan keeps its own progress, and your whole library syncs across devices. Tip: drop a <b>.csv</b> anywhere to add a plan.</p>`;
+    ${zonesCard}`;
 }
 $("#homeBtn").onclick = goHome;
 $("#homeView").addEventListener("click", e=>{
   const zt=e.target.closest("[data-zonestoggle]");
   if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
-  if(e.target.id==="homeImport"){ $("#importCsvFile").click(); return; }
-  if(e.target.id==="homeNew"){ newBlankPlan(); return; }
+  if(e.target.closest("#homeImport")){ $("#importCsvFile").click(); return; }
+  if(e.target.closest("#homeNew")){ newBlankPlan(); return; }
+  const hd=e.target.closest("[data-homedone]"); if(hd){ e.stopPropagation(); const r=primaryPlanRec(); if(r){ pushUndo(); r.done=r.done||{}; r.done[hd.dataset.homedone]=!r.done[hd.dataset.homedone]; save(); render(); } return; }
+  const ho=e.target.closest("[data-homeopen]"); if(ho){ const r=primaryPlanRec(); if(r){ const id=ho.dataset.homeopen; loadPlan(r.id); requestAnimationFrame(()=>{ if(typeof openModal==="function") openModal(id); }); } return; }
   const la=e.target.closest("[data-libadd]"); if(la){ const it=PLAN_LIBRARY.find(p=>p.title===la.dataset.libadd); if(it) importLibraryPlan(it); return; }
   const del=e.target.closest("[data-del]"); if(del){ e.stopPropagation(); deletePlan(del.dataset.del); return; }
   const ren=e.target.closest("[data-rename]"); if(ren){ e.stopPropagation(); renamePlan(ren.dataset.rename); return; }
