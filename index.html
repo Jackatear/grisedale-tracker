@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08l" />
+<meta name="app-build" content="2026-06-08m" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -28,7 +28,7 @@
     --radius:8px;
     --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
     --t-hills:#9c3c2e; --t-descent:#4f7e87; --t-simulation:#8c5a74;
-    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e;
+    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e; --t-sauna:#b86a4e;
   }
   [data-theme="dark"]{
     color-scheme:dark;
@@ -40,7 +40,7 @@
     --good:#8aa379; --warn:#c79a4b; --bad:#c25a48; --shadow:0 10px 30px rgba(0,0,0,.45);
     --t-easy:#8aa379; --t-recovery:#92aebd; --t-threshold:#c79a4b;
     --t-hills:#c25a48; --t-descent:#74a4ad; --t-simulation:#b083a0;
-    --t-long:#8d94c0; --t-race:#bda14a; --t-rest:#8f8a78; --t-bike:#7e9ab4; --t-strength:#968dc1;
+    --t-long:#8d94c0; --t-race:#bda14a; --t-rest:#8f8a78; --t-bike:#7e9ab4; --t-strength:#968dc1; --t-sauna:#d18a6c;
   }
   [data-theme="light"]{
     color-scheme:light;
@@ -51,7 +51,7 @@
     --good:#5d7350; --warn:#a8762a; --bad:#9c3c2e; --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
     --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
     --t-hills:#9c3c2e; --t-descent:#4f7e87; --t-simulation:#8c5a74;
-    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e;
+    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e; --t-sauna:#b86a4e;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -1242,10 +1242,11 @@ const TYPES = {
   Simulation: {label:"Race Sim",   c:"var(--t-simulation)"},
   Long:       {label:"Long Run",   c:"var(--t-long)"},
   Bike:       {label:"Bike",       c:"var(--t-bike)"},
+  Sauna:      {label:"Sauna",      c:"var(--t-sauna)"},
   Race:       {label:"Race",       c:"var(--t-race)"},
   Rest:       {label:"Rest",       c:"var(--t-rest)"},
 };
-const TYPE_ORDER = ["Easy","Recovery","Threshold","Hills","Descent","Simulation","Long","Bike","Race","Rest"];
+const TYPE_ORDER = ["Easy","Recovery","Threshold","Hills","Descent","Simulation","Long","Bike","Sauna","Race","Rest"];
 
 // d=duration min, k=distance km, v=vert m, z=zone, s=strength, sa=sauna
 const SEED_PLAN = [
@@ -1501,7 +1502,7 @@ function getWO(id, raw){
   if(!base) return null;
   const w = Object.assign({}, base, state.edits[id]||{});
   w.fell = isFellSurface(w);   // lock terrain in BEFORE filling an estimated distance (the heuristic keys off missing distance)
-  if(!raw && (w.k==null||w.k==="") && w.d>0 && !["Rest","Bike","Race"].includes(w.t)){   // estimate distance when missing (terrain-aware) so fell cards show a distance too
+  if(!raw && (w.k==null||w.k==="") && w.d>0 && !["Rest","Bike","Race","Sauna"].includes(w.t)){   // estimate distance when missing (terrain-aware) so fell cards show a distance too
     const spd = w.fell ? 7 : (w.sf==="trail" ? 9.5 : 10.5);   // km/h: fell slow (climbs/terrain), trail moderate, road quicker
     w.k = Math.round(w.d/60*spd*10)/10; w.kEst = true;
   }
@@ -1616,20 +1617,20 @@ function totals(ids){
   let runDur=0,runDist=0,bikeDur=0,bikeDist=0,runDoneDur=0,runDoneDist=0,bikeDoneDur=0,bikeDoneDist=0;
   ids.forEach(id=>{
     const w=getWO(id); if(!w) return;
-    const isRest = w.t==="Rest", isBike = w.t==="Bike";
+    const isRest = w.t==="Rest", isBike = w.t==="Bike", isSauna = w.t==="Sauna";
     const lg = state.log[id]||{};
     const k = lg.k!=null&&lg.k!==""? +lg.k : (w.k||0);
     const mm = lg.d!=null&&lg.d!==""? +lg.d : (w.d||0);
     const vv = lg.v!=null&&lg.v!==""? +lg.v : (w.v||0);
     dist+=(w.k||0); dur+=(w.d||0); vert+=(w.v||0);
     if(isBike){ bikeDur+=(w.d||0); bikeDist+=(w.k||0); }
-    else if(!isRest){ runDur+=(w.d||0); runDist+=(w.k||0); }
+    else if(!isRest && !isSauna){ runDur+=(w.d||0); runDist+=(w.k||0); }   // sauna is neither run nor bike volume
     if(!isRest) total++;
     if(state.done[id]){
       if(!isRest) done++;
       dDist+=k; dDur+=mm; dVert+=vv;
       if(isBike){ bikeDoneDur+=mm; bikeDoneDist+=k; }
-      else if(!isRest){ runDoneDur+=mm; runDoneDist+=k; }
+      else if(!isRest && !isSauna){ runDoneDur+=mm; runDoneDist+=k; }
     }
   });
   return {dist,dur,vert,total,done,dDist,dDur,dVert,
@@ -2518,7 +2519,7 @@ function loadFrom(w, lg){                          // unified estimator, best si
   // 1) session-RPE × minutes (the athlete's own read — RPE/2 maps onto the Z1..Z5 weights so history stays continuous)
   // 2) precise time-in-zone from the Strava HR stream
   // 3) minutes × planned-zone weight (intent-first so intervals aren't undercounted by a warmup-dragged avg HR)
-  if(!w||w.t==="Rest") return 0; lg=lg||{};
+  if(!w||w.t==="Rest"||w.t==="Sauna") return 0; lg=lg||{};   // sauna = heat/recovery, not training load
   if(lg.rpe>0){ const m = lg.d!=null ? +lg.d : (w.d||0); if(m) return m*(+lg.rpe/2); }
   if(Array.isArray(lg.zones)){ const tot=lg.zones.reduce((a,b)=>a+b,0);
     if(tot>0) return lg.zones.reduce((s,sec,i)=> s + (sec/60)*(LOAD_W[i]||1), 0); }
@@ -3378,7 +3379,7 @@ function isFellSurface(w){
 }
 // Short surface label for a card ("" for rest/bike, where it's not meaningful)
 function surfaceLabel(w){
-  if(!w || w.t==="Rest" || w.t==="Bike") return "";
+  if(!w || w.t==="Rest" || w.t==="Bike" || w.t==="Sauna") return "";
   if(w.sf) return w.sf;                       // explicit road/trail/fell/track
   return isFellSurface(w) ? "fell" : "road";  // inferred for legacy plans
 }
@@ -4002,6 +4003,7 @@ function normType(s){
   if(/descen|downhill/.test(s)) return "Descent";
   if(/sim|up.?down/.test(s)) return "Simulation";
   if(/long|mountain|recce/.test(s)) return "Long";
+  if(/sauna|heat|hot ?bath/.test(s)) return "Sauna";
   if(/race/.test(s)) return "Race";
   if(/rest|off|walk/.test(s)) return "Rest";
   return "Easy";
