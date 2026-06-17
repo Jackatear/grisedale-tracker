@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08q" />
+<meta name="app-build" content="2026-06-08r" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -482,6 +482,31 @@
   .rs-tile .l{font-size:12px;color:var(--muted)}
   .rs-tile .v{font-size:25px;font-weight:700;margin-top:4px;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:-.02em}
   .rs-tile.form .v{color:var(--good);font-family:var(--sans);letter-spacing:-.01em}
+  /* Horizon palette — Race shape as a dark card */
+  .rs-card{background:linear-gradient(158deg,#2e342a 0%,#242a21 100%);border-color:rgba(255,255,255,.06);color:#eceee7;box-shadow:0 14px 34px rgba(30,34,26,.22)}
+  .rs-eyebrow{color:rgba(236,238,231,.55)}
+  .rs-title{color:#eceee7}
+  .rs-summary{color:rgba(236,238,231,.82)}
+  .rs-readout{color:rgba(236,238,231,.6)}
+  .rs-readout .rs-week{color:#eceee7}
+  .rs-grid{stroke:rgba(255,255,255,.14);opacity:1}
+  .rs-bar{fill:#cf6336}
+  .rs-line{stroke:#9cc187}
+  .rs-area{fill:#9cc187;opacity:.12}
+  .rs-scrub{stroke:#9cc187}
+  .rs-dot{fill:#262c22;stroke:#9cc187}
+  .rs-star{fill:#ec9069}
+  .rs-rlab{fill:#f0a883}
+  .rs-plab{fill:rgba(236,238,231,.45)}
+  .rs-send{color:rgba(236,238,231,.5)}
+  .rs-range{accent-color:#e8895f}
+  .rs-tile{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06)}
+  .rs-tile .l{color:rgba(236,238,231,.55)}
+  .rs-tile .v{color:#eceee7}
+  .rs-tile.form .v{color:#9cc187}
+  .rs-pill.good{color:#9cc187;background:rgba(156,193,135,.16)}
+  .rs-pill.warn{color:#e3b766;background:rgba(227,183,102,.16)}
+  .rs-pill.bad{color:#e3866f;background:rgba(227,134,111,.16)}
   .pg-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
   .pg-card h4{margin:0 0 3px;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:8px}
   .pg-card h4 .btn{margin-left:auto;font-size:12px;padding:6px 11px}
@@ -2631,30 +2656,30 @@ function renderToday(){
   else if(w.z&&w.z!=="—") tiles.push(["Effort", w.z]);
   const surf=surfaceLabel(w); if(surf) tiles.push(["Terrain", surf[0].toUpperCase()+surf.slice(1)]);
   const tilesHTML = (!isRest && tiles.length)? `<div class="hero-tiles">${tiles.slice(0,3).map(t=>`<div class="ht"><b>${esc(t[1])}</b><i>${esc(t[0])}</i></div>`).join("")}</div>` : "";
-  // readiness-aware coach note (the "adapts your run" payoff) — advisory, doesn't change the plan
-  let coach="";
+  // readiness-aware coach note (the "adapts your run" payoff) — advisory, leads the quote when present
   const feel=(mode==="today" && !done && !isRest) ? todayFeel() : null;
-  if(feel!=null){
-    const msg = feel>=5 ? "Feeling Flying — green light to attack the quality. Capitalize on a good day."
-      : feel===4 ? "Feeling Good — run it as planned and press where it counts."
-      : feel===3 ? "Feeling Okay — steady as prescribed; let the legs warm into it."
-      : feel===2 ? "Feeling Tired — keep it honest-easy and cut a rep if the legs argue."
-      : "Feeling Wiped — easy or off today. Adaptation happens in recovery, not in a forced session.";
-    coach=`<div class="hero-coach"><span>Coach</span>${esc(msg)}</div>`;
-  }
-  // call to action
-  let cta="";
-  if(isRest) cta=`<div class="hero-rest">Rest day — recovery is where the gains land.</div>`;
-  else if(done) cta=`<div class="hero-cta done">✓ Completed${es?` · ${es.pct}%`:""}</div>`;
-  else if(mode==="today") cta=`<button class="hero-cta" data-done="${focus.id}">Mark done</button>`;
-  else cta=`<div class="hero-cta ghost">View session →</div>`;
-  host.innerHTML = `<div class="hero ${done?'done':''} ${isRest?'rest':''}" style="--c:${ty.c}" data-open="${focus.id}">
-      <div class="hero-top"><span class="hero-day">${esc(dayPill)}</span><span class="hero-type">${esc(ty.label)}${isKey?" ★":""}</span></div>
-      <div class="hero-title">${esc(w.n)}</div>
-      ${stats}${tilesHTML}
-      ${why?`<div class="hero-desc">${esc(why)}</div>`:""}
-      ${coach}${cta}
-    </div>`;
+  const coachMsg = feel==null ? "" :
+      feel>=5 ? "Feeling Flying — green light to attack the quality. Capitalize on a good day."
+    : feel===4 ? "Feeling Good — run it as planned and press where it counts."
+    : feel===3 ? "Feeling Okay — steady as prescribed; let the legs warm into it."
+    : feel===2 ? "Feeling Tired — keep it honest-easy and cut a rep if the legs argue."
+    : "Feeling Wiped — easy or off today. Adaptation happens in recovery, not in a forced session.";
+  // ---- Horizon hero (dark, with the artistic intensity line) ----
+  const sched = mode==="today" ? "Today" : (dd===1?"Tomorrow":`${WD_FULL[d(fdate).getDay()]} ${d(fdate).getDate()}`);
+  const quoteText = coachMsg || why;
+  const vertBadge = (w.v!=null&&w.v>0) ? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>` : "";
+  const chart = isRest ? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`;
+  const grid = isRest ? "" : `<div class="hz-statgrid">
+      <div class="hz-hstat"><div class="l">Target distance</div><div class="v">${w.k!=null?esc(fmtDist(w.k)):"—"}</div></div>
+      <div class="hz-hstat"><div class="l">Planned duration</div><div class="v">${w.d?esc(fmtDur(w.d)):"—"}</div></div></div>`;
+  const cta = isRest ? `<div class="hz-complete rest">Rest day — recovery is where the gains land.</div>`
+    : done ? `<div class="hz-complete done">✓ Completed${es?` · ${es.pct}%`:""}</div>`
+    : mode==="today" ? `<button class="hz-complete" data-done="${focus.id}">✓ Complete</button>`
+    : `<div class="hz-complete ghost">View session →</div>`;
+  host.innerHTML = `<div class="hz-hero ${done?'done':''}" data-open="${focus.id}">
+      <div class="hz-hero-top"><span class="hz-up">${mode==="today"?"Today":"Up next"} · ${esc(ty.label)}${isKey?" ★":""}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
+      <div class="hz-hero-title">${esc(w.n)}</div>
+      ${quoteText?`<div class="hz-quote">${esc(quoteText)}</div>`:""}${chart}${grid}${cta}</div>`;
 }
 function renderRaceBanner(){
   const host=$("#raceBanner"); if(!host) return;
