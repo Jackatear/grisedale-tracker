@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08m" />
+<meta name="app-build" content="2026-06-08n" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -369,6 +369,39 @@
   .pseg-metrics .pill{font-size:11.5px;padding:2px 8px;font-variant-numeric:tabular-nums}
   .pseg-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
   .pseg-note{font-size:11.5px;color:var(--muted);line-height:1.45;margin-top:9px;padding-left:2px;font-style:italic}
+  /* Session view v2 — grouped cards (The session / Why it matters / Log it) */
+  .mv2{display:flex;flex-direction:column;gap:13px}
+  .mv2 .mv-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:1px}
+  .mv2 .pill{font-size:12px;font-weight:600;padding:5px 12px;border:0;border-radius:999px;background:var(--bg2);color:var(--muted)}
+  .mv2 .pill.zone{background:var(--bg2);color:var(--muted)}
+  .ses-card,.why-card,.log-card{background:var(--bg2);border-radius:16px;padding:15px 16px}
+  .ses-lab{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin-bottom:13px}
+  .sb{display:flex;align-items:flex-end;gap:10px;margin-bottom:15px}
+  .sb-col{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
+  .sb-barwrap{height:62px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+  .sb-bar{width:100%;border-radius:6px;min-height:9px}
+  .sb-bars{display:flex;align-items:flex-end;justify-content:center;gap:3px;width:100%;height:100%}
+  .sb-bars i{flex:1 1 0;min-width:4px;max-width:13px;border-radius:3px;min-height:9px}
+  .sb-lab{font-size:11px;color:var(--muted);text-align:center;line-height:1.3;overflow-wrap:anywhere}
+  .ses-desc{font-size:14px;line-height:1.55;color:var(--txt);margin:0}
+  .ses-div{height:1px;background:var(--line);margin:15px 0 14px}
+  .ses-stats{display:flex;align-items:stretch}
+  .ses-stat{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding:0 15px;border-left:1px solid var(--line)}
+  .ses-stat:first-child{padding-left:0;border-left:0}
+  .ses-stat .l{font-size:12px;color:var(--muted)}
+  .ses-stat b{font-size:20px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .why-card .why-row{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.5;color:var(--txt)}
+  .why-card .why-row+.why-row{margin-top:13px}
+  .why-tick{flex:0 0 auto;width:18px;height:18px;border:2px solid var(--good);border-radius:5px;margin-top:1px}
+  .why-row b{font-weight:700}
+  .log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+  .log-toggle{border:1px solid var(--line2);background:var(--panel);color:var(--muted);border-radius:999px;padding:6px 14px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+  .log-toggle.done{color:var(--good);border-color:color-mix(in srgb,var(--good) 42%,transparent);background:color-mix(in srgb,var(--good) 13%,transparent)}
+  .log-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:var(--panel);border:1px solid var(--line2);border-radius:13px;padding:15px;font:inherit;font-size:16px;font-weight:700;color:var(--txt);cursor:pointer;transition:border-color .15s,transform .13s}
+  .log-btn:hover{border-color:var(--accent)}
+  .log-btn:active{transform:scale(.99)}
+  .log-circ{flex:0 0 auto;width:20px;height:20px;border:2px solid var(--faint);border-radius:50%}
+  .log-btn.done{color:var(--good);border-color:color-mix(in srgb,var(--good) 38%,transparent);background:color-mix(in srgb,var(--good) 9%,transparent);font-size:14px}
   /* Coach strip: training load + readiness */
   .coach-strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
   .coach-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column}
@@ -1201,7 +1234,7 @@
       <div class="modal-body" id="mBody"></div>
       <div class="modal-foot">
         <button class="btn danger" id="mDelete" style="display:none">Delete</button>
-        <span style="flex:1"></span>
+        <span style="flex:1" id="mFootSpacer"></span>
         <button class="btn" id="mCancel">Cancel</button>
         <button class="btn primary" id="mEdit" style="display:none">Edit</button>
         <button class="btn primary" id="mSave" style="display:none">Save</button>
@@ -2298,6 +2331,7 @@ const TYPE_WHY={
   Simulation:{builds:"Race-specific fitness — terrain, pacing, kit and fuelling rehearsed under race-like stress.", feel:"A dress rehearsal: race effort in the key sections."},
   Long:      {builds:"Endurance and durability — teaches your body to burn fat and your legs to last the whole race.", feel:"Steady and patient. Time on feet beats pace today."},
   Bike:      {builds:"Aerobic volume without impact — engine work your legs don't have to pay for.", feel:"An easy spin unless the plan says otherwise."},
+  Sauna:     {builds:"Heat adaptation — more plasma volume and better cooling, so you hold pace longer when it's hot. Passive aerobic-style stress with no impact.", feel:"Relaxed and still. Hydrate before and after; build the minutes gradually."},
   Race:      {builds:"The point of it all — and the most honest fitness test you own.", feel:"Empty the tank."},
   Rest:      {builds:"Adaptation. Fitness is built in recovery, not in training — skipping rest skips the gains.", feel:"Genuinely off, guilt-free."}
 };
@@ -3755,33 +3789,94 @@ function refreshScrollLock(){
 
 let modalMode="view";   // "view" | "edit" | "new"
 function setModalFooter(){
-  const del=$("#mDelete"), save=$("#mSave"), edit=$("#mEdit"), cancel=$("#mCancel");
+  const del=$("#mDelete"), save=$("#mSave"), edit=$("#mEdit"), cancel=$("#mCancel"), sp=$("#mFootSpacer");
+  const view = modalMode==="view";
   del.style.display  = modalMode==="new" ? "none" : "inline-flex";
   save.style.display = (modalMode==="edit"||modalMode==="new") ? "inline-flex" : "none";
-  edit.style.display = modalMode==="view" ? "inline-flex" : "none";
-  cancel.textContent = modalMode==="view" ? "Close" : "Cancel";
+  edit.style.display = view ? "inline-flex" : "none";
+  cancel.style.display = view ? "none" : "inline-flex";   // view closes via the × in the header
+  cancel.textContent = "Cancel";
+  edit.textContent = view ? "Edit details" : "Edit";
+  if(sp) sp.style.display = view ? "none" : "block";
+  edit.style.flex = view ? "1" : "";
+  edit.style.order = view ? "1" : ""; del.style.order = view ? "2" : "";
 }
 // Read-only summary shown when you tap a session (you choose Edit to change anything).
+// Effort zone index for a session (explicit zone first, else inferred from type)
+function effortZoneIdx(w){
+  let zi=zoneTextToIdx(w.z); if(zi!=null) return zi;
+  return ({Recovery:0, Easy:1, Long:1, Bike:1, Threshold:3, Descent:2, Hills:4, Simulation:4, Race:4})[w.t] ?? null;
+}
+// A compact structure bar: each block's HEIGHT ∝ intensity, WIDTH ∝ duration/count, colour by zone.
+function structureBarHTML(w){
+  const plan=sessionPlan(w), H=[34,44,62,82,100], EZ=ZONES[1].c;
+  const cols=[];
+  if(plan && plan.segs.length){
+    plan.segs.forEach(seg=>{
+      if(seg.kind==="wu") cols.push({flex:Math.max(10,seg.dur), lab:`${seg.dur} min easy`, bars:[{h:H[1],c:EZ}]});
+      else if(seg.kind==="cd") cols.push({flex:Math.max(8,seg.dur), lab:`${seg.dur} min easy`, bars:[{h:H[1],c:EZ}]});
+      else {
+        const each = seg.unit==="s" ? `${seg.each}s` : `${seg.each} min`;
+        const sprinty = seg.reps>1 && (seg.unit==="s" || seg.each<=2) && seg.idx<=1;   // short repeats w/ no zone = sprints/strides
+        const c = sprinty ? "var(--accent)" : ZONES[seg.idx].c, h = sprinty ? 100 : H[seg.idx];
+        const lab = seg.reps>1 ? `${seg.reps} × ${each}${sprinty?" sprints":""}` : `${each} @ ${ZONES[seg.idx].k}`;
+        const bars = seg.reps>1 ? Array.from({length:Math.min(seg.reps,12)},()=>({h,c})) : [{h,c}];
+        cols.push({flex:Math.max(12, Math.min(seg.reps,12)*3.4), lab, bars, work:true});
+      }
+    });
+    if(/\b(power|strength|s\s*&\s*c|lift|gym)\b/i.test((w.n||"")+" "+(w.note||""))) cols.push({flex:13, lab:"Power", bars:[{h:H[2],c:ZONES[2].c}]});
+  } else {
+    const idx = effortZoneIdx(w)??1;
+    cols.push({flex:40, lab:(w.d?fmtDur(w.d)+" · ":"")+ZONES[idx].k, bars:[{h:H[idx],c:ZONES[idx].c}]});
+  }
+  const col=c=>{
+    const inner = c.work
+      ? `<div class="sb-bars">${c.bars.map(b=>`<i style="height:${b.h}%;background:${b.c}"></i>`).join("")}</div>`
+      : `<div class="sb-bar" style="height:${c.bars[0].h}%;background:${c.bars[0].c}"></div>`;
+    return `<div class="sb-col" style="flex:${c.flex}"><div class="sb-barwrap">${inner}</div><div class="sb-lab">${esc(c.lab)}</div></div>`;
+  };
+  return `<div class="sb">${cols.map(col).join("")}</div>`;
+}
 function modalViewHTML(w){
   const lg=state.log[editingId]||{}, done=!!state.done[editingId];
-  const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null;
-  const stat=s=>`<div class="mv-stat"><span class="lab">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`;
-  const plan=[]; if(w.d)plan.push(["Duration",fmtDur(w.d)]); if(w.k!=null)plan.push(["Distance",fmtDist(w.k)]); if(w.v!=null)plan.push(["Vert",fmtVert(w.v)]);
-  const act=[]; if(done){ if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Vert",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); if(lg.rpe!=null)act.push(["RPE",lg.rpe+" / 10"]); }
-  const flag = done
-    ? (es?`<span class="pill exec ${es.level}">${es.pct}%</span><span class="mv-flag done">✓ Completed</span>`:`<span class="mv-flag done">✓ Completed</span>`)
-    : `<span class="mv-flag">○ To do</span>`;
+  const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null, rest=w.t==="Rest";
+  const surf=surfaceLabel(w);
+  const chips=`<div class="mv-chips">
+    <span class="pill type" style="background:color-mix(in srgb,${ty.c} 16%,transparent);color:${ty.c}">${esc(ty.label)}</span>
+    ${surf?`<span class="pill">${esc(surf[0].toUpperCase()+surf.slice(1))}</span>`:""}
+    ${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}</div>`;
+  // ── The session ──
+  const zi=effortZoneIdx(w);
+  const stats=[["Duration", w.d?fmtDur(w.d):"—"]];
+  if(w.k!=null) stats.push(["Distance", fmtDist(w.k)]);
+  else if(w.v!=null) stats.push(["Climb", fmtVert(w.v)]);
+  else stats.push(["Distance","—"]);
+  stats.push(["Effort", zi!=null?(EFFORT_WORD[zi]||w.z||"—"):(w.z&&w.z!=="—"?w.z:"—")]);
+  const statsHTML=`<div class="ses-stats">${stats.map(s=>`<div class="ses-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div>`;
+  const sesCard=`<div class="ses-card">
+    <div class="ses-lab">The session</div>
+    ${!rest?structureBarHTML(w):""}
+    ${w.note?`<p class="ses-desc">${esc(w.note)}</p>`:""}
+    <div class="ses-div"></div>${statsHTML}</div>`;
+  // ── Why it matters ──
   const why=TYPE_WHY[w.t];
-  return `<div class="mv">
-    <div class="mv-chips"><span class="pill type" style="background:${ty.c}">${esc(ty.label)}</span>${surfaceLabel(w)?`<span class="pill">${esc(surfaceLabel(w)[0].toUpperCase()+surfaceLabel(w).slice(1))}</span>`:""}${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}${flag}</div>
-    ${why?`<div class="mv-why"><div><b>Builds:</b> ${esc(why.builds)}</div><div class="why-feel"><b>Feel:</b> ${esc(why.feel)}</div></div>`:""}
-    ${plan.length?`<div><div class="mv-sect" style="margin-bottom:8px">Planned target</div><div class="mv-stats">${plan.map(stat).join("")}</div></div>`:""}
-    ${sessionPlanHTML(w)}
-    ${w.note?`<div><div class="mv-sect" style="margin-bottom:8px">Coach notes</div><div class="mv-note">${esc(w.note)}</div></div>`:""}
-    ${done
-      ? `<div><div class="mv-sect" style="margin-bottom:8px">Your log</div>${es?execReadoutHTML(es,w):""}${act.length?`<div class="mv-stats" style="margin-top:${es?"10px":"0"}">${act.map(stat).join("")}</div>`:""}${hrSparkHTML(lg)}${lg.c?`<div class="mv-note" style="margin-top:10px">${esc(lg.c)}</div>`:""}</div>`
-      : `<div class="mv-empty">Not logged yet. Tap <b>Edit</b> to mark it done and record how it went.</div>`}
-  </div>`;
+  const whyCard = why?`<div class="why-card"><div class="ses-lab">Why it matters</div>
+    <div class="why-row"><span class="why-tick"></span><div><b>Builds</b> — ${esc(why.builds)}</div></div>
+    <div class="why-row"><span class="why-tick"></span><div><b>Feel</b> — ${esc(why.feel)}</div></div></div>`:"";
+  // ── Log it ──
+  const toggle = done
+    ? `<button class="log-toggle done" data-toggledone="1">✓ Done</button>`
+    : `<button class="log-toggle" data-toggledone="1">○ To do</button>`;
+  let logBody;
+  if(done){
+    const act=[]; if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Climb",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); if(lg.rpe!=null)act.push(["RPE",lg.rpe+" / 10"]);
+    logBody=`${es?execReadoutHTML(es,w):""}${act.length?`<div class="ses-stats" style="margin-top:12px">${act.map(s=>`<div class="ses-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div>`:""}${hrSparkHTML(lg)}${lg.c?`<div class="mv-note" style="margin-top:11px">${esc(lg.c)}</div>`:""}
+      <button class="log-btn done" data-toggledone="1">✓ Completed — tap to undo</button>`;
+  } else {
+    logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
+  }
+  const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
+  return `<div class="mv2">${chips}${sesCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
@@ -3965,6 +4060,13 @@ $("#mSave").onclick = ()=>{
   $("#mBody").scrollTop=0;
 };
 $("#mEdit").onclick = modalEnterEdit;
+// Mark done / undo straight from the read-only view (the mockup's "Log it" card)
+$("#mBody").addEventListener("click", e=>{
+  const td=e.target.closest("[data-toggledone]"); if(!td || modalMode!=="view" || !editingId) return;
+  pushUndo(); state.done[editingId]=!state.done[editingId]; save();
+  const w=getWO(editingId); if(w){ $("#mBody").innerHTML=modalViewHTML(w); }
+  render();
+});
 $("#mDelete").onclick = ()=>{
   if(!confirm("Delete this session? Undo (⌘Z) brings it straight back, or re-import / reset the plan.")) return;
   pushUndo();
