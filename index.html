@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08p" />
+<meta name="app-build" content="2026-06-08q" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1102,6 +1102,69 @@
   .rd-more:hover{color:var(--txt)}
 
   /* home dashboard: Readiness / Load / Balance tiles + plans footer */
+  /* ===== HORIZON home — mission dashboard ===== */
+  .hz-mission,.hz-hero{background:linear-gradient(158deg,#2e342a 0%,#242a21 100%);border:1px solid rgba(255,255,255,.06);border-radius:20px;color:#eceee7;box-shadow:0 14px 34px rgba(30,34,26,.22)}
+  .hz-mission{padding:17px 18px 18px;margin-bottom:13px}
+  .hz-brand{display:flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:700;font-size:16px;letter-spacing:-.01em}
+  .hz-logo{color:#e8895f;font-size:15px}
+  .hz-gear{margin-left:auto;background:rgba(255,255,255,.08);border:0;color:rgba(236,238,231,.7);width:30px;height:30px;border-radius:9px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .hz-gear:hover{background:rgba(255,255,255,.14);color:#fff}
+  .hz-eye{margin-top:16px;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:rgba(236,238,231,.5);font-weight:600}
+  .hz-title2{font-family:var(--sans);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:4px}
+  .hz-phase{margin-top:8px;font-size:13px;color:rgba(236,238,231,.62);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .hz-wk{background:#8c3a1d;color:#f4ddd1;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-radius:6px}
+  .hz-dot{color:rgba(236,238,231,.35)}
+  .hz-vol{margin-top:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:13px 14px}
+  .hz-vol-lab{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:rgba(236,238,231,.5);font-weight:600}
+  .hz-vol-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:7px}
+  .hz-vol-num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:25px;font-weight:700;letter-spacing:-.01em}
+  .hz-vol-num i{font-size:14px;font-weight:500;font-style:normal;color:rgba(236,238,231,.55)}
+  .hz-vol-pct{font-size:12px;font-weight:600;color:#e8895f;text-align:right}
+  .hz-vol-bar{margin-top:11px;height:6px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+  .hz-vol-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#d4683c,#e8895f)}
+  .hz-pills{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 6px}
+  .hz-pill{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;font:inherit;text-align:left;color:var(--txt);cursor:default;box-shadow:var(--shadow-soft);min-width:0}
+  button.hz-pill{cursor:pointer}
+  .hz-pill-ic{flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:var(--bg2);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .hz-pill-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hz-pill-v{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:2px}
+  .hz-sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 2px 11px}
+  .hz-sec span{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:600}
+  .hz-fulllog{background:none;border:0;color:var(--accent);font:inherit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
+  .hz-hero{padding:17px 18px 18px;margin-bottom:6px;cursor:pointer}
+  .hz-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+  .hz-up{background:rgba(232,137,95,.16);color:#f0a883;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:5px 10px;border-radius:999px}
+  .hz-sched{font-size:11px;color:rgba(236,238,231,.5);text-align:right;line-height:1.4;text-transform:uppercase;letter-spacing:.05em}
+  .hz-sched b{display:block;color:#eceee7;font-size:13px;text-transform:none;letter-spacing:0;margin-top:1px}
+  .hz-hero-title{font-family:var(--sans);font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-top:14px}
+  .hz-quote{margin-top:13px;padding-left:13px;border-left:3px solid rgba(232,137,95,.55);font-size:14px;line-height:1.5;color:rgba(236,238,231,.78);font-style:italic}
+  .hz-chartwrap{position:relative;margin-top:17px;border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03)}
+  .hzline{display:block;width:100%;height:88px}
+  .hzline-s{fill:none;stroke:#ec9069;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .hzline-a{fill:#ec9069;opacity:.13}
+  .hz-gain{position:absolute;top:9px;right:10px;background:rgba(20,22,18,.55);color:#f0a883;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;backdrop-filter:blur(3px)}
+  .hz-statgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}
+  .hz-hstat{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 13px}
+  .hz-hstat .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:rgba(236,238,231,.5);font-weight:600}
+  .hz-hstat .v{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;font-weight:700;margin-top:5px}
+  .hz-complete{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:16px;background:linear-gradient(180deg,#b6431f,#9d3a1a);border:0;border-radius:13px;padding:15px;font:inherit;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:filter .15s,transform .13s}
+  .hz-complete:hover{filter:brightness(1.08)}
+  .hz-complete:active{transform:scale(.99)}
+  .hz-complete.done{background:rgba(255,255,255,.08);color:#9fcf8e;cursor:default}
+  .hz-complete.ghost{background:rgba(255,255,255,.08);color:#eceee7}
+  .hz-complete.rest{background:rgba(255,255,255,.05);color:rgba(236,238,231,.7);font-size:13.5px;font-weight:600;font-style:italic}
+  .hz-donelist{display:flex;flex-direction:column;gap:9px}
+  .hz-done{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px 13px;font:inherit;text-align:left;color:var(--txt);cursor:pointer;box-shadow:var(--shadow-soft)}
+  .hz-done-spark{flex:0 0 auto;width:54px;height:34px;background:var(--bg2);border-radius:9px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .hzspark{display:block;width:100%;height:100%}
+  .hzspark-s{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .hzspark-a{fill:var(--accent);opacity:.12}
+  .hz-done-rest{color:var(--good);font-size:15px;font-weight:700}
+  .hz-done-main{flex:1;min-width:0}
+  .hz-done-name{font-size:14.5px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hz-done-wk{flex:0 0 auto;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg2);padding:2px 6px;border-radius:5px}
+  .hz-done-meta{font-size:12px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
+  .hz-done-check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--good) 45%,transparent);color:var(--good);display:flex;align-items:center;justify-content:center;font-size:12px}
   .dash-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
   .dt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 12px 12px;text-align:left;min-width:0;box-shadow:var(--shadow-soft);font:inherit;color:var(--txt);display:block;cursor:default}
   button.dt{cursor:pointer}
@@ -1981,6 +2044,115 @@ function homeTilesHTML(){
     <button class="dt" data-tile="balance" title="${esc(TILE_INFO.balance.d)}"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></button>
   </div>`;
 }
+/* ===== "HORIZON" home — expedition/mission dashboard ===== */
+function hzWeekVol(rec){
+  const t=todayISO(), mon=mondayOf(t); let doneK=0, planK=0;
+  for(let di=0;di<7;di++){ const date=addDays(mon,di); ((rec.board&&rec.board[date])||[]).forEach(id=>{ const w=recWO(rec,id); if(!w||w.t==="Rest"||w.t==="Sauna")return; const lg=(rec.log&&rec.log[id])||{}; planK+=(w.k||0); if(rec.done&&rec.done[id]) doneK+=(lg.k!=null&&lg.k!==""?+lg.k:(w.k||0)); }); }
+  return {doneK, planK};
+}
+function hzMissionHTML(rec){
+  const t=todayISO();
+  const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
+  const goal=races.filter(r=>daysBetween(t,r.date)>=0).pop();
+  const startMon=recStartMon(rec);
+  const endDate = goal? goal.date : ((rec.plan||[]).map(w=>w.date).filter(Boolean).sort().pop()||t);
+  const totalDays=Math.max(1,daysBetween(startMon,endDate)), elapsed=Math.min(totalDays,Math.max(0,daysBetween(startMon,t)));
+  const totWk=Math.max(1,Math.round(totalDays/7)), curWk=Math.min(totWk,Math.max(1,Math.floor(elapsed/7)+1));
+  const st=planStats(rec);
+  const mon=mondayOf(t), blk=(rec.blocks&&rec.blocks[mon])||{};
+  const dd = goal? daysBetween(t,goal.date):null;
+  const phase = blk.label || (dd!=null&&dd<=14 ? "Final taper" : dd!=null&&dd<=35 ? "Race-specific phase" : "Building phase");
+  const mission = goal? (goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim() : (rec.planName||"Training");
+  const vol=hzWeekVol(rec), volPct = vol.planK? Math.round(vol.doneK/vol.planK*100):0, unit=state.unit;
+  const brand = athleteName()? athleteName()+"'s climb" : "Horizon";
+  return `<div class="hz-mission vw-fade">
+    <div class="hz-brand"><span class="hz-logo">▲</span><span>${esc(brand)}</span><button class="hz-gear" data-hzsettings title="Zones & settings">⚙</button></div>
+    <div class="hz-eye">Active mission</div>
+    <div class="hz-title2">${esc(mission)}</div>
+    <div class="hz-phase"><span class="hz-wk">Week ${curWk} of ${totWk}</span><span class="hz-dot">·</span>${esc(phase)}</div>
+    <div class="hz-vol">
+      <div class="hz-vol-lab">Weekly volume</div>
+      <div class="hz-vol-row"><div class="hz-vol-num">${fmtDist(vol.doneK,false)}<i> / ${fmtDist(vol.planK,false)} ${unit}</i></div><div class="hz-vol-pct">${st.pct}% plan completion</div></div>
+      <div class="hz-vol-bar"><i style="width:${Math.min(100,volPct)}%"></i></div>
+    </div>
+  </div>`;
+}
+function hzPillsHTML(rec){
+  const t=todayISO();
+  const todays=((rec.board&&rec.board[t])||[]).map(id=>recWO(rec,id)).filter(w=>w&&w.t!=="Rest");
+  const w=todays.find(x=>!(rec.done))||todays[0];
+  const surf = w? surfaceLabel(w):""; const terrain = surf? surf[0].toUpperCase()+surf.slice(1):"Mixed";
+  const sc=readinessScore(state.readiness&&state.readiness[t]);
+  const feel = sc==null?"Tap to log": sc>=80?"Fresh": sc>=60?"Good": sc>=45?"Tired":"Run-down";
+  return `<div class="hz-pills">
+    <button class="hz-pill" data-tile="readiness"><span class="hz-pill-ic">◐</span><div><div class="hz-pill-l">Readiness</div><div class="hz-pill-v">${sc==null?feel:feel}</div></div></button>
+    <div class="hz-pill"><span class="hz-pill-ic">△</span><div><div class="hz-pill-l">Today's terrain</div><div class="hz-pill-v">${esc(terrain)}</div></div></div>
+  </div>`;
+}
+// Build an artistic intensity profile (0..1 over normalised time) from the session structure.
+function sessionProfile(w){
+  const name=w.n||"", fb=zoneTextToIdx(w.z)==null?2:zoneTextToIdx(w.z);
+  const works=(typeof barWorkSets==="function")?barWorkSets(name, fb):[];
+  const ZI=i=>0.30+0.62*(i/4), v=[];
+  if(works.length){
+    v.push(0.26,0.33,0.40);
+    works.forEach(wk=>{ const sprint=(wk.unit==="s"||wk.each<=2)&&wk.idx<=2; const idx=sprint?4:wk.idx, hi=ZI(idx), n=Math.min(wk.reps,10);
+      for(let r=0;r<n;r++) v.push(0.37, hi, hi, 0.41); });
+    v.push(0.33,0.26);
+  } else {
+    const base=ZI(fb); for(let i=0;i<22;i++) v.push(Math.max(.16, base + Math.sin(i*0.62)*0.06 + Math.sin(i*0.27+1)*0.045));
+  }
+  return v;
+}
+function intensityLineSVG(w, mini){
+  const v=sessionProfile(w), n=v.length;
+  const W=mini?72:300, H=mini?30:88, padT=mini?5:12, padB=mini?5:8;
+  const xs=i=>(n>1?i/(n-1):0)*W, ys=val=>padT+(1-val)*(H-padT-padB);
+  const pts=v.map((val,i)=>[xs(i),ys(val)]);
+  const line=`M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`+smoothCmds(pts,0,n-1);
+  const area=`M${pts[0][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}${smoothCmds(pts,0,n-1)} L${pts[n-1][0].toFixed(1)},${H} Z`;
+  const cls=mini?"hzspark":"hzline";
+  return `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path class="${cls}-a" d="${area}"/><path class="${cls}-s" d="${line}"/></svg>`;
+}
+function hzHeroHTML(rec){
+  const t=todayISO();
+  const on=date=>((rec.board&&rec.board[date])||[]).map(id=>({id,w:recWO(rec,id)})).filter(x=>x.w);
+  let focus=null, mode="today", fdate=t; const today=on(t);
+  focus = today.find(x=>x.w.t!=="Rest" && !(rec.done&&rec.done[x.id])) || today.find(x=>x.w.t!=="Rest") || today.find(x=>x.w.t==="Rest");
+  if(!focus){ const up=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date>t&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])).sort((a,b)=>a.date<b.date?-1:1); if(up.length){ focus={id:up[0].id,w:recWO(rec,up[0].id)}; mode="next"; fdate=up[0].date; } }
+  if(!focus) return "";
+  const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!(rec.done&&rec.done[focus.id]), isRest=w.t==="Rest";
+  const dd=daysBetween(t,fdate);
+  const sched = mode==="today"?"Today":(dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]+" "+d(fdate).getDate());
+  const quote = w.note? `<div class="hz-quote">${esc(w.note)}</div>`:"";
+  const vert = (w.v!=null&&w.v>0)? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
+  const chart = isRest? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vert}</div>`;
+  const cta = isRest? `<div class="hz-complete rest">Rest day — recovery is where the gains land.</div>`
+    : done? `<div class="hz-complete done">✓ Completed</div>`
+    : mode==="today"? `<button class="hz-complete" data-homedone="${esc(focus.id)}">✓ Complete</button>`
+    : `<div class="hz-complete ghost">View session →</div>`;
+  const grid = isRest? "" : `<div class="hz-statgrid"><div class="hz-hstat"><div class="l">Target distance</div><div class="v">${w.k!=null?esc(fmtDist(w.k)):"—"}</div></div><div class="hz-hstat"><div class="l">Planned duration</div><div class="v">${w.d?esc(fmtDur(w.d)):"—"}</div></div></div>`;
+  return `<div class="hz-hero ${done?'done':''} vw-fade" data-homeopen="${esc(focus.id)}">
+    <div class="hz-hero-top"><span class="hz-up">Up next · ${esc(ty.label)}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
+    <div class="hz-hero-title">${esc(w.n)}</div>${quote}${chart}${grid}${cta}</div>`;
+}
+function hzDoneHTML(rec){
+  const startMon=recStartMon(rec);
+  const all=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date&&rec.done&&rec.done[w.id]&&!(rec.deleted&&rec.deleted[w.id]));
+  all.sort((a,b)=>a.date<b.date?1:-1);
+  const items=all.slice(0,5).map(s=>{ const w=recWO(rec,s.id), lg=(rec.log&&rec.log[s.id])||{};
+    const wk=Math.max(1,Math.floor(daysBetween(startMon,w.date)/7)+1);
+    const k=lg.k!=null&&lg.k!==""?+lg.k:w.k, vv=lg.v!=null&&lg.v!==""?+lg.v:w.v, surf=surfaceLabel(w);
+    const meta=[k!=null?fmtDist(k):null,(vv!=null&&vv>0)?"↑ "+fmtVert(vv):null,surf?surf[0].toUpperCase()+surf.slice(1):null].filter(Boolean).join(" · ");
+    const spark = (w.t==="Sauna"||w.t==="Rest")? `<span class="hz-done-rest">✓</span>` : intensityLineSVG(w,true);
+    return `<button class="hz-done" data-homeopen="${esc(s.id)}">
+      <div class="hz-done-spark">${spark}</div>
+      <div class="hz-done-main"><div class="hz-done-name">${esc(w.n)}<span class="hz-done-wk">W${wk}</span></div><div class="hz-done-meta">${esc(meta||TYPES[w.t]?.label||"")}</div></div>
+      <span class="hz-done-check">✓</span></button>`;
+  }).join("");
+  if(!items) return "";
+  return `<div class="hz-sec"><span>What I have done</span><button class="hz-fulllog" data-hzfulllog>Full log</button></div><div class="hz-donelist">${items}</div>`;
+}
 function renderHome(){
   const rec=primaryPlanRec();
   if(!(state.plans||[]).length){
@@ -2013,11 +2185,14 @@ function renderHome(){
       </div>
     </div>`;
   $("#homeView").innerHTML = `
-    ${rec? homeRaceBannerHTML(rec):""}
-    ${rec? homeHeroHTML(rec):""}
+    ${rec? hzMissionHTML(rec):""}
+    ${rec? hzPillsHTML(rec):""}
+    <div class="hz-sec"><span>What I need to do</span></div>
+    ${rec? hzHeroHTML(rec):""}
     ${homeTilesHTML()}
     ${coachPropHTML()}
     ${seasonNudgeHTML()}
+    ${rec? hzDoneHTML(rec):""}
     ${typeof predictorHTML==="function"? predictorHTML():""}
     <div class="home-plans-head"><span>Your plans · ${(state.plans||[]).length}</span>
       <div class="home-actions"><button class="btn" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New plan</button></div></div>
@@ -2030,6 +2205,8 @@ $("#homeView").addEventListener("click", e=>{
   if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
   if(e.target.closest("#homeImport")){ $("#importCsvFile").click(); return; }
   if(e.target.closest("#homeNew")){ newBlankPlan(); return; }
+  if(e.target.closest("[data-hzsettings]")){ const zc=$(".zones-card"); if(zc){ zc.classList.add("open"); state.zonesOpen=true; save(); zc.scrollIntoView({behavior:"smooth",block:"center"}); } return; }
+  if(e.target.closest("[data-hzfulllog]")){ const r=primaryPlanRec(); if(r) loadPlan(r.id); return; }
   const tile=e.target.closest("[data-tile]"); if(tile){ openTileInfo(tile.dataset.tile); return; }
   const hd=e.target.closest("[data-homedone]"); if(hd){ e.stopPropagation(); const r=primaryPlanRec(); if(r){ pushUndo(); r.done=r.done||{}; r.done[hd.dataset.homedone]=!r.done[hd.dataset.homedone]; save(); render(); } return; }
   const ho=e.target.closest("[data-homeopen]"); if(ho){ const r=primaryPlanRec(); if(r){ const id=ho.dataset.homeopen; loadPlan(r.id); requestAnimationFrame(()=>{ if(typeof openModal==="function") openModal(id); }); } return; }
