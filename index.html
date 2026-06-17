@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08o" />
+<meta name="app-build" content="2026-06-08p" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -317,6 +317,9 @@
   .field textarea{resize:vertical;min-height:64px}
   .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  /* Sauna edit mode — only time, heart rate & notes are relevant */
+  #mBody.sauna-edit [data-saunahide]{display:none!important}
+  #mBody.sauna-edit .grid3{display:flex;flex-direction:column;gap:12px}
   .coach{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;white-space:pre-wrap;font-size:13px;color:var(--txt);line-height:1.55}
   .donerow{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;padding:12px 14px}
   .toggle{position:relative;width:44px;height:25px;border-radius:999px;background:var(--line2);border:0;transition:.2s;flex:0 0 auto;cursor:pointer}
@@ -3914,15 +3917,16 @@ function modalEditHTML(w){
     <div class="field"><label>Session</label><input id="f_n" value="${esc(w.n)}"></div>
     <div class="grid3">
       <div class="field"><label>Type</label><select id="f_t">${TYPE_ORDER.map(t=>`<option value="${t}" ${t===w.t?"selected":""}>${TYPES[t].label}</option>`).join("")}</select></div>
-      <div class="field"><label>Surface</label><select id="f_sf">${surfaceOptions(w.sf||surfaceLabel(w)||"road")}</select></div>
-      <div class="field"><label>HR zone / effort</label><input id="f_z" value="${esc(w.z||"")}"></div>
+      <div class="field" data-saunahide><label>Surface</label><select id="f_sf">${surfaceOptions(w.sf||surfaceLabel(w)||"road")}</select></div>
+      <div class="field" data-saunahide><label>HR zone / effort</label><input id="f_z" value="${esc(w.z||"")}"></div>
     </div>
     <div class="sectlabel">Planned target</div>
     <div class="grid3">
       <div class="field"><label>Duration (min)</label><input id="f_d" type="number" min="0" value="${w.d??""}"></div>
-      <div class="field"><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value="${w.k??""}"></div>
-      <div class="field"><label>Vert (m)</label><input id="f_v" type="number" min="0" value="${w.v??""}"></div>
+      <div class="field" data-saunahide><label>Distance (km)</label><input id="f_k" type="number" min="0" step="0.1" value="${w.k??""}"></div>
+      <div class="field" data-saunahide><label>Vert (m)</label><input id="f_v" type="number" min="0" value="${w.v??""}"></div>
     </div>
+    <div data-saunahide>
     <div class="sectlabel">Session structure <span class="ss-hint">optional · builds the interval breakdown</span></div>
     <input id="f_struct" class="ss-in" value="${esc(structVal)}" placeholder="WU 15min Z2 | 4x6min Z3 r90s | CD 10min Z2">
     <div class="ss-chips">
@@ -3932,6 +3936,7 @@ function modalEditHTML(w){
       <button type="button" class="ss-chip" data-ins="CD 10min Z2">+ cool-down</button>
     </div>
     <div id="f_structprev" class="ss-prev"></div>
+    </div>
     ${w.note? `<div><div class="sectlabel" style="margin-bottom:6px">Coach notes</div><div class="coach">${esc(w.note)}</div></div>`:""}
     <div class="sectlabel">Your log</div>
     <div class="donerow">
@@ -3941,11 +3946,11 @@ function modalEditHTML(w){
     <div id="f_exec" hidden></div>
     <div class="grid3">
       <div class="field"><label>Actual time (min)</label><input id="f_ld" type="number" min="0" placeholder="${w.d??""}" value="${lg.d??""}"></div>
-      <div class="field"><label>Actual dist (km)</label><input id="f_lk" type="number" min="0" step="0.1" placeholder="${w.k??""}" value="${lg.k??""}"></div>
-      <div class="field"><label>Actual vert (m)</label><input id="f_lv" type="number" min="0" placeholder="${w.v??""}" value="${lg.v??""}"></div>
+      <div class="field" data-saunahide><label>Actual dist (km)</label><input id="f_lk" type="number" min="0" step="0.1" placeholder="${w.k??""}" value="${lg.k??""}"></div>
+      <div class="field" data-saunahide><label>Actual vert (m)</label><input id="f_lv" type="number" min="0" placeholder="${w.v??""}" value="${lg.v??""}"></div>
     </div>
-    <div class="field"><label>Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
-    <div class="field"><label>Effort — RPE <span style="font-weight:400;color:var(--faint)">(1 easy · 10 max, tap again to clear)</span></label>
+    <div class="field"><label id="f_lhr_lab">Avg heart rate (bpm)</label><input id="f_lhr" type="number" min="0" placeholder="—" value="${lg.hr??""}"></div>
+    <div class="field" data-saunahide><label>Effort — RPE <span style="font-weight:400;color:var(--faint)">(1 easy · 10 max, tap again to clear)</span></label>
       <div class="rpe-row" id="f_rpe">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<button type="button" data-rpe="${n}" aria-pressed="${lg.rpe==n}">${n}</button>`).join("")}</div></div>
     <div class="field"><label>How it went</label><textarea id="f_lc" placeholder="Notes, how you felt, route…">${esc(lg.c||"")}</textarea></div>
   `;
@@ -3969,6 +3974,14 @@ function wireModalEdit(w){
   ["f_ld","f_lk"].forEach(idn=>{ const el=$("#"+idn); if(el) el.addEventListener("input", refreshExec); });
   refreshExec();
   wireStructure();
+  // Sauna = heat/recovery: collapse the form to just time, heart rate & notes
+  const applySaunaMode=()=>{
+    const sauna = (($("#f_t")||{}).value)==="Sauna";
+    $("#mBody").classList.toggle("sauna-edit", sauna);
+    const lab=$("#f_lhr_lab"); if(lab) lab.textContent = sauna ? "Max heart rate (bpm)" : "Avg heart rate (bpm)";
+  };
+  const tsel=$("#f_t"); if(tsel) tsel.addEventListener("change", applySaunaMode);
+  applySaunaMode();
 }
 // Live structure field: chips append blocks, preview renders the parsed session plan as you type
 function wireStructure(){
@@ -3985,6 +3998,7 @@ function wireStructure(){
 function openModal(id){
   const w=getWO(id); if(!w) return;
   editingId=id; isNew=false; modalMode="view";
+  $("#mBody").classList.remove("sauna-edit");
   $("#mDate").textContent = dayLong(w.date);
   $("#mTitleHead").textContent = w.n;
   $("#mBody").innerHTML = modalViewHTML(w);
@@ -4042,23 +4056,23 @@ $("#mSave").onclick = ()=>{
   pushUndo();
   if(isNew){
     const date=$("#mBody").dataset.date;
-    const t=get("f_t")||"Easy";
+    const t=get("f_t")||"Easy"; const sa_=t==="Sauna";
     const w={ id:editingId, date, t, n:(get("f_n")||"Untitled").trim(),
-      d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v")),
-      z:(get("f_z")||"—").trim()||"—", sf:(get("f_sf")||"").trim(), struct:(get("f_struct")||"").trim(), s:0, sa:0, note:(get("f_note")||"").trim() };
+      d:numOrNull(get("f_d")), k:sa_?null:numOrNull(get("f_k")), v:sa_?null:numOrNull(get("f_v")),
+      z:sa_?"—":((get("f_z")||"—").trim()||"—"), sf:sa_?"":(get("f_sf")||"").trim(), struct:sa_?"":(get("f_struct")||"").trim(), s:0, sa:0, note:(get("f_note")||"").trim() };
     state.custom.push(w);
     (state.board[date]=state.board[date]||[]).push(w.id);
     ensureTypeVisible(t);
   }else{
-    const id=editingId, t=get("f_t");
+    const id=editingId, t=get("f_t"); const sa_=t==="Sauna";
     state.edits[id]=Object.assign({}, state.edits[id], {
-      n:(get("f_n")||"").trim(), t, z:(get("f_z")||"").trim(), sf:(get("f_sf")||"").trim(), struct:(get("f_struct")||"").trim(),
-      d:numOrNull(get("f_d")), k:numOrNull(get("f_k")), v:numOrNull(get("f_v"))
+      n:(get("f_n")||"").trim(), t, z:sa_?"—":(get("f_z")||"").trim(), sf:sa_?"":(get("f_sf")||"").trim(), struct:sa_?"":(get("f_struct")||"").trim(),
+      d:numOrNull(get("f_d")), k:sa_?null:numOrNull(get("f_k")), v:sa_?null:numOrNull(get("f_v"))
     });
     state.done[id] = $("#f_done").getAttribute("aria-pressed")==="true";
     const prev=state.log[id]||{};                  // keep Strava-derived fields (zones/zt/sid) the modal doesn't edit
     const rpeSel=document.querySelector('#f_rpe [aria-pressed="true"]');
-    const lg=Object.assign({}, prev, { d:numOrNull(get("f_ld")), k:numOrNull(get("f_lk")), v:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), rpe:rpeSel? +rpeSel.dataset.rpe : null, c:(get("f_lc")||"").trim() });
+    const lg=Object.assign({}, prev, { d:numOrNull(get("f_ld")), k:sa_?null:numOrNull(get("f_lk")), v:sa_?null:numOrNull(get("f_lv")), hr:numOrNull(get("f_lhr")), rpe:(sa_||!rpeSel)?null:+rpeSel.dataset.rpe, c:(get("f_lc")||"").trim() });
     if(lg.rpe==null) delete lg.rpe;
     const empty = lg.d==null&&lg.k==null&&lg.v==null&&lg.hr==null&&lg.rpe==null&&!lg.c && lg.sid==null && !(Array.isArray(lg.zones)&&lg.zones.length);
     if(empty) delete state.log[id]; else state.log[id]=lg;
