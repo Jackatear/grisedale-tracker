@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08n" />
+<meta name="app-build" content="2026-06-08o" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -383,6 +383,8 @@
   .sb-bars{display:flex;align-items:flex-end;justify-content:center;gap:3px;width:100%;height:100%}
   .sb-bars i{flex:1 1 0;min-width:4px;max-width:13px;border-radius:3px;min-height:9px}
   .sb-lab{font-size:11px;color:var(--muted);text-align:center;line-height:1.3;overflow-wrap:anywhere}
+  .sb-col.slim .sb-barwrap{height:auto;padding:14px 0}
+  .sb-slim{width:100%;height:14px;border-radius:8px}
   .ses-desc{font-size:14px;line-height:1.55;color:var(--txt);margin:0}
   .ses-div{height:1px;background:var(--line);margin:15px 0 14px}
   .ses-stats{display:flex;align-items:stretch}
@@ -3807,33 +3809,46 @@ function effortZoneIdx(w){
   let zi=zoneTextToIdx(w.z); if(zi!=null) return zi;
   return ({Recovery:0, Easy:1, Long:1, Bike:1, Threshold:3, Descent:2, Hills:4, Simulation:4, Race:4})[w.t] ?? null;
 }
-// A compact structure bar: each block's HEIGHT ∝ intensity, WIDTH ∝ duration/count, colour by zone.
+// Session shape bar — built from name + notes so it actually matches the session.
+// Reps with @zone tags, strides, hill reps and "+ strength" are all picked up; an easy
+// warm-up/cool-down is shown around quality work; steady runs get one slim continuous bar.
+function barWorkSets(str, fb){
+  const re=/(\d+)\s*[×x]\s*\(?\s*(\d+)\s*(min|mins|s|sec|secs)\b/gi; const out=[]; let r;
+  while((r=re.exec(str))){ const tail=str.slice(r.index+r[0].length, r.index+r[0].length+18);
+    const tag=/@\s*([A-Za-z0-9]+)/.exec(tail);
+    out.push({reps:+r[1], each:+r[2], unit:/^s/i.test(r[3])?"s":"min", idx:blockZoneIdx(tag?tag[1]:null, fb)}); }
+  return out;
+}
 function structureBarHTML(w){
-  const plan=sessionPlan(w), H=[34,44,62,82,100], EZ=ZONES[1].c;
+  if(!w || w.t==="Rest") return "";
+  const name=w.n||"", note=w.note||"", text=name+" "+note, Z=ZONES, EZ=Z[1].c;
+  const fb = zoneTextToIdx(w.z)==null ? 3 : zoneTextToIdx(w.z);
+  const works = barWorkSets(name, fb);   // name only — notes describe strength holds (2×20s planks) we must not read as run intervals
+  let strides=0; if(!works.length){ const st=/(\d+)\s*(?:[×x]\s*\d+\s*s\s*)?(?:relaxed\s+)?strides/i.exec(name); strides = st? +st[1] : (/strides/i.test(name)?4:0); }
+  const strength=/\b(strength|power|s\s*&\s*c|\bgym\b|lifting)\b/i.test(text);
+  const easyBase=["Easy","Recovery","Long","Bike"].includes(w.t);
   const cols=[];
-  if(plan && plan.segs.length){
-    plan.segs.forEach(seg=>{
-      if(seg.kind==="wu") cols.push({flex:Math.max(10,seg.dur), lab:`${seg.dur} min easy`, bars:[{h:H[1],c:EZ}]});
-      else if(seg.kind==="cd") cols.push({flex:Math.max(8,seg.dur), lab:`${seg.dur} min easy`, bars:[{h:H[1],c:EZ}]});
-      else {
-        const each = seg.unit==="s" ? `${seg.each}s` : `${seg.each} min`;
-        const sprinty = seg.reps>1 && (seg.unit==="s" || seg.each<=2) && seg.idx<=1;   // short repeats w/ no zone = sprints/strides
-        const c = sprinty ? "var(--accent)" : ZONES[seg.idx].c, h = sprinty ? 100 : H[seg.idx];
-        const lab = seg.reps>1 ? `${seg.reps} × ${each}${sprinty?" sprints":""}` : `${each} @ ${ZONES[seg.idx].k}`;
-        const bars = seg.reps>1 ? Array.from({length:Math.min(seg.reps,12)},()=>({h,c})) : [{h,c}];
-        cols.push({flex:Math.max(12, Math.min(seg.reps,12)*3.4), lab, bars, work:true});
-      }
+  if(works.length || strides || strength){
+    cols.push({flex:easyBase?34:18, lab:easyBase?"Easy":"Warm-up", bars:[{h:50,c:EZ}]});
+    works.forEach(wk=>{
+      const sprint=(wk.unit==="s"||wk.each<=2)&&wk.idx<=2;       // short unzoned reps = strides/sprints
+      const idx=sprint?4:wk.idx, c=Z[idx].c, h=idx>=4?100:idx>=3?86:70;
+      const each=wk.unit==="s"?`${wk.each}s`:`${wk.each} min`, n=Math.min(wk.reps,12);
+      cols.push({flex:Math.max(13,n*3.4), work:true, lab:`${wk.reps} × ${each}`, bars:Array.from({length:n},()=>({h,c}))});
     });
-    if(/\b(power|strength|s\s*&\s*c|lift|gym)\b/i.test((w.n||"")+" "+(w.note||""))) cols.push({flex:13, lab:"Power", bars:[{h:H[2],c:ZONES[2].c}]});
+    if(!works.length && strides){ const n=Math.min(strides,12);
+      cols.push({flex:Math.max(11,n*3), work:true, lab:`${strides} strides`, bars:Array.from({length:n},()=>({h:100,c:Z[4].c}))}); }
+    if(works.length && !easyBase) cols.push({flex:13, lab:"Cool-down", bars:[{h:50,c:EZ}]});
+    if(strength) cols.push({flex:13, lab:"Strength", bars:[{h:64,c:Z[2].c}]});
   } else {
-    const idx = effortZoneIdx(w)??1;
-    cols.push({flex:40, lab:(w.d?fmtDur(w.d)+" · ":"")+ZONES[idx].k, bars:[{h:H[idx],c:ZONES[idx].c}]});
+    const idx=effortZoneIdx(w)??1;
+    cols.push({flex:1, slim:true, lab:(w.d?fmtDur(w.d)+" continuous · ":"Continuous · ")+Z[idx].k, bars:[{c:Z[idx].c}]});
   }
   const col=c=>{
-    const inner = c.work
-      ? `<div class="sb-bars">${c.bars.map(b=>`<i style="height:${b.h}%;background:${b.c}"></i>`).join("")}</div>`
+    const inner = c.slim ? `<div class="sb-slim" style="background:${c.bars[0].c}"></div>`
+      : c.work ? `<div class="sb-bars">${c.bars.map(b=>`<i style="height:${b.h}%;background:${b.c}"></i>`).join("")}</div>`
       : `<div class="sb-bar" style="height:${c.bars[0].h}%;background:${c.bars[0].c}"></div>`;
-    return `<div class="sb-col" style="flex:${c.flex}"><div class="sb-barwrap">${inner}</div><div class="sb-lab">${esc(c.lab)}</div></div>`;
+    return `<div class="sb-col${c.slim?" slim":""}" style="flex:${c.flex}"><div class="sb-barwrap">${inner}</div><div class="sb-lab">${esc(c.lab)}</div></div>`;
   };
   return `<div class="sb">${cols.map(col).join("")}</div>`;
 }
