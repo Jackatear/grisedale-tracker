@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08s" />
+<meta name="app-build" content="2026-06-08t" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -219,12 +219,12 @@
   @keyframes wkflash{0%,100%{box-shadow:none}25%{box-shadow:0 0 0 2px var(--accent)}}
   .botnav{display:none}
   @media (max-width:700px){
-    .botnav{display:flex;position:fixed;left:11px;right:11px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:35;gap:3px;background:linear-gradient(180deg,#30362c,#252b22);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:6px;box-shadow:0 12px 34px rgba(16,20,14,.42)}
+    .botnav{display:flex;position:fixed;left:11px;right:11px;bottom:max(8px, calc(env(safe-area-inset-bottom) - 12px));z-index:35;gap:3px;background:linear-gradient(180deg,#30362c,#252b22);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:6px;box-shadow:0 12px 34px rgba(16,20,14,.42)}
     .botnav .bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 7px;background:none;border:0;border-radius:15px;color:rgba(236,238,231,.5);font:inherit;font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .16s,background .16s}
     .botnav .bn svg{width:21px;height:21px}
     .botnav .bn.active{color:#f0a883;background:rgba(255,255,255,.07)}
     .tabsrow{display:none!important}       /* replaced by the bottom nav on phones (must beat the later desktop display:flex) */
-    body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+    body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   }
   .phasebadge{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid var(--line2);color:var(--muted)}
   .wk-adj-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
@@ -508,6 +508,8 @@
   .rs-pill.good{color:#9cc187;background:rgba(156,193,135,.16)}
   .rs-pill.warn{color:#e3b766;background:rgba(227,183,102,.16)}
   .rs-pill.bad{color:#e3866f;background:rgba(227,134,111,.16)}
+  .rs-foot{margin-top:12px;font-size:11.5px;line-height:1.5;color:rgba(236,238,231,.55)}
+  .rs-foot b{color:#9cc187;font-weight:700}
   .pg-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
   .pg-card h4{margin:0 0 3px;font-size:10.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--faint);font-weight:600;display:flex;align-items:center;gap:8px}
   .pg-card h4 .btn{margin-left:auto;font-size:12px;padding:6px 11px}
@@ -3246,14 +3248,15 @@ function raceShapeCardHTML(m){
     <div class="rs-head"><div><div class="rs-eyebrow">${esc(name)} · ${togo}</div><h3 class="rs-title">Race shape</h3></div>
       <span class="rs-pill ${m.status.c}">${esc(m.status.w)}</span></div>
     <p class="rs-summary">${trend}</p>
-    <div class="rs-readout" id="rsReadout"><b class="rs-week">Week ${m.curIdx+1}</b> · you are here · fitness ${cur.fit}</div>
+    <div class="rs-readout" id="rsReadout"><b class="rs-week">Week ${m.curIdx+1}</b> · you are here · fitness ${cur.fit}%</div>
     <div class="rs-chart">${pgRaceShapeChart(m)}</div>
     <div class="rs-slide"><span class="rs-send">W1</span><input type="range" class="rs-range" id="rsSlider" min="0" max="${m.weeks.length-1}" step="1" value="${m.curIdx}" aria-label="Scrub weeks"><span class="rs-send">Race</span></div>
     <div class="rs-tiles">
-      <div class="rs-tile"><div class="l">Fitness now</div><div class="v">${m.fitNow}</div></div>
-      <div class="rs-tile"><div class="l">Race day</div><div class="v">${m.fitRace}</div></div>
+      <div class="rs-tile"><div class="l">Fitness now</div><div class="v">${m.fitNow}%</div></div>
+      <div class="rs-tile"><div class="l">Race day</div><div class="v">${m.fitRace}%</div></div>
       <div class="rs-tile form"><div class="l">Form</div><div class="v">${esc(m.formWord)}</div></div>
-    </div></div>`;
+    </div>
+    <div class="rs-foot">Fitness is shown as a % of your projected race-day peak — 100% is the fittest this plan builds you. ${(()=>{ const r=m.fitNow>0?m.fitRace/m.fitNow:null; return r==null?"" : r>=1.08?`On plan you'll arrive about <b>${r.toFixed(1)}×</b> fitter than today.` : `You're already close to race-day fitness.`; })()}</div></div>`;
 }
 function renderRaceShape(){
   const host=$("#raceShape"); if(!host) return;
@@ -3268,7 +3271,7 @@ function rsScrubTo(k){
   const sc=document.getElementById("rsScrub"); if(sc){ sc.setAttribute("x1",x); sc.setAttribute("x2",x); }
   const dot=document.getElementById("rsDot"); if(dot){ dot.setAttribute("cx",x); dot.setAttribute("cy",y); }
   const lab=w.isCur?"you are here":(w.future?"projected":"done");
-  const ro=document.getElementById("rsReadout"); if(ro) ro.innerHTML=`<b class="rs-week">Week ${k+1}</b> · ${lab} · fitness ${w.fit}`;
+  const ro=document.getElementById("rsReadout"); if(ro) ro.innerHTML=`<b class="rs-week">Week ${k+1}</b> · ${lab} · fitness ${w.fit}%`;
 }
 function renderProgress(){
   const host=$("#progressView"); if(!host) return;
