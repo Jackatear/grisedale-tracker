@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08t" />
+<meta name="app-build" content="2026-06-08u" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -119,26 +119,52 @@
   .section-toggle[aria-expanded="false"] .caret{transform:rotate(-90deg)}
   .dash.collapsed{display:none}
   /* Calendar grid */
-  .cal-top{display:flex;align-items:center;gap:8px;margin:2px 2px 14px;flex-wrap:wrap}
-  .cal-top h3{font-size:16px;margin:0;font-weight:700;min-width:104px}
-  .cal-nav{display:flex;gap:6px;margin-left:auto}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-  .cal-wd{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);text-align:center;padding:2px 0 4px;font-weight:600}
-  .cal-cell{min-height:88px;border:1px solid var(--line);border-radius:9px;padding:5px 5px 6px;background:var(--panel);display:flex;flex-direction:column;gap:3px;overflow:hidden;cursor:pointer}
-  .cal-cell.out{background:var(--bg2);opacity:.5}
-  .cal-cell.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-  .cal-dnum{font-size:11.5px;font-weight:600;color:var(--muted);flex:0 0 auto}
-  .cal-cell.today .cal-dnum{color:var(--accent)}
-  .cal-evts{display:flex;flex-direction:column;gap:3px;min-height:0}
-  .cal-evt{font-size:10.5px;line-height:1.3;padding:2px 5px;border-radius:5px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--txt);border-left:2.5px solid var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cal-evt.done{opacity:.5;text-decoration:line-through;text-decoration-color:var(--faint)}
-  .cal-more{font-size:10px;color:var(--muted);padding-left:2px}
+  /* CONTOUR calendar — type-chip month grid + margin (rail) selected cards */
+  .cal-head{margin:2px 2px 16px}
+  .cal-headrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .cal-headrow h3{font-family:var(--sans);font-size:21px;font-weight:700;letter-spacing:-.02em;margin:0}
+  .cal-nav{display:flex;gap:7px}
+  .cal-navb{min-width:32px;height:32px;padding:0 9px;border-radius:9px;border:1px solid var(--line2);background:var(--panel);color:var(--muted);font:inherit;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .cal-navb.arrow{font-size:17px}
+  .cal-navb:hover{border-color:var(--accent);color:var(--accent)}
+  .cal-ctx{margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .cal-ctx b{color:var(--accent);font-weight:700}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .cal-wd{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);text-align:center;padding:2px 0 5px;font-weight:600}
+  .cal-grid .cal-cell{position:relative;min-height:60px;border:1px solid var(--line);border-radius:11px;padding:6px 5px;background:var(--panel);display:flex;flex-direction:column;gap:3px;overflow:hidden;cursor:pointer}
+  .cal-grid .cal-cell.out{background:transparent;border-color:transparent;cursor:default}
+  .cal-cell.out .cal-dnum{opacity:.22}
+  .cal-cell.today .cal-dnum{color:var(--accent);font-weight:700}
+  .cal-grid .cal-cell.sel{border-color:var(--accent);box-shadow:0 0 0 1.5px color-mix(in srgb,var(--accent) 50%,transparent)}
+  .cal-dnum{font-size:12px;font-weight:600;color:var(--txt);font-variant-numeric:tabular-nums;line-height:1;flex:0 0 auto}
+  .cal-chip{margin-top:auto;border-radius:7px;padding:3px 5px 4px;background:color-mix(in srgb,var(--c) 15%,transparent);line-height:1.05;overflow:hidden}
+  .cal-chip b{display:block;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:9px;font-weight:700;color:var(--c);letter-spacing:.01em}
+  .cal-chip span{display:block;font-size:8px;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85;margin-top:1px}
+  .cal-chip.done{filter:saturate(.55);opacity:.65}
+  .cal-plus{position:absolute;top:5px;right:6px;font-size:8px;color:var(--faint);font-weight:700}
+  .cal-sel-label{margin:20px 2px 11px;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:600}
+  .cal-sel{display:flex;flex-direction:column;gap:9px}
+  .cal-empty2{color:var(--muted);font-size:13px;padding:16px;border:1px dashed var(--line2);border-radius:13px;text-align:center}
+  .cal-empty2 .cal-add{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:0}
+  /* MARGIN (rail) activity card */
+  .mcard{display:flex;align-items:stretch;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;font:inherit;color:var(--txt);cursor:pointer;box-shadow:var(--shadow-soft);position:relative}
+  .mc-rail{flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:12px 6px;background:color-mix(in srgb,var(--c) 13%,transparent);border-right:1px solid color-mix(in srgb,var(--c) 20%,transparent)}
+  .mc-z{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;font-weight:700;color:var(--c);letter-spacing:-.01em}
+  .mc-load{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums}
+  .mc-rail i{font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-style:normal}
+  .mc-body{flex:1;min-width:0;padding:11px 40px 11px 13px;display:flex;flex-direction:column;justify-content:center;gap:3px}
+  .mc-eye{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--c);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mc-name{font-size:14.5px;font-weight:700;letter-spacing:-.01em;line-height:1.25;overflow-wrap:anywhere}
+  .mc-meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .mcard.done .mc-name{color:var(--muted)}
+  .mcard.rest .mc-rail{background:var(--bg2);border-right-color:var(--line)}
+  .mc-check{position:absolute;top:11px;right:12px;width:23px;height:23px;border-radius:7px;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--good);background:var(--panel)}
+  .mc-check.on{border-color:color-mix(in srgb,var(--good) 45%,transparent);background:color-mix(in srgb,var(--good) 12%,transparent)}
   @media (max-width:700px){
-    .cal-grid{gap:3px}
-    .cal-cell{min-height:62px;border-radius:7px;padding:3px 3px 4px;gap:2px}
-    .cal-dnum{font-size:11px}
-    .cal-evt{font-size:0;padding:0;height:6px;border-radius:3px;border-left:0;background:var(--c)}  /* compact colour bars on phones */
-    .cal-more{font-size:9px}
+    .cal-grid{gap:4px}
+    .cal-grid .cal-cell{min-height:54px;border-radius:9px;padding:5px 4px}
+    .cal-chip b{font-size:8.5px} .cal-chip span{font-size:7.5px}
+    .mc-rail{width:58px}
   }
   .phase-head{display:flex;align-items:center;gap:11px;margin:22px 2px 13px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent)}
   .phase-head::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--accent)}
@@ -3813,46 +3839,94 @@ document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.
 /* ===== Calendar (month grid) view ===== */
 const MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function shiftMonth(ym, delta){ let [y,m]=ym.split("-").map(Number); m=m-1+delta; y+=Math.floor(m/12); m=((m%12)+12)%12; return y+"-"+String(m+1).padStart(2,"0"); }
+const TYPE_ABBR={Easy:"EASY",Recovery:"RECO",Threshold:"THRES",Hills:"HILLS",Descent:"DESC",Simulation:"RACE SIM",Long:"LONG",Bike:"BIKE",Sauna:"SAUNA",Race:"RACE",Rest:"REST"};
+function calZoneLab(w){ if(w.t==="Race")return"RACE"; if(w.t==="Rest")return"REST"; if(w.t==="Sauna")return"SAUNA"; const z=zoneTextToIdx(w.z); return z!=null?("Z"+(z+1)):"—"; }
+// MARGIN card — contour-rail (zone + load) + calm scannable body. Reusable activity card.
+function marginCardHTML(id){
+  const w=getWO(id); if(!w) return "";
+  const ty=TYPES[w.t]||TYPES.Rest, done=!!state.done[id], isRest=w.t==="Rest", lg=state.log[id]||{};
+  const zlab = isRest?"REST":calZoneLab(w);
+  const ld = isRest?0:(done?sessionLoad(id):plannedLoad(w)); const load = ld?Math.round(ld/5)*5:"—";
+  const surf=surfaceLabel(w); const eye=[TYPE_ABBR[w.t]||w.t, surf?surf.toUpperCase():null].filter(Boolean).join(" · ");
+  const meta=[];
+  if(done){ const dv=lg.d!=null&&lg.d!==""?+lg.d:w.d, kv=lg.k!=null&&lg.k!==""?+lg.k:w.k, vv=lg.v!=null&&lg.v!==""?+lg.v:w.v;
+    if(dv)meta.push(fmtDur(dv)); if(kv!=null)meta.push(fmtDist(kv)); if(vv!=null&&vv>0)meta.push("↗ "+fmtVert(vv)); if(lg.hr)meta.push(lg.hr+" bpm"); }
+  else { if(w.d)meta.push(fmtDur(w.d)); if(w.k!=null)meta.push(fmtDist(w.k)); if(w.v!=null&&w.v>0)meta.push("↗ "+fmtVert(w.v));
+    if(w.t==="Race"&&w.date)meta.push(WD[d(w.date).getDay()]+" "+d(w.date).getDate()+" "+MO[d(w.date).getMonth()]); }
+  return `<button class="mcard ${done?'done':''} ${isRest?'rest':''}" data-open="${esc(id)}" style="--c:${ty.c}">
+    <div class="mc-rail"><b class="mc-z">${esc(zlab)}</b><span class="mc-load">${load}</span><i>load</i></div>
+    <div class="mc-body"><div class="mc-eye">${esc(eye)}</div><div class="mc-name">${esc(w.n)}</div>${meta.length?`<div class="mc-meta">${esc(meta.join(" · "))}</div>`:""}</div>
+    <span class="mc-check ${done?'on':''}" data-check="${esc(id)}">${done?"✓":""}</span></button>`;
+}
+function strengthMarginCardHTML(c){
+  return `<button class="mcard done strength" data-strength="${esc(c.id)}" style="--c:var(--t-strength)">
+    <div class="mc-rail"><b class="mc-z">S</b><span class="mc-load">${c.mins||"—"}</span><i>min</i></div>
+    <div class="mc-body"><div class="mc-eye">STRENGTH</div><div class="mc-name">${esc(c.title)}</div><div class="mc-meta">${(c.rows||[]).filter(r=>r.name).length} exercises</div></div>
+    <span class="mc-check on">✓</span></button>`;
+}
 function renderCalendar(){
   const host=$("#calendarView"); if(!host) return;
   if(!state.calMonth) state.calMonth = (planStartMonday()? planStartMonday().slice(0,7) : todayISO().slice(0,7));
+  const today=todayISO();
+  if(!state.calSel || (state.board[state.calSel]||[]).length===0 && !strengthDaysOn(state.calSel).length){
+    if(!state.calSel) state.calSel = today;            // default selection = today
+  }
   const [y,mo]=state.calMonth.split("-").map(Number);
   const firstDow=((new Date(y,mo-1,1)).getDay()+6)%7;        // Monday = 0
-  const today=todayISO();
-  const phone = !!(window.matchMedia && window.matchMedia("(max-width:700px)").matches);
-  const MAX = phone ? 4 : 3;
+  // context line for the selected day's week
+  const selMon=mondayOf(state.calSel), startMon=planStartMonday();
+  const wkN = startMon? Math.max(1, Math.floor(daysBetween(startMon,selMon)/7)+1) : null;
+  const blk=(state.blocks&&state.blocks[selMon])||{};
+  const blkName=(blk.label||"").split(/\s+[·—–-]\s+/)[0].trim();
+  let wkKm=0; for(let di=0;di<7;di++){ (state.board[addDays(selMon,di)]||[]).forEach(id=>{ const w=getWO(id); if(w&&w.t!=="Rest"&&w.t!=="Sauna"&&w.k!=null) wkKm+=w.k; }); }
+  const races=allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race").sort((a,b)=>a.date<b.date?-1:1);
+  const goal=races.filter(r=>daysBetween(today,r.date)>=0).pop(); const dRace=goal?daysBetween(today,goal.date):null;
+  const ctx=[ wkN?`Week ${wkN}`:null, blkName||null, wkKm?`<b>${esc(fmtDist(Math.round(wkKm)))}</b> planned`:null, dRace!=null?`race in <b>${dRace} day${dRace===1?"":"s"}</b>`:null ].filter(Boolean).join(" · ");
   let cells="";
   for(let i=0;i<42;i++){
     const dtc=new Date(y, mo-1, 1 - firstDow + i);
     const isoD=iso(dtc), inMonth = dtc.getMonth()===(mo-1);
     const ids=(state.board[isoD]||[]).filter(id=>getWO(id));
-    const items = ids.map(id=>{ const w=getWO(id), ty=TYPES[w.t]||TYPES.Rest;
-        return `<div class="cal-evt ${state.done[id]?'done':''}" data-id="${id}" style="--c:${ty.c}" title="${esc(w.n)}">${esc(w.n)}</div>`; })
-      .concat(strengthDaysOn(isoD).map(c=>`<div class="cal-evt done" data-strength="${esc(c.id)}" style="--c:var(--t-strength)" title="${esc(c.title)}">${esc(c.title)}</div>`));
-    const evts = items.slice(0,MAX).join("");
-    const more = items.length>MAX ? `<div class="cal-more">+${items.length-MAX}</div>` : "";
-    cells += `<div class="cal-cell ${inMonth?'':'out'} ${isoD===today?'today':''}" data-date="${isoD}" data-in="${inMonth?1:0}">
-        <div class="cal-dnum">${dtc.getDate()}</div><div class="cal-evts">${evts}${more}</div></div>`;
+    const sessIds=ids.filter(id=>getWO(id).t!=="Rest");
+    const sN=strengthDaysOn(isoD).length;
+    let chip="";
+    if(inMonth && sessIds.length){
+      const prim=getWO(sessIds[0]), ty=TYPES[prim.t]||TYPES.Rest, allDone=sessIds.every(id=>state.done[id]);
+      const z=calZoneLab(prim), ab=TYPE_ABBR[prim.t]||prim.t;
+      chip=`<div class="cal-chip ${allDone?'done':''}" style="--c:${ty.c}"><b>${esc(z)}</b>${prim.t==="Race"?"":`<span>${esc(ab)}</span>`}</div>`;
+    } else if(inMonth && sN){ chip=`<div class="cal-chip" style="--c:var(--t-strength)"><b>S</b><span>STR</span></div>`; }
+    const extra=inMonth?((sessIds.length+sN)-1):0;
+    cells += `<div class="cal-cell ${inMonth?'':'out'} ${isoD===today?'today':''} ${isoD===state.calSel?'sel':''}" data-date="${isoD}">
+        ${extra>0?`<span class="cal-plus">+${extra}</span>`:""}<div class="cal-dnum">${dtc.getDate()}</div>${chip}</div>`;
   }
-  const wd=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const wd=["M","T","W","T","F","S","S"];
+  const selIds=(state.board[state.calSel]||[]).filter(id=>getWO(id));
+  const selStrength=strengthDaysOn(state.calSel);
+  const selBody = (selIds.length||selStrength.length)
+    ? selIds.map(marginCardHTML).join("") + selStrength.map(strengthMarginCardHTML).join("")
+    : `<div class="cal-empty2">Nothing scheduled · <button class="cal-add" data-dayadd="${esc(state.calSel)}">＋ Add session</button></div>`;
+  const sd=d(state.calSel), selLabel=`Selected · ${WD[sd.getDay()]} ${sd.getDate()} ${MO[sd.getMonth()]}`;
   host.innerHTML = `
-    <div class="cal-top">
-      <h3>${MONTHS_FULL[mo-1]} ${y}</h3>
-      <div class="cal-nav">
-        <button class="iconbtn" data-cal="today">Today</button>
-        <button class="iconbtn" data-cal="prev" title="Previous month">‹</button>
-        <button class="iconbtn" data-cal="next" title="Next month">›</button>
-      </div>
+    <div class="cal-head">
+      <div class="cal-headrow"><h3>${MONTHS_FULL[mo-1]} ${y}</h3>
+        <div class="cal-nav"><button class="cal-navb" data-cal="today">Today</button><button class="cal-navb arrow" data-cal="prev" aria-label="Previous month">‹</button><button class="cal-navb arrow" data-cal="next" aria-label="Next month">›</button></div></div>
+      ${ctx?`<div class="cal-ctx">${ctx}</div>`:""}
     </div>
-    <div class="cal-grid">${wd.map(x=>`<div class="cal-wd">${x}</div>`).join("")}${cells}</div>`;
+    <div class="cal-grid">${wd.map(x=>`<div class="cal-wd">${x}</div>`).join("")}${cells}</div>
+    <div class="cal-sel-label">${esc(selLabel)}</div>
+    <div class="cal-sel">${selBody}</div>`;
 }
 $("#calendarView").addEventListener("click", e=>{
   const nav=e.target.closest("[data-cal]");
   if(nav){ const a=nav.dataset.cal;
     state.calMonth = a==="today" ? todayISO().slice(0,7) : shiftMonth(state.calMonth||todayISO().slice(0,7), a==="next"?1:-1);
+    if(a==="today") state.calSel=todayISO();
     save(); renderCalendar(); return; }
-  const cell=e.target.closest(".cal-cell");
-  if(cell) openDaySheet(cell.dataset.date);          // open the whole day → tappable session cards
+  const chk=e.target.closest("[data-check]"); if(chk){ e.stopPropagation(); pushUndo(); state.done[chk.dataset.check]=!state.done[chk.dataset.check]; save(); render(); return; }
+  const op=e.target.closest("[data-open]"); if(op){ openModal(op.dataset.open); return; }
+  const st=e.target.closest("[data-strength]"); if(st){ openStrengthFromBoard(st.dataset.strength); return; }
+  const ad=e.target.closest("[data-dayadd]"); if(ad){ openNew(ad.dataset.dayadd); return; }
+  const cell=e.target.closest(".cal-cell"); if(cell && cell.dataset.date){ state.calSel=cell.dataset.date; save(); renderCalendar(); }
 });
 // Day detail sheet: lists every session on a day as a big, easy-to-tap mini card
 function openDaySheet(date){
