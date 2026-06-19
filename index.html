@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08u" />
+<meta name="app-build" content="2026-06-08v" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -405,6 +405,19 @@
   .mv2 .pill{font-size:12px;font-weight:600;padding:5px 12px;border:0;border-radius:999px;background:var(--bg2);color:var(--muted)}
   .mv2 .pill.zone{background:var(--bg2);color:var(--muted)}
   .ses-card,.why-card,.log-card{background:var(--bg2);border-radius:16px;padding:15px 16px}
+  /* Session modal — dark Horizon hero header */
+  .mv-hero{cursor:default;margin:0;padding:16px 17px 18px}
+  .mvh-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  .mvh-pill{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.08);color:rgba(236,238,231,.72)}
+  .mvh-pill.type{background:rgba(232,137,95,.18);color:#f0a883}
+  .mvh-pill.done{background:rgba(156,193,135,.18);color:#9cc187}
+  .mv-hero .hz-chartwrap{margin-top:15px}
+  .mv-hero .hz-quote{margin-top:14px}
+  .mvh-stats{display:flex;align-items:stretch;margin-top:16px}
+  .mvh-stat{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding:0 10px;border-left:1px solid rgba(255,255,255,.1)}
+  .mvh-stat:first-child{padding-left:0;border-left:0}
+  .mvh-stat .l{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:rgba(236,238,231,.5);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mvh-stat b{font-size:17px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#eceee7;white-space:nowrap}
   .ses-lab{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;margin-bottom:13px}
   .sb{display:flex;align-items:flex-end;gap:10px;margin-bottom:15px}
   .sb-col{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}
@@ -417,11 +430,10 @@
   .sb-slim{width:100%;height:14px;border-radius:8px}
   .ses-desc{font-size:14px;line-height:1.55;color:var(--txt);margin:0}
   .ses-div{height:1px;background:var(--line);margin:15px 0 14px}
-  .ses-stats{display:flex;align-items:stretch}
-  .ses-stat{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;padding:0 15px;border-left:1px solid var(--line)}
-  .ses-stat:first-child{padding-left:0;border-left:0}
-  .ses-stat .l{font-size:12px;color:var(--muted)}
-  .ses-stat b{font-size:20px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .ses-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(68px,1fr));gap:12px 6px}
+  .ses-stat{min-width:0;display:flex;flex-direction:column;gap:5px}
+  .ses-stat .l{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ses-stat b{font-size:17px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
   .why-card .why-row{display:flex;gap:11px;align-items:flex-start;font-size:14px;line-height:1.5;color:var(--txt)}
   .why-card .why-row+.why-row{margin-top:13px}
   .why-tick{flex:0 0 auto;width:18px;height:18px;border:2px solid var(--good);border-radius:5px;margin-top:1px}
@@ -4139,23 +4151,26 @@ function modalViewHTML(w){
   const lg=state.log[editingId]||{}, done=!!state.done[editingId];
   const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null, rest=w.t==="Rest";
   const surf=surfaceLabel(w);
-  const chips=`<div class="mv-chips">
-    <span class="pill type" style="background:color-mix(in srgb,${ty.c} 16%,transparent);color:${ty.c}">${esc(ty.label)}</span>
-    ${surf?`<span class="pill">${esc(surf[0].toUpperCase()+surf.slice(1))}</span>`:""}
-    ${w.z&&w.z!=="—"?`<span class="pill zone">${esc(w.z)}</span>`:""}</div>`;
-  // ── The session ──
+  // ── The session — dark Horizon hero with the artistic intensity line ──
   const zi=effortZoneIdx(w);
-  const stats=[["Duration", w.d?fmtDur(w.d):"—"]];
-  if(w.k!=null) stats.push(["Distance", fmtDist(w.k)]);
+  const ld = rest?0:(done?sessionLoad(editingId):plannedLoad(w)); const loadN = ld?Math.round(ld/5)*5:null;
+  const stats=[["Time", w.d?fmtDur(w.d):"—"]];
+  if(w.k!=null) stats.push(["Dist", fmtDist(w.k)]);
   else if(w.v!=null) stats.push(["Climb", fmtVert(w.v)]);
-  else stats.push(["Distance","—"]);
+  else stats.push(["Dist","—"]);
   stats.push(["Effort", zi!=null?(EFFORT_WORD[zi]||w.z||"—"):(w.z&&w.z!=="—"?w.z:"—")]);
-  const statsHTML=`<div class="ses-stats">${stats.map(s=>`<div class="ses-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div>`;
-  const sesCard=`<div class="ses-card">
-    <div class="ses-lab">The session</div>
-    ${!rest?structureBarHTML(w):""}
-    ${w.note?`<p class="ses-desc">${esc(w.note)}</p>`:""}
-    <div class="ses-div"></div>${statsHTML}</div>`;
+  if(loadN) stats.push(["Load", String(loadN)]);
+  const heroChips=`<div class="mvh-chips">
+    <span class="mvh-pill type">${esc(ty.label)}</span>
+    ${surf?`<span class="mvh-pill">${esc(surf[0].toUpperCase()+surf.slice(1))}</span>`:""}
+    ${w.z&&w.z!=="—"?`<span class="mvh-pill">${esc(w.z)}</span>`:""}
+    ${done?`<span class="mvh-pill done">✓ ${es?es.pct+"%":"Done"}</span>`:""}</div>`;
+  const vertBadge=(w.v!=null&&w.v>0)?`<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
+  const sesCard=`<div class="hz-hero mv-hero">
+    ${heroChips}
+    ${!rest?`<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`:""}
+    ${w.note?`<div class="hz-quote">${esc(w.note)}</div>`:""}
+    <div class="mvh-stats">${stats.map(s=>`<div class="mvh-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div></div>`;
   // ── Why it matters ──
   const why=TYPE_WHY[w.t];
   const whyCard = why?`<div class="why-card"><div class="ses-lab">Why it matters</div>
@@ -4174,7 +4189,7 @@ function modalViewHTML(w){
     logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
   }
   const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
-  return `<div class="mv2">${chips}${sesCard}${whyCard}${logCard}</div>`;
+  return `<div class="mv2">${sesCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
