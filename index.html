@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08w" />
+<meta name="app-build" content="2026-06-08x" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -520,6 +520,21 @@
   .pg-rec-sub{font-size:12px;color:var(--muted);margin-top:2px}
   .pg-rec-v{flex:0 0 auto;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
   .pg-rec-v i{font-size:12px;font-weight:500;font-style:normal;color:var(--muted);margin-left:3px}
+  /* run route traces (GPS) */
+  .rt-svg{display:block;width:100%;height:100%}
+  .rt-line{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+  .rt-start{fill:var(--good)} .rt-end{fill:var(--accent)}
+  .hz-chartwrap.route{background:rgba(255,255,255,.03);padding:4px}
+  .hz-chartwrap.route .rt-svg{height:170px}
+  .hz-chartwrap.route .rt-line{stroke:#ec9069;stroke-width:2.6}
+  .hz-chartwrap.route .rt-start{fill:#9cc187} .hz-chartwrap.route .rt-end{fill:#ec9069}
+  .hz-routetag{position:absolute;top:9px;left:11px;background:rgba(20,22,18,.55);color:#f0a883;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.03em;backdrop-filter:blur(3px)}
+  .pg-routes{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px}
+  .pg-route{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--shadow-soft);overflow:hidden}
+  .pg-route .rt-svg{height:116px;background:var(--bg2);border-radius:9px}
+  .pg-route-meta{padding:9px 4px 2px}
+  .pg-route-meta b{display:block;font-size:13px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pg-route-meta span{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .pg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
   .pg-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;min-width:0}
   .pg-stat .v{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -2217,6 +2232,29 @@ function intensityLineSVG(w, mini){
   const cls=mini?"hzspark":"hzline";
   return `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path class="${cls}-a" d="${area}"/><path class="${cls}-s" d="${line}"/></svg>`;
 }
+// Google encoded-polyline decoder → [[lat,lng],…] (Strava map.summary_polyline).
+function decodePolyline(str){
+  if(!str) return []; let i=0, lat=0, lng=0; const out=[];
+  while(i<str.length){ let b, sh=0, res=0;
+    do{ b=str.charCodeAt(i++)-63; res|=(b&0x1f)<<sh; sh+=5; }while(b>=0x20); lat+=(res&1)?~(res>>1):(res>>1);
+    sh=0; res=0; do{ b=str.charCodeAt(i++)-63; res|=(b&0x1f)<<sh; sh+=5; }while(b>=0x20); lng+=(res&1)?~(res>>1):(res>>1);
+    out.push([lat/1e5, lng/1e5]); }
+  return out;
+}
+// Draw a run's GPS route as a clean SVG trace (no map tiles — free, private, on-brand).
+function routeTraceSVG(poly, opts){
+  opts=opts||{}; const pts=decodePolyline(poly); if(pts.length<2) return "";
+  const W=opts.w||300, H=opts.h||170, pad=opts.pad||12, cls=opts.cls||"rt-svg";
+  const meanLat=pts.reduce((a,p)=>a+p[0],0)/pts.length, kx=Math.cos(meanLat*Math.PI/180);
+  const xs=pts.map(p=>p[1]*kx), ys=pts.map(p=>-p[0]);   // north up
+  const minX=Math.min.apply(null,xs), maxX=Math.max.apply(null,xs), minY=Math.min.apply(null,ys), maxY=Math.max.apply(null,ys);
+  const spanX=Math.max(1e-9,maxX-minX), spanY=Math.max(1e-9,maxY-minY);
+  const scale=Math.min((W-2*pad)/spanX,(H-2*pad)/spanY);
+  const offX=(W-spanX*scale)/2, offY=(H-spanY*scale)/2, X=x=>offX+(x-minX)*scale, Y=y=>offY+(y-minY)*scale;
+  let d=""; pts.forEach((p,i)=>{ d+=(i?" L":"M")+X(xs[i]).toFixed(1)+","+Y(ys[i]).toFixed(1); });
+  const s0=[X(xs[0]),Y(ys[0])], s1=[X(xs[xs.length-1]),Y(ys[ys.length-1])];
+  return `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path class="rt-line" d="${d}"/>${opts.dots!==false?`<circle class="rt-start" cx="${s0[0].toFixed(1)}" cy="${s0[1].toFixed(1)}" r="3.2"/><circle class="rt-end" cx="${s1[0].toFixed(1)}" cy="${s1[1].toFixed(1)}" r="3.2"/>`:""}</svg>`;
+}
 function hzHeroHTML(rec){
   const t=todayISO();
   const on=date=>((rec.board&&rec.board[date])||[]).map(id=>({id,w:recWO(rec,id)})).filter(x=>x.w);
@@ -3503,6 +3541,11 @@ function renderProgress(){
   if(bigWeek.v>0) recs.push({c:"var(--accent)",l:"Biggest training week",sub:bigWeek.m?"wk of "+mdShort(bigWeek.m):"",v:pgHours(bigWeek.v),u:"h"});
   if(streak>0) recs.push({c:"var(--good)",l:"Key-session streak",sub:"weeks without a miss",v:streak,u:streak===1?"wk":"wks"});
   const recordsHTML = recs.length? `<div class="pg-sec2"><span>Records</span><span class="pg-sec2-r">${recs.length} personal best${recs.length===1?"":"s"}</span></div><div class="pg-recs">${recs.map(r=>`<div class="pg-rec" style="--c:${r.c}"><div class="pg-rec-main"><div class="pg-rec-l">${esc(r.l)}</div>${r.sub?`<div class="pg-rec-sub">${esc(r.sub)}</div>`:""}</div><div class="pg-rec-v">${r.v}<i>${esc(r.u)}</i></div></div>`).join("")}</div>`:"";
+  // recent run routes (GPS traces from Strava)
+  const routes=[];
+  (state.plans||[]).forEach(rec=>{ (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{ if(!w||!w.date)return; const lg=(rec.log&&rec.log[w.id])||{}; if(lg.poly && rec.done&&rec.done[w.id] && !(rec.deleted&&rec.deleted[w.id])){ const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{}); routes.push({date:eff.date, name:eff.n||"Run", k:lg.k!=null&&lg.k!==""?+lg.k:eff.k, poly:lg.poly}); } }); });
+  routes.sort((a,b)=>a.date<b.date?1:-1);
+  const routesHTML = routes.length? `<div class="pg-sec2"><span>Recent routes</span><span class="pg-sec2-r">${routes.length} mapped</span></div><div class="pg-routes">${routes.slice(0,6).map(r=>`<div class="pg-route">${routeTraceSVG(r.poly,{w:160,h:118,cls:"rt-svg"})}<div class="pg-route-meta"><b>${esc(r.name)}</b><span>${r.k!=null?esc(fmtDist(r.k)):""} · ${esc(mdShort(r.date))}</span></div></div>`).join("")}</div>`:"";
   const proofHTML=`<div class="pg-proof">
     <div class="pg-proof-head"><span class="pg-proof-mark">◆</span> Proof of progress</div>
     <div class="pg-proof-sub">Everything you've completed on the road to British Fell Champion.</div>
@@ -3517,6 +3560,7 @@ function renderProgress(){
     ${proofHTML}
     ${tiles}
     ${recordsHTML}
+    ${routesHTML}
     <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
       ${engineBody}</div>
     <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
@@ -4275,9 +4319,13 @@ function modalViewHTML(w){
     ${w.z&&w.z!=="—"?`<span class="mvh-pill">${esc(w.z)}</span>`:""}
     ${done?`<span class="mvh-pill done">✓ ${es?es.pct+"%":"Done"}</span>`:""}</div>`;
   const vertBadge=(w.v!=null&&w.v>0)?`<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
+  const hasRoute = done && lg.poly && decodePolyline(lg.poly).length>2;
+  const chartHTML = rest ? "" : hasRoute
+    ? `<div class="hz-chartwrap route">${routeTraceSVG(lg.poly,{h:170})}<span class="hz-routetag">▲ Route</span>${vertBadge}</div>`
+    : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`;
   const sesCard=`<div class="hz-hero mv-hero">
     ${heroChips}
-    ${!rest?`<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`:""}
+    ${chartHTML}
     ${w.note?`<div class="hz-quote">${esc(w.note)}</div>`:""}
     <div class="mvh-stats">${stats.map(s=>`<div class="mvh-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div></div>`;
   // ── Why it matters ──
@@ -4984,6 +5032,7 @@ function matchActivities(acts){
     const min = a.moving_time ? Math.round(a.moving_time/60) : null;
     const vert= a.elev!=null ? Math.round(a.elev) : null;
     const hr  = a.hr!=null ? Math.round(a.hr) : null;
+    const poly= a.poly || null;                     // encoded route geometry for the trace map
     const nm  = a.name || a.type || "Activity";
     const memberIds=a.sids||[a.id];
     // every session that previously claimed any part of this activity (a split import lands on several)
@@ -5020,7 +5069,7 @@ function matchActivities(acts){
     if(pick){                                                // fill a planned session
       used.add(pick.id); state.done[pick.id]=true;
       const prev=state.log[pick.id]||{};
-      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, sid:a.id,
+      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, poly:poly??prev.poly, sid:a.id,
         c:(prev.c?prev.c+" · ":"")+"Strava: "+nm+stitched });
       if(a.sids) state.log[pick.id].sids=memberIds;
       imported.push({id:pick.id, sids:memberIds}); matched++;
@@ -5030,7 +5079,7 @@ function matchActivities(acts){
       (state.custom=state.custom||[]).push(rec);
       (state.board[date]=state.board[date]||[]).push(id);
       state.done[id]=true;
-      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, {sid:a.id}, a.sids?{sids:memberIds}:{});
+      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, poly?{poly}:{}, {sid:a.id}, a.sids?{sids:memberIds}:{});
       imported.push({id, sids:memberIds}); added++;
     }
   });
