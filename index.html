@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08y" />
+<meta name="app-build" content="2026-06-08z" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -5125,6 +5125,18 @@ function matchActivities(acts){
 /* ============================ RUNNER'S WORLD — a little overworld ============================
    Pure client-side canvas mini-game. No backend/gist/cost — just reads your training stats. */
 let _rg=null;
+const RG_SPRITE_SRC="data:image/png;base64,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";                 // embedded 4×4 character sheet (48px frames: rows down/left/right/up)
+const RG_SPRITE_IMG=new Image(); let _rgSpriteReady=false, RG_SPRITE_CANVAS=null, RG_SPRITE_URL="";
+function rgKnockoutWhite(img){ const c=document.createElement("canvas"); c.width=img.naturalWidth; c.height=img.naturalHeight; const x=c.getContext("2d"); x.drawImage(img,0,0);
+  const id=x.getImageData(0,0,c.width,c.height), a=id.data, W=c.width, Hh=c.height, seen=new Uint8Array(W*Hh), st=[];
+  const wht=i=>a[i]>238&&a[i+1]>238&&a[i+2]>238;                                          // edge-connected white = background (interior white hair survives)
+  const psh=(px,py)=>{ if(px<0||py<0||px>=W||py>=Hh)return; const p=py*W+px; if(seen[p])return; seen[p]=1; if(wht(p*4)) st.push(p); };
+  for(let i2=0;i2<W;i2++){ psh(i2,0); psh(i2,Hh-1); } for(let j=0;j<Hh;j++){ psh(0,j); psh(W-1,j); }
+  while(st.length){ const p=st.pop(); a[p*4+3]=0; const px=p%W, py=(p/W)|0; psh(px+1,py); psh(px-1,py); psh(px,py+1); psh(px,py-1); }
+  x.putImageData(id,0,0); return c; }
+RG_SPRITE_IMG.onload=()=>{ try{ RG_SPRITE_CANVAS=rgKnockoutWhite(RG_SPRITE_IMG); RG_SPRITE_URL=RG_SPRITE_CANVAS.toDataURL("image/png"); }catch(e){ RG_SPRITE_CANVAS=RG_SPRITE_IMG; RG_SPRITE_URL=RG_SPRITE_SRC; } _rgSpriteReady=true; };
+if(RG_SPRITE_SRC.indexOf("data:")===0) RG_SPRITE_IMG.src=RG_SPRITE_SRC;
+const RG_SPR=48, RG_DIRROW={down:0,left:1,right:2,up:3};
 function rgReadinessAvg(){
   let s=0,n=0; for(let i=0;i<14;i++){ const v=readinessScore(state.readiness&&state.readiness[addDays(todayISO(),-i)]); if(v!=null){s+=v;n++;} }
   return n? Math.round(s/n) : null;
@@ -5193,7 +5205,7 @@ function openRunnerWorld(){
   function openRunnerStats(){
     const st=runnerStats(); const back=$("#rgStatsBack");
     back.innerHTML=`<div class="rg-stats-card">
-      <div class="rg-stats-head"><div class="rg-avatar">${RG_RUNNER}</div><div><div class="rg-stats-name">${esc(athleteName()||"Your runner")}</div><div class="rg-stats-title">Lv ${st.level} · ${esc(st.title)}</div></div></div>
+      <div class="rg-stats-head"><div class="rg-avatar"${_rgSpriteReady?` style="background-image:url('${RG_SPRITE_URL||RG_SPRITE_SRC}');background-size:400% 400%;background-position:0% 0%;background-repeat:no-repeat;image-rendering:pixelated"`:""}>${_rgSpriteReady?"":RG_RUNNER}</div><div><div class="rg-stats-name">${esc(athleteName()||"Your runner")}</div><div class="rg-stats-title">Lv ${st.level} · ${esc(st.title)}</div></div></div>
       <div class="rg-stats-hp"><span>HP</span><div class="rg-stats-hptrack"><i style="width:${st.hp}%"></i></div><b>${st.hp}</b></div>
       <div class="rg-stats-list">${st.stats.map(s=>`<div class="rg-stat"><span class="rg-stat-l">${s[0]}</span><div class="rg-stat-bar"><i style="width:${s[1]}%;background:${s[2]}"></i></div><b>${s[1]}</b></div>`).join("")}</div>
       <div class="rg-stats-foot">${st.done} sessions banked on the road to British Fell Champion.</div>
@@ -5205,26 +5217,18 @@ function openRunnerWorld(){
   function hud(){ const st=runnerStats(); $("#rgHp").style.width=st.hp+"%"; $("#rgHpN").textContent=st.hp; $("#rgHp").style.background=st.hp>=60?"#7fae62":st.hp>=40?"#cf9f43":"#c2503a"; }
   hud();
   // ---- draw helpers ----
-  function drawRunner(cx,cy){ const f=p.frame, moving=keys.up||keys.down||keys.left||keys.right;
-    const bob=moving?Math.sin(f*0.4)*1.6:0; cy+=bob;
-    ctx.save();
-    ctx.fillStyle="rgba(40,44,30,.18)"; ctx.beginPath(); ctx.ellipse(cx,cy+16,12,4.5,0,0,7); ctx.fill();
-    if(p.dir==="left"){ ctx.translate(cx*2,0); ctx.scale(-1,1); }                       // flip for left
-    const X=p.dir==="left"?(cx*2-cx):cx;                                                // mirrored x
-    const sw=moving?Math.sin(f*0.55)*5:0;
-    ctx.lineCap="round"; ctx.lineJoin="round";
-    ctx.strokeStyle="#3a3d34"; ctx.lineWidth=5;                                          // legs
-    ctx.beginPath(); ctx.moveTo(X,cy+5); ctx.lineTo(X-3+sw,cy+16); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(X,cy+5); ctx.lineTo(X+3-sw,cy+16); ctx.stroke();
-    ctx.strokeStyle="#b14a22"; ctx.lineWidth=7;                                          // torso
-    ctx.beginPath(); ctx.moveTo(X,cy-8); ctx.lineTo(X,cy+6); ctx.stroke();
-    ctx.strokeStyle="#e6b48a"; ctx.lineWidth=4.5;                                        // arms
-    ctx.beginPath(); ctx.moveTo(X,cy-5); ctx.lineTo(X+6,cy-(moving?sw:0)); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(X,cy-5); ctx.lineTo(X-6,cy+(moving?sw:0)); ctx.stroke();
-    ctx.fillStyle="#e6b48a"; ctx.beginPath(); ctx.arc(X,cy-13,6.5,0,7); ctx.fill();      // head
-    ctx.strokeStyle="#b14a22"; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(X,cy-15,5.5,Math.PI*1.05,Math.PI*1.95); ctx.stroke(); // cap
-    if(p.dir==="down"){ ctx.fillStyle="#3a3d34"; ctx.beginPath(); ctx.arc(X-2.3,cy-12.5,1,0,7); ctx.arc(X+2.3,cy-12.5,1,0,7); ctx.fill(); }
-    ctx.restore();
+  const RG_WALK=[0,1,2,3];                                                              // walk-frame column cycle
+  function drawRunner(cx,cy){ const moving=keys.up||keys.down||keys.left||keys.right;
+    ctx.fillStyle="rgba(40,44,30,.2)"; ctx.beginPath(); ctx.ellipse(cx,cy+19,12,4.5,0,0,7); ctx.fill();   // shadow
+    if(_rgSpriteReady){
+      const row=RG_DIRROW[p.dir]??0, col=moving?RG_WALK[Math.floor(p.frame/7)%RG_WALK.length]:0;
+      const sc=1.35, dw=RG_SPR*sc, dh=RG_SPR*sc;                                         // ~65px on screen
+      ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(RG_SPRITE_CANVAS||RG_SPRITE_IMG, col*RG_SPR, row*RG_SPR, RG_SPR, RG_SPR, Math.round(cx-dw/2), Math.round(cy-dh+22), dw, dh);
+      ctx.imageSmoothingEnabled=true; return;
+    }
+    // fallback (sprite not loaded): a simple dot
+    ctx.fillStyle="#b14a22"; ctx.beginPath(); ctx.arc(cx,cy,9,0,7); ctx.fill();
   }
   const GREEN=["#9db085","#95a87b"], TRAIL="#c4a87a", WATER="#86a9b4";
   function draw(){
