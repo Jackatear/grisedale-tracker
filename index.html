@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08x" />
+<meta name="app-build" content="2026-06-08y" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -535,6 +535,40 @@
   .pg-route-meta{padding:9px 4px 2px}
   .pg-route-meta b{display:block;font-size:13px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .pg-route-meta span{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  /* ===== Runner's world (mini-game) ===== */
+  .rg-overlay{position:fixed;inset:0;z-index:200;background:#9db085;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+  .rg-canvas{position:absolute;inset:0;display:block}
+  .rg-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;z-index:2}
+  .rg-name{background:rgba(20,22,16,.55);color:#f3efe3;font-weight:700;font-size:13px;padding:6px 12px;border-radius:999px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .rg-close{width:36px;height:36px;border-radius:50%;border:0;background:rgba(20,22,16,.55);color:#f3efe3;font-size:16px;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .rg-hpwrap{position:absolute;top:calc(54px + env(safe-area-inset-top));left:14px;display:flex;align-items:center;gap:7px;z-index:2;background:rgba(20,22,16,.5);padding:5px 11px 5px 9px;border-radius:999px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .rg-hp-ic{color:#e36b5c;font-size:13px}
+  .rg-hp-track{width:118px;height:8px;border-radius:999px;background:rgba(255,255,255,.25);overflow:hidden}
+  .rg-hp-track i{display:block;height:100%;border-radius:999px;background:#7fae62;transition:width .4s}
+  .rg-hp-n{color:#f3efe3;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+  .rg-hint{position:absolute;bottom:calc(168px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;color:rgba(20,22,16,.6);font-size:12px;font-weight:600;z-index:2;transition:opacity .6s;pointer-events:none}
+  .rg-pad{position:absolute;bottom:calc(28px + env(safe-area-inset-bottom));left:22px;width:150px;height:150px;z-index:3}
+  .rg-btn{position:absolute;width:50px;height:50px;border-radius:13px;border:0;background:rgba(20,22,16,.5);color:#f3efe3;font-size:15px;cursor:pointer;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+  .rg-btn.on{background:rgba(177,74,34,.85)}
+  .rg-btn.up{left:50px;top:0}.rg-btn.down{left:50px;bottom:0}.rg-btn.left{left:0;top:50px}.rg-btn.right{right:0;top:50px}
+  .rg-statsback{position:absolute;inset:0;z-index:5;background:rgba(20,22,16,.5);display:flex;align-items:center;justify-content:center;padding:22px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  .rg-stats-card{width:min(360px,100%);background:var(--panel);border-radius:18px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .rg-stats-head{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+  .rg-avatar{flex:0 0 auto;width:54px;height:54px;border-radius:14px;background:var(--bg2);display:flex;align-items:center;justify-content:center}
+  .rg-stats-name{font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .rg-stats-title{font-size:12.5px;color:var(--accent);font-weight:600;margin-top:1px}
+  .rg-stats-hp{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+  .rg-stats-hp>span{font-size:11px;font-weight:700;color:var(--muted);width:20px}
+  .rg-stats-hptrack{flex:1;height:9px;border-radius:999px;background:var(--bg2);overflow:hidden}
+  .rg-stats-hptrack i{display:block;height:100%;border-radius:999px;background:#7fae62}
+  .rg-stats-hp>b{font-size:13px;font-variant-numeric:tabular-nums}
+  .rg-stats-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+  .rg-stat{display:flex;align-items:center;gap:9px}
+  .rg-stat-l{font-size:12px;color:var(--muted);width:72px;font-weight:600}
+  .rg-stat-bar{flex:1;height:8px;border-radius:999px;background:var(--bg2);overflow:hidden}
+  .rg-stat-bar i{display:block;height:100%;border-radius:999px}
+  .rg-stat>b{font-size:12px;width:24px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+  .rg-stats-foot{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:13px}
   .pg-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
   .pg-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;min-width:0}
   .pg-stat .v{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -1320,6 +1354,7 @@
         <button data-act="rename">Rename this plan</button>
         <button data-act="exportCsv">Export this plan (CSV)</button>
         <button data-act="library">Season library — next blocks…</button>
+        <button data-act="runner">🏃 Runner's world</button>
         <button data-act="templateCsv">Blank template (CSV)</button>
         <div class="sep"></div>
         <button data-act="importCsv">Import plan (CSV…)</button>
@@ -4727,6 +4762,7 @@ menu.addEventListener("click", e=>{
     case "exportCsv":  if(state.activeId) exportPlanCSV(state.activeId); break;
     case "templateCsv": download("plan-template.csv", csvTemplate(), "text/csv"); break;
     case "library":    openLibrarySheet(); break;
+    case "runner":     openRunnerWorld(); break;
     case "importCsv":  $("#importCsvFile").click(); break;
     case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;
     case "importJson": $("#importJsonFile").click(); break;
@@ -5086,6 +5122,146 @@ function matchActivities(acts){
   return {matched,added,updated,imported};
 }
 
+/* ============================ RUNNER'S WORLD — a little overworld ============================
+   Pure client-side canvas mini-game. No backend/gist/cost — just reads your training stats. */
+let _rg=null;
+function rgReadinessAvg(){
+  let s=0,n=0; for(let i=0;i<14;i++){ const v=readinessScore(state.readiness&&state.readiness[addDays(todayISO(),-i)]); if(v!=null){s+=v;n++;} }
+  return n? Math.round(s/n) : null;
+}
+function runnerStats(){
+  let done=0, vert=0, hard=0, longRuns=0; const strength=(state.strengthDays||[]).filter(c=>c.done).length;
+  (state.plans||[]).forEach(rec=>{ (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{ if(!w||!(rec.done&&rec.done[w.id])||(rec.deleted&&rec.deleted[w.id]))return;
+    const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{}); if(eff.t==="Rest")return; done++;
+    const lg=(rec.log&&rec.log[w.id])||{}; vert+=((lg.v!=null&&lg.v!==""?+lg.v:eff.v)||0);
+    if(["Threshold","Hills","Simulation"].includes(eff.t))hard++; if(eff.t==="Long")longRuns++; }); });
+  const wks=athleteWeeks(8), avgHrs=wks.reduce((a,w)=>a+w.min,0)/8/60, avgVert=wks.reduce((a,w)=>a+w.vert,0)/8;
+  const cl=v=>Math.max(5,Math.min(100,Math.round(v)));
+  const stats=[["Endurance",cl(avgHrs/7*100+longRuns*2),"#5d7350"],["Climbing",cl(avgVert/1800*100),"#9c3c2e"],
+    ["Speed",cl(hard*6+18),"#a8762a"],["Strength",cl(strength*9+12),"#6f679e"],["Recovery",cl(rgReadinessAvg()||58),"#4f7e87"]];
+  const level=Math.floor(done/4)+1;
+  const titles=["Trail Pup","Fell Novice","Hill Apprentice","Path Finder","Ridge Runner","Summit Seeker","Mountain Goat","Fell Master","Champion-in-waiting"];
+  const title=titles[Math.min(titles.length-1, Math.floor(level/3))];
+  const feel=todayFeel(); const hp=feel!=null?feel*20:(readinessScore(state.readiness&&state.readiness[todayISO()])||70);
+  return {level,title,done,hp:Math.max(12,Math.min(100,hp)),stats};
+}
+const RG_RUNNER=`<svg viewBox="0 0 64 64" width="40" height="40"><circle cx="32" cy="14" r="6.5" fill="#e6b48a"/><path d="M30 9 a8 7 0 0 1 8 4" fill="none" stroke="#b14a22" stroke-width="4" stroke-linecap="round"/><path d="M32 21 L29 36" stroke="#b14a22" stroke-width="6" stroke-linecap="round"/><path d="M31 24 L40 27 L44 21" fill="none" stroke="#e6b48a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 24 L23 27 L26 33" fill="none" stroke="#e6b48a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 36 L40 40 L43 50" fill="none" stroke="#3a3d34" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M29 36 L21 43 L24 52" fill="none" stroke="#3a3d34" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function openRunnerWorld(){
+  if(_rg) return;
+  const ov=document.createElement("div"); ov.className="rg-overlay"; ov.id="rgOverlay";
+  ov.innerHTML=`<canvas class="rg-canvas" id="rgCanvas"></canvas>
+    <div class="rg-top"><div class="rg-name" id="rgName"></div><button class="rg-close" id="rgClose" aria-label="Close">✕</button></div>
+    <div class="rg-hpwrap"><span class="rg-hp-ic">♥</span><div class="rg-hp-track"><i id="rgHp"></i></div><span class="rg-hp-n" id="rgHpN"></span></div>
+    <div class="rg-hint" id="rgHint">Walk with the pad · tap your runner for stats</div>
+    <div class="rg-pad">
+      <button class="rg-btn up" data-dir="up" aria-label="up">▲</button>
+      <button class="rg-btn left" data-dir="left" aria-label="left">◀</button>
+      <button class="rg-btn right" data-dir="right" aria-label="right">▶</button>
+      <button class="rg-btn down" data-dir="down" aria-label="down">▼</button></div>
+    <div class="rg-statsback" id="rgStatsBack" hidden></div>`;
+  document.body.appendChild(ov);
+  const cv=$("#rgCanvas"), ctx=cv.getContext("2d");
+  const TS=46, W=46, H=46;
+  // ---- world gen ----
+  const map=[]; for(let y=0;y<H;y++){ map[y]=[]; for(let x=0;x<W;x++) map[y][x]=0; }
+  const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  let tx=R(6,W-6), ty=R(6,H-6);                                   // winding trail
+  for(let i=0;i<520;i++){ if(map[ty]&&map[ty][tx]!=null) map[ty][tx]=1; tx=Math.max(2,Math.min(W-3,tx+R(-1,1))); ty=Math.max(2,Math.min(H-3,ty+R(-1,1))); }
+  for(let p=0;p<4;p++){ const cx=R(4,W-5),cy=R(4,H-5); for(let y=-1;y<=1;y++)for(let x=-1;x<=1;x++){ if(Math.random()<.7&&map[cy+y]&&map[cy+y][cx+x]===0) map[cy+y][cx+x]=2; } } // ponds
+  for(let i=0;i<70;i++){ const x=R(1,W-2),y=R(1,H-2); if(map[y][x]===0) map[y][x]=3; }   // trees
+  for(let i=0;i<40;i++){ const x=R(1,W-2),y=R(1,H-2); if(map[y][x]===0) map[y][x]=4; }   // rocks
+  for(let i=0;i<90;i++){ const x=R(1,W-2),y=R(1,H-2); if(map[y][x]===0) map[y][x]=5; }   // flowers
+  const sumX=R(36,42), sumY=R(3,7); for(let y=-2;y<=2;y++)for(let x=-2;x<=2;x++){ if(map[sumY+y]&&Math.abs(x)+Math.abs(y)<3) map[sumY+y][sumX+x]=4; } map[sumY][sumX]=6; // summit + flag
+  const blocked=(px,py)=>{ const X=Math.floor(px/TS), Y=Math.floor((py+10)/TS); const t=map[Y]&&map[Y][X]; return t===2||t===3; };
+  // start on a clear grass tile near centre
+  let p={x:W*TS/2, y:H*TS/2, dir:"down", frame:0};
+  while(blocked(p.x,p.y)){ p.x+=TS; }
+  const keys={up:false,down:false,left:false,right:false};
+  let cssW=0, cssH=0;
+  function resize(){ const dpr=Math.min(2,window.devicePixelRatio||1); cssW=ov.clientWidth; cssH=ov.clientHeight; cv.width=cssW*dpr; cv.height=cssH*dpr; cv.style.width=cssW+"px"; cv.style.height=cssH+"px"; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  resize();
+  // ---- input ----
+  const setDir=(d,on)=>{ keys[d]=on; };
+  ov.querySelectorAll(".rg-btn").forEach(b=>{ const d=b.dataset.dir;
+    const dn=e=>{ e.preventDefault(); setDir(d,true); b.classList.add("on"); }, up=e=>{ e.preventDefault(); setDir(d,false); b.classList.remove("on"); };
+    b.addEventListener("pointerdown",dn); b.addEventListener("pointerup",up); b.addEventListener("pointerleave",up); b.addEventListener("pointercancel",up); });
+  const onKey=e=>{ const m={ArrowUp:"up",ArrowDown:"down",ArrowLeft:"left",ArrowRight:"right",w:"up",s:"down",a:"left",d:"right"}[e.key]; if(!m)return; if(e.type==="keydown"){ keys[m]=true; } else keys[m]=false; };
+  window.addEventListener("keydown",onKey); window.addEventListener("keyup",onKey);
+  cv.addEventListener("pointerdown",e=>{ const r=cv.getBoundingClientRect(); const sx=e.clientX-r.left, sy=e.clientY-r.top; if(Math.hypot(sx-cssW/2, sy-(cssH/2-6))<46) openRunnerStats(); });
+  $("#rgClose").onclick=closeRunnerWorld;
+  $("#rgStatsBack").addEventListener("click",e=>{ if(e.target.id==="rgStatsBack"||e.target.classList.contains("rg-stats-close")){ $("#rgStatsBack").hidden=true; } });
+  function openRunnerStats(){
+    const st=runnerStats(); const back=$("#rgStatsBack");
+    back.innerHTML=`<div class="rg-stats-card">
+      <div class="rg-stats-head"><div class="rg-avatar">${RG_RUNNER}</div><div><div class="rg-stats-name">${esc(athleteName()||"Your runner")}</div><div class="rg-stats-title">Lv ${st.level} · ${esc(st.title)}</div></div></div>
+      <div class="rg-stats-hp"><span>HP</span><div class="rg-stats-hptrack"><i style="width:${st.hp}%"></i></div><b>${st.hp}</b></div>
+      <div class="rg-stats-list">${st.stats.map(s=>`<div class="rg-stat"><span class="rg-stat-l">${s[0]}</span><div class="rg-stat-bar"><i style="width:${s[1]}%;background:${s[2]}"></i></div><b>${s[1]}</b></div>`).join("")}</div>
+      <div class="rg-stats-foot">${st.done} sessions banked on the road to British Fell Champion.</div>
+      <button class="btn primary rg-stats-close" style="width:100%;margin-top:4px">Back to the trail</button></div>`;
+    back.hidden=false;
+  }
+  // ---- HUD ----
+  const st0=runnerStats(); $("#rgName").textContent=`${athleteName()||"Runner"} · Lv ${st0.level}`;
+  function hud(){ const st=runnerStats(); $("#rgHp").style.width=st.hp+"%"; $("#rgHpN").textContent=st.hp; $("#rgHp").style.background=st.hp>=60?"#7fae62":st.hp>=40?"#cf9f43":"#c2503a"; }
+  hud();
+  // ---- draw helpers ----
+  function drawRunner(cx,cy){ const f=p.frame, moving=keys.up||keys.down||keys.left||keys.right;
+    const bob=moving?Math.sin(f*0.4)*1.6:0; cy+=bob;
+    ctx.save();
+    ctx.fillStyle="rgba(40,44,30,.18)"; ctx.beginPath(); ctx.ellipse(cx,cy+16,12,4.5,0,0,7); ctx.fill();
+    if(p.dir==="left"){ ctx.translate(cx*2,0); ctx.scale(-1,1); }                       // flip for left
+    const X=p.dir==="left"?(cx*2-cx):cx;                                                // mirrored x
+    const sw=moving?Math.sin(f*0.55)*5:0;
+    ctx.lineCap="round"; ctx.lineJoin="round";
+    ctx.strokeStyle="#3a3d34"; ctx.lineWidth=5;                                          // legs
+    ctx.beginPath(); ctx.moveTo(X,cy+5); ctx.lineTo(X-3+sw,cy+16); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X,cy+5); ctx.lineTo(X+3-sw,cy+16); ctx.stroke();
+    ctx.strokeStyle="#b14a22"; ctx.lineWidth=7;                                          // torso
+    ctx.beginPath(); ctx.moveTo(X,cy-8); ctx.lineTo(X,cy+6); ctx.stroke();
+    ctx.strokeStyle="#e6b48a"; ctx.lineWidth=4.5;                                        // arms
+    ctx.beginPath(); ctx.moveTo(X,cy-5); ctx.lineTo(X+6,cy-(moving?sw:0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X,cy-5); ctx.lineTo(X-6,cy+(moving?sw:0)); ctx.stroke();
+    ctx.fillStyle="#e6b48a"; ctx.beginPath(); ctx.arc(X,cy-13,6.5,0,7); ctx.fill();      // head
+    ctx.strokeStyle="#b14a22"; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(X,cy-15,5.5,Math.PI*1.05,Math.PI*1.95); ctx.stroke(); // cap
+    if(p.dir==="down"){ ctx.fillStyle="#3a3d34"; ctx.beginPath(); ctx.arc(X-2.3,cy-12.5,1,0,7); ctx.arc(X+2.3,cy-12.5,1,0,7); ctx.fill(); }
+    ctx.restore();
+  }
+  const GREEN=["#9db085","#95a87b"], TRAIL="#c4a87a", WATER="#86a9b4";
+  function draw(){
+    const camX=Math.max(0,Math.min(W*TS-cssW, p.x-cssW/2)), camY=Math.max(0,Math.min(H*TS-cssH, p.y-cssH/2));
+    const x0=Math.floor(camX/TS), y0=Math.floor(camY/TS), x1=Math.ceil((camX+cssW)/TS), y1=Math.ceil((camY+cssH)/TS);
+    for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){ if(!map[y]||map[y][x]==null)continue; const sx=x*TS-camX, sy=y*TS-camY, t=map[y][x];
+      ctx.fillStyle=(t===2)?WATER:GREEN[(x+y)&1]; ctx.fillRect(sx,sy,TS+1,TS+1);
+      if(t===1){ ctx.fillStyle=TRAIL; ctx.beginPath(); ctx.ellipse(sx+TS/2,sy+TS/2,TS*0.52,TS*0.52,0,0,7); ctx.fill(); }
+      if(t===2){ ctx.fillStyle="rgba(255,255,255,.13)"; ctx.fillRect(sx+8,sy+TS*0.6,TS-16,3); }
+      if(t===5){ ctx.fillStyle=["#e8d36a","#f0f0ea","#d98ca6"][(x*7+y)%3]; ctx.beginPath(); ctx.arc(sx+TS*0.35,sy+TS*0.55,2.4,0,7); ctx.arc(sx+TS*0.6,sy+TS*0.4,2.4,0,7); ctx.fill(); }
+      if(t===4||t===6){ ctx.fillStyle="#9a9b90"; ctx.beginPath(); ctx.ellipse(sx+TS/2,sy+TS*0.62,TS*0.3,TS*0.22,0,0,7); ctx.fill(); ctx.fillStyle="#85867c"; ctx.beginPath(); ctx.ellipse(sx+TS*0.42,sy+TS*0.55,TS*0.16,TS*0.13,0,0,7); ctx.fill(); }
+      if(t===6){ ctx.strokeStyle="#5a5d52"; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(sx+TS/2,sy+TS*0.5); ctx.lineTo(sx+TS/2,sy+8); ctx.stroke(); ctx.fillStyle="#b14a22"; ctx.beginPath(); ctx.moveTo(sx+TS/2,sy+9); ctx.lineTo(sx+TS/2+13,sy+13); ctx.lineTo(sx+TS/2,sy+18); ctx.fill(); }
+      if(t===3){ ctx.fillStyle="#7a5a3a"; ctx.fillRect(sx+TS/2-2.5,sy+TS*0.5,5,TS*0.4); ctx.fillStyle="#5d7350"; ctx.beginPath(); ctx.arc(sx+TS/2,sy+TS*0.42,TS*0.36,0,7); ctx.fill(); ctx.fillStyle="#6c855e"; ctx.beginPath(); ctx.arc(sx+TS*0.4,sy+TS*0.34,TS*0.18,0,7); ctx.fill(); }
+    }
+    drawRunner(p.x-camX, p.y-camY);
+  }
+  function step(){
+    let dx=(keys.right?1:0)-(keys.left?1:0), dy=(keys.down?1:0)-(keys.up?1:0);
+    if(dx&&dy){ dx*=0.71; dy*=0.71; }
+    const moving=!!(dx||dy), spd=2.5;
+    if(moving){ p.dir=Math.abs(dx)>=Math.abs(dy)?(dx>0?"right":"left"):(dy>0?"down":"up"); $("#rgHint")&&($("#rgHint").style.opacity="0");
+      const nx=p.x+dx*spd; if(!blocked(nx,p.y)) p.x=Math.max(TS*0.5,Math.min(W*TS-TS*0.5,nx));
+      const ny=p.y+dy*spd; if(!blocked(p.x,ny)) p.y=Math.max(TS*0.5,Math.min(H*TS-TS*0.5,ny));
+      p.frame++; }
+  }
+  let last=0;
+  function loop(t){ if(!_rg) return; if(t-last>14){ step(); draw(); last=t; } if((t|0)%500<16) hud(); _rg.raf=requestAnimationFrame(loop); }
+  window.addEventListener("resize",resize);
+  _rg={raf:0, ov, onKey, resize};
+  _rg.raf=requestAnimationFrame(loop);
+  refreshScrollLock&&refreshScrollLock();
+}
+function closeRunnerWorld(){
+  if(!_rg) return; cancelAnimationFrame(_rg.raf);
+  window.removeEventListener("keydown",_rg.onKey); window.removeEventListener("keyup",_rg.onKey); window.removeEventListener("resize",_rg.resize);
+  _rg.ov.remove(); _rg=null; refreshScrollLock&&refreshScrollLock();
+}
 /* ============================ GO ============================ */
 let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); maybeAnimateView(); }
