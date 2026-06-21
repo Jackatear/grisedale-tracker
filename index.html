@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08za" />
+<meta name="app-build" content="2026-06-08zb" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -404,7 +404,7 @@
   .mv2 .mv-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-bottom:1px}
   .mv2 .pill{font-size:12px;font-weight:600;padding:5px 12px;border:0;border-radius:999px;background:var(--bg2);color:var(--muted)}
   .mv2 .pill.zone{background:var(--bg2);color:var(--muted)}
-  .ses-card,.why-card,.log-card{background:var(--bg2);border-radius:16px;padding:15px 16px}
+  .ses-card,.why-card,.log-card,.mv-plancard{background:var(--bg2);border-radius:16px;padding:15px 16px}
   /* Session modal — dark Horizon hero header */
   .mv-hero{cursor:default;margin:0;padding:16px 17px 18px}
   .mvh-chips{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
@@ -4364,6 +4364,9 @@ function modalViewHTML(w){
     ${chartHTML}
     ${w.note?`<div class="hz-quote">${esc(w.note)}</div>`:""}
     <div class="mvh-stats">${stats.map(s=>`<div class="mvh-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div></div>`;
+  // ── Session structure (readable interval breakdown — warm-up / work / cool-down with paces & HR) ──
+  const planHTML = rest ? "" : sessionPlanHTML(w);
+  const planCard = planHTML ? `<div class="mv-plancard">${planHTML}</div>` : "";
   // ── Why it matters ──
   const why=TYPE_WHY[w.t];
   const whyCard = why?`<div class="why-card"><div class="ses-lab">Why it matters</div>
@@ -4382,7 +4385,7 @@ function modalViewHTML(w){
     logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
   }
   const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
-  return `<div class="mv2">${sesCard}${whyCard}${logCard}</div>`;
+  return `<div class="mv2">${sesCard}${planCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
