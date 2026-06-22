@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zc" />
+<meta name="app-build" content="2026-06-08zd" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -930,6 +930,9 @@
   .sd-pick .opt:hover{border-color:var(--accent)}
   .sd-pick .opt b{font-size:13.5px;font-weight:600}
   .sd-pick .opt small{color:var(--muted);font-size:11.5px}
+  .sd-pick-sec{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:14px 2px 8px;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .sd-pick-sec:first-of-type{margin-top:4px}
+  .sd-ref-intro{font-size:12.5px;line-height:1.5;color:var(--muted);margin:0 0 12px}
   .day-sheet-head h3{margin:2px 0 13px;font-size:15.5px;letter-spacing:-.1px}
   .day-list{display:flex;flex-direction:column;gap:8px;margin-bottom:11px}
   .day-it{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--line);border-left:3px solid var(--c);background:var(--panel2);border-radius:11px;padding:12px 13px;font:inherit;cursor:pointer;color:var(--txt)}
@@ -2455,36 +2458,43 @@ $("#homeView").addEventListener("change", e=>{
 
 /* ============================ STRENGTH TAB ============================ */
 const STRENGTH = {
-  intro: "Runners don't lift to get big — they lift to get durable and economical. Heavy, low-rep strength plus explosive plyometrics build tendon stiffness and force production, so each stride costs less energy, climbs hurt less, and hard descents (and your femur) tolerate the pounding. These are the exact sessions threaded through your plan, gathered in one place.",
+  intro: "Built for you after the femoral stress reaction: heavy, low-rep strength to load the bone, eccentric + single-leg work for descending and the right-side hip/ITB chain, and heavy-slow calf work for the Achilles — two sessions a week, every week, as a habit that becomes the plan's S1/S2. Foundation first (weeks 1–3), then heavy strength carrying into the plan; power/plyometrics come later once you're bone-confident. Two sessions: A (squat / quads / descending) and B (hinge / posterior chain / climbing), ~40 min each, plus a 15-min micro day for flat weeks. Warm up 5 min first: leg swings, bodyweight squats, calf raises, glute bridges, ankle circles.",
   principles: [
-    "<b>Lift on a run day</b> — ideally after an easy or quality run — so easy days stay easy and hard days stay hard.",
-    "<b>Go heavy and low-rep</b> (4–6 reps, 1–2 in reserve). This is neural strength, not a bodybuilding pump.",
-    "<b>Explode on jumps and bounds</b> — intent and quality matter far more than volume.",
-    "<b>Single-leg work mirrors running</b> and exposes left/right imbalances — don't skip it.",
-    "<b>Load early in a block</b> when you're fresh; in the last ~10 days drop to short primer sessions — maintain, don't build.",
-    "<b>Never let strength soreness compromise a key run.</b> If in doubt, cut a set."
+    "<b>Heavy &amp; low-rep beats light &amp; high-rep.</b> ~4–6 reps with real load build bone density, tendon stiffness and running economy — the single best non-running insurance against another femoral stress reaction.",
+    "<b>Earn the load first.</b> Weeks 1–3 are foundation (movement, tendon prep, bodyweight→light) before you go heavy. Rushing to heavy is the same mistake as spiking mileage.",
+    "<b>Single-leg &amp; eccentric bias.</b> Running is single-leg and descending is eccentric — step-downs, split squats and single-leg RDLs train exactly that, plus the right-side hip/ITB chain that keeps flaring.",
+    "<b>Tendon work every session.</b> Heavy-slow calf raises, straight-knee and bent-knee — 3s up, 3s down. Slow and heavy, never bouncy.",
+    "<b>Two reps in reserve, always.</b> Never grind to failure or wreck yourself for a key run. Add load (~2.5–5%) only when you hit the top of the rep range with clean form and ~2 still in the tank.",
+    "<b>Deload every 4th week</b> — drop a set or ~10% load, matched to your run deloads.",
+    "<b>Lift on or just after harder run days</b>, after the run, so easy days stay easy. Leave ~24h between heavy lower-body work and a key descending/quality run. Ilkley (12 Jul): one light session that week, nothing heavy 3–4 days before.",
+    "<b>Never zero.</b> On a flat day do the 15-min micro session and call it a win — consistency beats perfection. You're a runner who lifts twice a week; it's non-negotiable, like brushing your teeth.",
+    "<b>Fuel it.</b> ~1.6–2.0 g protein/kg/day with some around each session — don't train these under-fuelled. Bone and tendon adaptation needs fuel.",
+    "<b>Femoral stress reaction:</b> clear the heavy-lifting progression with a physio if anything flares. This is coaching, not medical advice."
   ],
   sections: [
-    { title:"Foundation · Phase 1", sub:"2× per week through the base weeks (S1 + S2)", routines:[
-      { name:"Strength S1", mins:40, focus:"Posterior chain + single-leg control", ex:[
-        ["Trap-bar deadlift","4×5"],["Single-leg press","3×8 / leg"],["Bulgarian split squat","3×6 / leg"],
-        ["Single-leg calf raise","4×12 / leg"],["Copenhagen plank","2×20s / side"],["Plank","3×45s"] ] },
-      { name:"Strength S2", mins:40, focus:"Power + lateral stability", ex:[
-        ["Goblet squat (heavy)","4×6"],["Single-leg RDL","3×6 / leg"],["Step-ups","3×8 / leg"],
-        ["Box jumps","4×4"],["Pallof press","2×10 / side"],["Single-leg balance","3×30s / leg"] ] },
+    { title:"Phase 1 · Foundation (weeks 1–3)", sub:"Groove the patterns, wake the tendons, build the habit — bodyweight → light, 3s eccentrics, 2–3 in reserve", routines:[
+      { name:"Session A · Foundation", mins:40, focus:"Squat · quads · descending — patterns + tendon prep", ex:[
+        ["Goblet squat","3×10 · 3s down"],["Bulgarian split squat","2×8 / leg"],["Eccentric step-down","2×8 / leg · 3s lower"],
+        ["Single-leg calf raise","2×10 / leg · 3s-3s"],["Side plank","2×30s / side"],["Pallof press","2×8 / side"] ] },
+      { name:"Session B · Foundation", mins:40, focus:"Hinge · posterior chain · climbing", ex:[
+        ["Romanian deadlift","3×8"],["Hip thrust","2×12"],["Weighted step-up","2×8 / leg"],
+        ["Seated calf raise (soleus)","2×12"],["Banded monster walks","2×15"],["Dead bug","2×8 / side"],["Bird dog","2×8 / side"] ] },
+      { name:"Micro session · 15 min", mins:15, focus:"Flat-day minimum — never zero", ex:[
+        ["Goblet squat","2×10"],["Eccentric step-down","2×8 / leg"],["Single-leg calf raise","2×12 / leg"],
+        ["Hip thrust","2×12"],["Plank","2×30s"] ] },
     ]},
-    { title:"Fell-specific · Phase 2", sub:"Shift from maximal strength toward explosive power", routines:[
-      { name:"Maximal strength", mins:40, focus:"Heavy base for sustained climbing & descending", ex:[
-        ["Trap-bar deadlift (heavy)","4×4"],["Single-leg press","3×6 / leg"],["Bulgarian split squat","3×5 / leg"],
-        ["Single-leg calf raise","4×10 / leg"],["Copenhagen plank","2×25s / side"] ] },
-      { name:"Power / plyometric", mins:35, focus:"Convert strength into fell-specific spring", ex:[
-        ["Box jumps","5×3"],["Depth drops","4×4"],["Single-leg bounding","3×20m"],
-        ["Trap-bar jump (light)","4×3"],["Pallof press","2×10 / side"],["Single-leg balance","3×30s"] ] },
+    { title:"Phase 2 · Strength (weeks 4+, carries into the plan)", sub:"Heavy, low-rep, progressive — this IS the plan's S1/S2", routines:[
+      { name:"Session A · Strength", mins:40, focus:"Heavy squat · quads · descending — 2 RIR", ex:[
+        ["Trap-bar / barbell squat","4×5 · 2 RIR"],["Bulgarian split squat (weighted)","3×6 / leg"],["Eccentric step-down (hold DB)","3×8 / leg · 3s lower"],
+        ["Single-leg calf raise (loaded)","3×8 / leg · 3s-3s"],["Side plank","3×40s / side"],["Pallof press","3×10 / side"] ] },
+      { name:"Session B · Strength", mins:40, focus:"Heavy hinge · glutes · climbing power", ex:[
+        ["Romanian deadlift","4×6 heavy"],["Hip thrust","3×8 heavy"],["Weighted step-up","3×6 / leg"],
+        ["Seated calf raise (soleus)","3×10 · slow"],["Banded monster walks","3×15"],["Dead bug","3×10 / side"],["Bird dog","3×10 / side"] ] },
     ]},
-    { title:"Taper & race week", sub:"Maintain, don't build — zero fatigue", routines:[
-      { name:"Primer / activation", mins:20, focus:"Wake the system up the day before/of quality, no load", ex:[
-        ["Bodyweight squats","2×10"],["Walking lunges","2×8 / leg"],["Calf raises","2×15"],
-        ["Box jumps","3×3"],["Plank","2×30s"] ] },
+    { title:"Phase 3 · Power / plyometric (later — once bone-confident)", sub:"Reactive work for economy + descending. Not for the pre-plan window — added a couple of months into the plan", routines:[
+      { name:"Power / plyometric · later", mins:35, focus:"Reactive spring — only once bone-confident", ex:[
+        ["Pogo hops","4×10"],["Box jumps","5×3"],["Single-leg bounding","3×20m"],
+        ["Low depth drops","4×4"],["Pallof press","2×10 / side"] ] },
     ]},
   ]
 };
@@ -2620,7 +2630,7 @@ function renderStrength(){
   $("#strengthView").innerHTML = `
     <div class="s-top"><div><h2>Strength</h2><div class="s-sub">${esc(summary)}</div></div><button class="s-add-btn" data-act="add">＋ New session</button></div>
     ${body}
-    <details class="sd-ref"><summary>Strength principles &amp; how to use them</summary><ul>${STRENGTH.principles.map(p=>`<li>${p}</li>`).join("")}</ul></details>`;
+    <details class="sd-ref"><summary>Strength plan &amp; how to use it</summary><p class="sd-ref-intro">${STRENGTH.intro}</p><ul>${STRENGTH.principles.map(p=>`<li>${p}</li>`).join("")}</ul></details>`;
 }
 // Pull a card's editable DOM inputs back into its model (so edits aren't lost on done/add-row/save).
 function readStrengthCard(cardEl, c){
@@ -2648,8 +2658,11 @@ function openSdPicker(){
   back.innerHTML=`<div class="sd-pick"><h3>New strength session</h3>${
     lastDone?`<button class="opt repeat" data-ri="repeat"><span><b>↻ Repeat last session</b><br><small>${esc(lastDone.title)} · ${sdFmtDate(lastDone.date)} — beat last time's numbers</small></span><small>${(lastDone.rows||[]).filter(r=>r.name).length} ex</small></button>`:""
   }${
-    opts.map((o,i)=>`<button class="opt" data-ri="${i}"><span><b>${esc(o.name)}</b><br><small>${esc(o.focus)}</small></span><small>${o.mins} min</small></button>`).join("")
-  }<button class="opt" data-ri="blank"><span><b>Blank session</b><br><small>Start from scratch</small></span><small>＋</small></button></div>`;
+    (()=>{ let ri=0; return STRENGTH.sections.map(sec=>
+      `<div class="sd-pick-sec">${esc(sec.title)}</div>`+
+      sec.routines.map(r=>{ const i=ri++; return `<button class="opt" data-ri="${i}"><span><b>${esc(r.name)}</b><br><small>${esc(r.focus)}</small></span><small>${r.mins} min</small></button>`; }).join("")
+    ).join(""); })()
+  }<div class="sd-pick-sec">Other</div><button class="opt" data-ri="blank"><span><b>Blank session</b><br><small>Start from scratch</small></span><small>＋</small></button></div>`;
   back.addEventListener("click", ev=>{
     if(ev.target===back){ closeSdPicker(); return; }
     const o=ev.target.closest(".opt"); if(!o) return;
