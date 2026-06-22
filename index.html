@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zb" />
+<meta name="app-build" content="2026-06-08zc" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1266,6 +1266,23 @@
   .hz-phase{margin-top:8px;font-size:13px;color:rgba(236,238,231,.62);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .hz-wk{background:#8c3a1d;color:#f4ddd1;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-radius:6px}
   .hz-dot{color:rgba(236,238,231,.35)}
+  .hz-streak{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 13px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);transition:background .35s,border-color .35s}
+  .hz-streak.lit{background:linear-gradient(100deg,rgba(232,137,95,.20),rgba(240,168,131,.06));border-color:rgba(232,137,95,.32)}
+  .hz-flame{font-size:25px;line-height:1;filter:grayscale(.9) brightness(.72);transform-origin:50% 85%;transition:filter .35s}
+  .hz-streak.lit .hz-flame{filter:none;animation:hzFlicker 1.9s ease-in-out infinite}
+  @keyframes hzFlicker{0%,100%{transform:scale(1) rotate(-1.5deg);opacity:.9}45%{transform:scale(1.13) rotate(2deg);opacity:1}72%{transform:scale(.96) rotate(-2deg);opacity:.95}}
+  .hz-streak-main{flex:1;min-width:0}
+  .hz-streak-num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;font-weight:700;color:#f6e9df;line-height:1;letter-spacing:-.02em}
+  .hz-streak-num span{font-family:var(--sans);font-size:11.5px;font-weight:600;color:rgba(236,238,231,.5);margin-left:7px;letter-spacing:0}
+  .hz-streak-num em{font-family:var(--sans);font-size:14px;font-style:normal;font-weight:600;color:rgba(236,238,231,.6);letter-spacing:0}
+  .hz-streak-sub{font-size:11.5px;color:rgba(236,238,231,.6);margin-top:5px}
+  .hz-streak.urgent .hz-streak-sub{color:#f0a883;font-weight:600}
+  .hz-streak-dots{display:flex;gap:4px;align-items:center;flex:0 0 auto}
+  .hz-streak-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
+  .hz-streak-dots i.on{background:#e8895f}
+  .hz-streak-dots i.miss{background:rgba(255,255,255,.10)}
+  .hz-streak-dots i.next{background:transparent;border:1.5px solid rgba(240,168,131,.65);width:7px;height:7px;animation:hzPulse 1.5s ease-in-out infinite}
+  @keyframes hzPulse{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
   .hz-vol{margin-top:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:13px 14px}
   .hz-vol-lab{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:rgba(236,238,231,.5);font-weight:600}
   .hz-vol-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:7px}
@@ -2204,6 +2221,40 @@ function hzWeekVol(rec){
   for(let di=0;di<7;di++){ const date=addDays(mon,di); ((rec.board&&rec.board[date])||[]).forEach(id=>{ const w=recWO(rec,id); if(!w||w.t==="Rest"||w.t==="Sauna")return; const lg=(rec.log&&rec.log[id])||{}; planK+=(w.k||0); if(rec.done&&rec.done[id]) doneK+=(lg.k!=null&&lg.k!==""?+lg.k:(w.k||0)); }); }
   return {doneK, planK};
 }
+// Consistency streak — the single biggest engagement lever (Duolingo / Strava / Whoop all lean on it).
+// Counts consecutive COMPLETED training sessions: rest days are skipped, and today's unfinished session
+// is "pending" (never breaks it) — only a MISSED past session ends the run. Returns current + best + today's state.
+function trainingStreak(rec){
+  const t=todayISO();
+  const sess=(rec.plan||[]).concat(rec.custom||[])
+    .filter(w=>w&&w.date&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])&&w.date<=t)
+    .sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1 : 0);
+  const isDone=w=>!!(rec.done&&rec.done[w.id]);
+  const arr=sess.slice();
+  while(arr.length && arr[arr.length-1].date===t && !isDone(arr[arr.length-1])) arr.pop();   // today still pending → don't break
+  let cur=0; for(let i=arr.length-1;i>=0;i--){ if(isDone(arr[i])) cur++; else break; }
+  let best=0, run=0; for(const w of arr){ if(isDone(w)){ run++; if(run>best)best=run; } else run=0; }
+  if(cur>best) best=cur;
+  const todayHas=sess.some(w=>w.date===t), todayDone=sess.some(w=>w.date===t && isDone(w));
+  return {cur, best, todayHas, todayDone, last:arr.slice(-7).map(isDone)};
+}
+function hzStreakHTML(rec){
+  const s=trainingStreak(rec);
+  const canExtend = s.todayHas && !s.todayDone;   // a session waiting today → urgency to keep the chain
+  const lit = s.cur>=1;
+  let sub;
+  if(s.cur===0)        sub = s.best>0 ? `Your best is ${s.best} — rebuild it today` : (s.todayHas ? "Complete today's session to start a streak" : "Your streak begins with the next session");
+  else if(canExtend)   sub = "Keep it alive — today's session is waiting";
+  else if(s.todayDone) sub = (s.cur>=s.best && s.cur>=3) ? "🏆 Your best run yet" : (s.best>s.cur ? `Best ${s.best} · keep stacking` : "Logged today — nice");
+  else                 sub = s.best>s.cur ? `Best ${s.best} · streak safe` : "Resting today — streak safe";
+  const dots = s.last.map(on=>`<i class="${on?'on':'miss'}"></i>`).join("") + (canExtend?`<i class="next"></i>`:"");
+  const num = s.cur>=1 ? `${s.cur}<span>in a row</span>` : `<em>${s.best>0?"Streak reset":"Start a streak"}</em>`;
+  return `<div class="hz-streak${lit?' lit':''}${canExtend?' urgent':''}">
+    <div class="hz-flame" aria-hidden="true">🔥</div>
+    <div class="hz-streak-main"><div class="hz-streak-num">${num}</div><div class="hz-streak-sub">${sub}</div></div>
+    ${dots?`<div class="hz-streak-dots" aria-hidden="true">${dots}</div>`:""}
+  </div>`;
+}
 function hzMissionHTML(rec){
   const t=todayISO();
   const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
@@ -2224,6 +2275,7 @@ function hzMissionHTML(rec){
     <div class="hz-eye">Active mission</div>
     <div class="hz-title2">${esc(mission)}</div>
     <div class="hz-phase"><span class="hz-wk">Week ${curWk} of ${totWk}</span><span class="hz-dot">·</span>${esc(phase)}</div>
+    ${hzStreakHTML(rec)}
     <div class="hz-vol">
       <div class="hz-vol-lab">Weekly volume</div>
       <div class="hz-vol-row"><div class="hz-vol-num">${fmtDist(vol.doneK,false)}<i> / ${fmtDist(vol.planK,false)} ${unit}</i></div><div class="hz-vol-pct">${st.pct}% plan completion</div></div>
