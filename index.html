@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zd" />
+<meta name="app-build" content="2026-06-08ze" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -573,6 +573,21 @@
   .pg-stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;min-width:0}
   .pg-stat .v{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
   .pg-stat .l{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);font-weight:600;margin-top:2px}
+  /* Race shape — collapsible toggle (collapsed by default on Plan) */
+  .rs-collapse{margin:2px 0 14px;display:flex;flex-direction:column;gap:10px}
+  .rs-toggle{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;font:inherit;color:var(--txt);cursor:pointer;box-shadow:var(--shadow-soft)}
+  .rs-tg-ic{font-size:16px;flex:0 0 auto;opacity:.9}
+  .rs-tg-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .rs-tg-title{font-weight:700;font-size:14px;letter-spacing:-.01em}
+  .rs-tg-sub{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rs-tg-pill{flex:0 0 auto;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .rs-tg-pill.good{color:var(--good);background:color-mix(in srgb,var(--good) 13%,transparent)}
+  .rs-tg-pill.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 14%,transparent)}
+  .rs-tg-pill.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 13%,transparent)}
+  .rs-tg-caret{flex:0 0 auto;color:var(--faint);transition:transform .2s;display:flex;align-items:center}
+  .rs-tg-caret svg{width:17px;height:17px}
+  .rs-collapse.open .rs-tg-caret{transform:rotate(180deg)}
+  .rs-collapse-body .rs-card{margin:0}
   /* Race shape — fitness projection hero */
   .rs-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 16px 18px;margin:2px 0 16px}
   .rs-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
@@ -2804,17 +2819,7 @@ function todayFeel(){
 // Inline "morning check-in" — one tap on a Wiped→Flying scale, the day's readiness in 2 seconds.
 function renderReadinessCard(){
   const host=$("#readinessCard"); if(!host) return;
-  const feel=todayFeel(), set=feel!=null;
-  const pct = set ? ((feel-1)/4*100) : 50;
-  const word = set ? FEEL_WORDS[feel-1] : "How are you?";
-  host.innerHTML=`<div class="rd-card">
-    <div class="rd-head"><span class="rd-title">Morning check-in</span><span class="rd-hint">${set?"✓ Logged today":"Adapts your run"}</span></div>
-    <div class="rd-word ${set?("f"+feel):"unset"}">${esc(word)}</div>
-    <div class="rd-sub">How you're feeling today</div>
-    <div class="rd-track"><span class="rd-fill" style="width:${set?pct:0}%"></span><span class="rd-knob ${set?"":"off"}" style="left:${pct}%"></span></div>
-    <div class="rd-labels">${FEEL_WORDS.map((w,i)=>`<button class="rd-lab ${feel===i+1?"on":""}" data-feel="${i+1}">${w}</button>`).join("")}</div>
-    <button class="rd-more" data-ci="1">Add detail — sleep, niggles, resting HR ›</button>
-  </div>`;
+  host.hidden=true; host.innerHTML="";   // moved off Plan — log readiness from Home's readiness pill / check-in
 }
 $("#readinessCard").addEventListener("click", e=>{
   const b=e.target.closest("[data-feel]"); if(!b) return;
@@ -2900,30 +2905,7 @@ function renderToday(){
 }
 function renderRaceBanner(){
   const host=$("#raceBanner"); if(!host) return;
-  const t=todayISO();
-  const races=allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race").sort((a,b)=>a.date<b.date?-1:1);
-  const future=races.filter(r=>daysBetween(t,r.date)>=0);
-  const goal=future.length? future[future.length-1] : null;     // the A-race = final upcoming race
-  if(!goal){ host.hidden=true; host.innerHTML=""; return; }
-  host.hidden=false;
-  const dd=daysBetween(t,goal.date);
-  const startMon=planStartMonday();
-  const totalDays=Math.max(1, daysBetween(startMon, goal.date));
-  const elapsed=Math.min(totalDays, Math.max(0, daysBetween(startMon,t)));
-  const pct=Math.round(elapsed/totalDays*100);
-  const totWeeks=Math.max(1, Math.round(totalDays/7)), curWeek=Math.min(totWeeks, Math.max(1, Math.floor(elapsed/7)+1));
-  const gd=d(goal.date);
-  const dlong=`${WD_FULL[gd.getDay()]} ${gd.getDate()} ${MONTHS_FULL[gd.getMonth()]}`;
-  const name=(goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim();
-  host.innerHTML=`<button class="racebanner" data-open="${goal.id}">
-    <div class="rb-top">
-      <span class="rb-icon">🏁</span>
-      <span class="rb-main"><span class="rb-name">${esc(name)}</span><span class="rb-date">${esc(dlong)}</span></span>
-      <span class="rb-dd"><b>${dd}</b><i>${dd===1?"day":"days"} to go</i></span>
-    </div>
-    <div class="rb-bar"><i style="width:${pct}%"></i></div>
-    <div class="rb-foot"><span>Week ${curWeek} of ${totWeeks}</span><span>${pct}% complete</span></div>
-  </button>`;
+  host.hidden=true; host.innerHTML="";   // moved off Plan — the race countdown now lives only on Home's mission card
 }
 $("#raceBanner").addEventListener("click", e=>{ const o=e.target.closest("[data-open]"); if(o) openModal(o.dataset.open); });
 $("#todayCard").addEventListener("click", e=>{
@@ -3451,16 +3433,18 @@ function pgRaceShapeChart(m){
     ${taperX!=null?`<text class="rs-plab" text-anchor="middle" x="${taperX.toFixed(1)}" y="${baseY+14}">Taper</text>`:""}
   </svg>`;
 }
-function raceShapeCardHTML(m){
+function raceShapeCardHTML(m, opts){
+  opts=opts||{};
   const name=(m.goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim();
   const togo=m.ddays<=0?"race week":(m.dweeks>=2?`${m.dweeks} weeks to go`:`${m.ddays} day${m.ddays===1?"":"s"} to go`);
   const trend=m.status.c==="good"?"Fitness is climbing steadily — hold the plan and you'll peak right on race day."
     :m.status.c==="warn"?"You're a little behind the plan, but there's still road — string together the next weeks and you'll arrive sharp."
     :"You've slipped off the plan — don't chase it all at once. Rebuild consistency and the curve will turn back up.";
   const cur=m.weeks[m.curIdx];
-  return `<div class="rs-card">
-    <div class="rs-head"><div><div class="rs-eyebrow">${esc(name)} · ${togo}</div><h3 class="rs-title">Race shape</h3></div>
-      <span class="rs-pill ${m.status.c}">${esc(m.status.w)}</span></div>
+  const head = opts.noHead ? "" : `<div class="rs-head"><div><div class="rs-eyebrow">${esc(name)} · ${togo}</div><h3 class="rs-title">Race shape</h3></div>
+      <span class="rs-pill ${m.status.c}">${esc(m.status.w)}</span></div>`;
+  return `<div class="rs-card${opts.noHead?" bare":""}">
+    ${head}
     <p class="rs-summary">${trend}</p>
     <div class="rs-readout" id="rsReadout"><b class="rs-week">Week ${m.curIdx+1}</b> · you are here · fitness ${cur.fit}%</div>
     <div class="rs-chart">${pgRaceShapeChart(m)}</div>
@@ -3476,8 +3460,22 @@ function renderRaceShape(){
   const host=$("#raceShape"); if(!host) return;
   const m=raceShapeModel();
   if(!m){ host.hidden=true; host.innerHTML=""; return; }
-  host.hidden=false; host.innerHTML=raceShapeCardHTML(m);
+  host.hidden=false;
+  const open=!!state.raceShapeOpen;   // collapsed by default — one tap away, not dominating the page
+  const cur=m.weeks[m.curIdx];
+  const mult = m.fitNow>0 && m.fitRace/m.fitNow>=1.08 ? ` · ${(m.fitRace/m.fitNow).toFixed(1)}× by race day` : "";
+  const teaser=`Week ${m.curIdx+1} · fitness ${cur.fit}%${mult}`;
+  host.innerHTML=`<div class="rs-collapse${open?" open":""}">
+    <button class="rs-toggle" data-rstoggle aria-expanded="${open}">
+      <span class="rs-tg-ic">📈</span>
+      <span class="rs-tg-main"><span class="rs-tg-title">Race shape</span><span class="rs-tg-sub">${esc(teaser)}</span></span>
+      <span class="rs-tg-pill ${m.status.c}">${esc(m.status.w)}</span>
+      <span class="rs-tg-caret">${SD_CARET}</span></button>
+    ${open?`<div class="rs-collapse-body">${raceShapeCardHTML(m,{noHead:true})}</div>`:""}</div>`;
 }
+$("#raceShape").addEventListener("click", e=>{
+  if(e.target.closest("[data-rstoggle]")){ state.raceShapeOpen=!state.raceShapeOpen; save(); renderRaceShape(); }
+});
 $("#planView").addEventListener("input", e=>{ if(e.target.id==="rsSlider") rsScrubTo(+e.target.value); });
 function rsScrubTo(k){
   const g=_rsGeo; if(!g||!g.weeks[k]) return;
