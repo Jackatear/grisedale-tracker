@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08ze" />
+<meta name="app-build" content="2026-06-08zf" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -715,6 +715,22 @@
   .pg-zleg b{font-variant-numeric:tabular-nums;color:var(--txt)}
   .pg-verdict{font-size:12.5px;margin:10px 0 0;line-height:1.5;color:var(--muted)}
   .pg-verdict b{color:var(--txt)}
+  /* How your training makes you faster — the five speed engines */
+  .se-mix{display:flex;height:12px;border-radius:7px;overflow:hidden;background:var(--bg2);margin:0 0 15px;gap:2px}
+  .se-mix i{height:100%;min-width:3px;border-radius:2px;transition:width .45s cubic-bezier(.22,.61,.36,1)}
+  .se-rows{display:flex;flex-direction:column;gap:14px}
+  .se-row{padding-left:13px;border-left:3px solid transparent}
+  .se-row.key{border-left-color:var(--t-threshold)}
+  .se-top{display:flex;align-items:center;gap:8px}
+  .se-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .se-name{font-weight:700;font-size:13.5px;letter-spacing:-.01em}
+  .se-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:2px 7px;border-radius:5px}
+  .se-pct{margin-left:auto;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;font-weight:700;color:var(--txt)}
+  .se-payoff{font-size:12.5px;line-height:1.5;color:var(--muted);margin:6px 0 0}
+  .se-fed{font-size:11px;color:var(--faint);margin-top:5px}
+  .se-fed b{color:var(--muted);font-weight:600}
+  .se-foot{font-size:12px;line-height:1.55;color:var(--muted);margin:15px 0 0;padding-top:13px;border-top:1px solid var(--line)}
+  .se-foot b{color:var(--txt)}
   .pg-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid var(--line)}
   .pg-row:first-of-type{border-top:0}
   .pg-row .ttl{font-weight:600;font-size:13.5px;line-height:1.3;overflow-wrap:anywhere}
@@ -3502,6 +3518,50 @@ function pgRing(pct){
     <text x="50" y="49" text-anchor="middle" class="pg-ring-v">${pct}<tspan class="pg-ring-pct">%</tspan></text>
     <text x="50" y="64" text-anchor="middle" class="pg-ring-l">KEY HIT</text></svg>`;
 }
+/* "How your training makes you faster" — the causal chain from each session type to race speed,
+   plus how the active plan's load splits across the five engines that drive a fell runner. */
+const SPEED_ENGINES = [
+  {key:"base", name:"Aerobic base", c:"var(--t-easy)", fed:"Easy · Recovery · Bike",
+   payoff:"The size of your engine — more capillaries and mitochondria. A bigger base makes every pace cost less effort and lets you recover faster between hard days, so you can absorb more training."},
+  {key:"threshold", name:"Lactate threshold", c:"var(--t-threshold)", fed:"Threshold", star:true,
+   payoff:"The pace you can hold for about an hour before your legs flood with lactate. Push this line up and your whole race gets faster — the single biggest lever on your finish time."},
+  {key:"vo2", name:"VO₂ & climbing power", c:"var(--t-hills)", fed:"Hills / VO2",
+   payoff:"Your ceiling — the most oxygen your body can use. Raise it and threshold effort feels easier, and you get the punch to drive hard up the climbs where fell races are decided."},
+  {key:"durability", name:"Endurance & durability", c:"var(--t-long)", fed:"Long · Race Sim",
+   payoff:"Race-day staying power. Long runs train your legs to burn fat and hold form deep into the race, so you're still strong on the final climbs while rivals fade."},
+  {key:"strength", name:"Strength, economy & descending", c:"var(--t-descent)", fed:"Strength · Descent · strides",
+   payoff:"Free speed. Heavy strength and descent work stiffen your tendons and armour your quads — less energy per stride, fewer injuries, and the nerve to attack descents instead of braking."},
+];
+function speedEngines(rec){
+  const idx={Easy:0,Recovery:0,Bike:0,Threshold:1,Hills:2,Long:3,Simulation:3,Descent:4};
+  const load=[0,0,0,0,0];
+  if(rec){
+    (rec.plan||[]).concat(rec.custom||[]).forEach(s=>{
+      if(!s||(rec.deleted&&rec.deleted[s.id])) return;
+      const w=recWO(rec,s.id); if(!w||w.t==="Rest"||w.t==="Race"||w.t==="Sauna") return;
+      const sys=idx[w.t]; if(sys!=null) load[sys]+=plannedLoad(w)||0;
+      if(w.s) load[4]+=30;   // strength bolted onto a run day → feeds the strength/economy engine
+    });
+  }
+  const tot=load.reduce((a,b)=>a+b,0);
+  return SPEED_ENGINES.map((e,i)=>Object.assign({}, e, {load:load[i], pct: tot? Math.round(load[i]/tot*100):0}));
+}
+function pgSpeedEnginesHTML(){
+  const rec=(typeof primaryPlanRec==="function")? primaryPlanRec() : null;
+  const engs=speedEngines(rec), tot=engs.reduce((a,e)=>a+e.load,0);
+  const mix = tot? `<div class="se-mix">${engs.filter(e=>e.pct>0).map(e=>`<i style="width:${e.pct}%;background:${e.c}" title="${esc(e.name)} · ${e.pct}%"></i>`).join("")}</div>`:"";
+  const rows = engs.map(e=>`<div class="se-row${e.star?" key":""}">
+    <div class="se-top"><span class="se-dot" style="background:${e.c}"></span><span class="se-name">${esc(e.name)}</span>${e.star?`<span class="se-tag">what you asked</span>`:""}${tot?`<span class="se-pct">${e.pct}%</span>`:""}</div>
+    <div class="se-payoff">${e.payoff}</div>
+    <div class="se-fed">Built by <b>${esc(e.fed)}</b></div>
+  </div>`).join("");
+  return `<div class="pg-card se-card"><h4>How your training makes you faster</h4>
+    <p class="pg-sub">Every session is quietly rebuilding you to run faster for less effort. Here's the chain from each workout to a quicker race — and how much of <b>your plan</b> feeds each engine.</p>
+    ${mix}
+    <div class="se-rows">${rows}</div>
+    <p class="se-foot">Stacked up over months, these turn ordinary training into a body that reaches your goal race able to hold a faster pace, climb stronger, and descend without falling apart.</p>
+  </div>`;
+}
 function renderProgress(){
   const host=$("#progressView"); if(!host) return;
   const wks=athleteWeeks(16);
@@ -3660,6 +3720,7 @@ function renderProgress(){
     ${tiles}
     ${recordsHTML}
     ${routesHTML}
+    ${pgSpeedEnginesHTML()}
     <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
       ${engineBody}</div>
     <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
