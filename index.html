@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zf" />
+<meta name="app-build" content="2026-06-08zg" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -731,6 +731,21 @@
   .se-fed b{color:var(--muted);font-weight:600}
   .se-foot{font-size:12px;line-height:1.55;color:var(--muted);margin:15px 0 0;padding-top:13px;border-top:1px solid var(--line)}
   .se-foot b{color:var(--txt)}
+  /* Time vs training-stress visual */
+  .ts-bars{margin:2px 0 9px}
+  .ts-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .ts-lab{flex:0 0 82px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);text-align:right}
+  .ts-bar{flex:1;min-width:0;display:flex;height:24px;border-radius:7px;overflow:hidden;background:var(--bg2);gap:1px}
+  .ts-bar i{height:100%;min-width:2px;transition:width .45s cubic-bezier(.22,.61,.36,1)}
+  .ts-leg{display:flex;flex-wrap:wrap;gap:6px 13px;font-size:11px;color:var(--muted);margin:2px 0 0;padding-left:92px}
+  .ts-leg .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .ts-pot{font-size:12px;line-height:1.55;color:var(--muted);margin:13px 0 0}
+  .ts-pot b{color:var(--txt)}
+  .ts-call{font-size:12.5px;line-height:1.55;color:var(--muted);background:var(--bg2);border-radius:11px;padding:11px 13px;margin-top:10px}
+  .ts-call b{color:var(--txt)}
+  .ts-call.key{border-left:3px solid var(--t-threshold)}
+  .ts-sub2{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:18px 0 12px;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  @media(max-width:380px){ .ts-leg{padding-left:0} }
   .pg-row{display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid var(--line)}
   .pg-row:first-of-type{border-top:0}
   .pg-row .ttl{font-weight:600;font-size:13.5px;line-height:1.3;overflow-wrap:anywhere}
@@ -3546,18 +3561,56 @@ function speedEngines(rec){
   const tot=load.reduce((a,b)=>a+b,0);
   return SPEED_ENGINES.map((e,i)=>Object.assign({}, e, {load:load[i], pct: tot? Math.round(load[i]/tot*100):0}));
 }
+// Time vs training-stress split, by session type, across the active plan. Load (LOAD_W[zone]) is
+// the stress proxy: a Z4 minute = 2× a Z2 minute, so stress ≠ time — the whole point of this view.
+function trainingStimulus(rec){
+  const byType={}, dates=[];
+  if(rec){
+    (rec.plan||[]).concat(rec.custom||[]).forEach(s=>{
+      if(!s||(rec.deleted&&rec.deleted[s.id])) return;
+      const w=recWO(rec,s.id); if(!w||w.t==="Rest"||w.t==="Race"||w.t==="Sauna") return;
+      const min=+w.d||0, load=plannedLoad(w)||0; if(!min&&!load) return;
+      const b=byType[w.t]||(byType[w.t]={t:w.t,min:0,load:0}); b.min+=min; b.load+=load;
+      if(w.date) dates.push(w.date);
+    });
+  }
+  const types=Object.values(byType).sort((a,b)=>TYPE_ORDER.indexOf(a.t)-TYPE_ORDER.indexOf(b.t));
+  const totMin=types.reduce((a,b)=>a+b.min,0), totLoad=types.reduce((a,b)=>a+b.load,0);
+  let weeks=1; if(dates.length){ dates.sort(); weeks=Math.max(1,Math.round((daysBetween(dates[0],dates[dates.length-1])+1)/7)); }
+  return {types, totMin, totLoad, weeks};
+}
 function pgSpeedEnginesHTML(){
   const rec=(typeof primaryPlanRec==="function")? primaryPlanRec() : null;
+  const st=trainingStimulus(rec);
+  // — the time-vs-stress visual —
+  let visual="";
+  if(st.totLoad>0 && st.totMin>0){
+    const seg=key=>st.types.map(b=>{ const frac=(key==="min"? b.min/st.totMin : b.load/st.totLoad); return `<i style="width:${(frac*100).toFixed(2)}%;background:${TYPES[b.t].c}" title="${esc(TYPES[b.t].label)} · ${Math.round(frac*100)}%"></i>`; }).join("");
+    const grp=keys=>{ let mn=0,ld=0; st.types.forEach(b=>{ if(keys.includes(b.t)){mn+=b.min;ld+=b.load;} }); return {mn,ld,tp:Math.round(mn/st.totMin*100),sp:Math.round(ld/st.totLoad*100)}; };
+    const easy=grp(["Easy","Recovery","Bike"]), thr=grp(["Threshold"]);
+    const easyPM=easy.mn?easy.ld/easy.mn:2, thrPM=thr.mn?thr.ld/thr.mn:4;
+    const thWk=Math.round(thr.mn/st.weeks), equiv=Math.round(thWk*(easyPM?thrPM/easyPM:2));
+    const calls=`${easy.mn?`<div class="ts-call"><b>Your easy running</b> — ${easy.tp}% of your time, but only ${easy.sp}% of the training stress. That gap is the whole point: easy miles are cheap volume that grow the aerobic engine, and because they barely stress you, you can stack up hours without breaking down. Not wasted time — it's the base everything else stands on.</div>`:""}
+      ${thr.mn?`<div class="ts-call key"><b>Your threshold</b> — just ${thr.tp}% of your time, yet ${thr.sp}% of the stress. Those ~${thWk} min a week carry the training load of a <b>${equiv}-min easy run</b>, aimed straight at race pace. Push much past that and you'd dig a recovery hole that ruins the easy days — and the next hard one. Hard is rationed on purpose, not by accident.</div>`:""}`;
+    visual=`<div class="ts-bars">
+        <div class="ts-row"><span class="ts-lab">Your time</span><div class="ts-bar">${seg("min")}</div></div>
+        <div class="ts-row"><span class="ts-lab">Fitness stress</span><div class="ts-bar">${seg("load")}</div></div>
+      </div>
+      <div class="ts-leg">${st.types.map(b=>`<span><span class="dot" style="background:${TYPES[b.t].c}"></span>${esc(TYPES[b.t].label)}</span>`).join("")}</div>
+      <p class="ts-pot">Minute for minute, a <b>Z4 threshold</b> minute carries <b>2×</b> the training stress of an easy <b>Z2</b> minute — a <b>Z5</b> hill rep about 2½×. Same fitness from a fraction of the time, which is exactly why the hard stuff is so concentrated (and so limited).</p>
+      ${calls}`;
+  }
+  // — what each session is building (the five engines) —
   const engs=speedEngines(rec), tot=engs.reduce((a,e)=>a+e.load,0);
-  const mix = tot? `<div class="se-mix">${engs.filter(e=>e.pct>0).map(e=>`<i style="width:${e.pct}%;background:${e.c}" title="${esc(e.name)} · ${e.pct}%"></i>`).join("")}</div>`:"";
   const rows = engs.map(e=>`<div class="se-row${e.star?" key":""}">
     <div class="se-top"><span class="se-dot" style="background:${e.c}"></span><span class="se-name">${esc(e.name)}</span>${e.star?`<span class="se-tag">what you asked</span>`:""}${tot?`<span class="se-pct">${e.pct}%</span>`:""}</div>
     <div class="se-payoff">${e.payoff}</div>
     <div class="se-fed">Built by <b>${esc(e.fed)}</b></div>
   </div>`).join("");
   return `<div class="pg-card se-card"><h4>How your training makes you faster</h4>
-    <p class="pg-sub">Every session is quietly rebuilding you to run faster for less effort. Here's the chain from each workout to a quicker race — and how much of <b>your plan</b> feeds each engine.</p>
-    ${mix}
+    <p class="pg-sub">Fitness comes from training <b>stress</b>, not minutes on your feet — so a short hard session and a long easy one can earn the same, and you can only take so much of the hard. Here's how your plan actually splits.</p>
+    ${visual}
+    <div class="ts-sub2">What each session is building</div>
     <div class="se-rows">${rows}</div>
     <p class="se-foot">Stacked up over months, these turn ordinary training into a body that reaches your goal race able to hold a faster pace, climb stronger, and descend without falling apart.</p>
   </div>`;
