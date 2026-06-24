@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zg" />
+<meta name="app-build" content="2026-06-08zh" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -105,6 +105,16 @@
   .iconbtn:hover{border-color:var(--faint);color:var(--txt)}
   .iconbtn:disabled{opacity:.4;cursor:default}
   .iconbtn:disabled:hover{border-color:var(--line2);color:var(--muted)}
+  /* Unified inline icon — sized by its container, coloured by currentColor */
+  .ico{display:inline-block;width:18px;height:18px;vertical-align:-3px;flex:0 0 auto}
+  .iconbtn .ico{width:18px;height:18px;vertical-align:-4px}
+  .hz-pill-ic .ico{width:18px;height:18px;vertical-align:0}
+  .hz-gear .ico{width:17px;height:17px;vertical-align:0}
+  .rs-tg-ic .ico{width:17px;height:17px;vertical-align:0}
+  .cp-eyebrow .ico,.coach-next .ico{width:13px;height:13px;vertical-align:-2px;color:var(--accent)}
+  #cloudBtn .cb-tick{font-size:10px;font-weight:700;margin-left:2px;vertical-align:1px}
+  .pill .ico{width:12px;height:12px;vertical-align:-2px;opacity:.85}
+  .pill.load .ico{color:var(--accent);opacity:1}
   .m-only{display:none!important}   /* mobile-only controls (revealed in the ≤700px media query) */
 
   .wrap{max-width:1400px;margin:0 auto;padding:24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}
@@ -800,7 +810,8 @@
   .dropzone{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bg) 76%,transparent);backdrop-filter:blur(2px)}
   .dropzone.show{display:flex}
   .dz-inner{pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:44px 70px;border:2px dashed var(--accent);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}
-  .dz-emoji{font-size:38px}
+  .dz-emoji{font-size:38px;color:var(--faint)}
+  .dz-emoji .ico{width:38px;height:38px;vertical-align:0}
   .dz-inner b{font-size:17px}
   .dz-inner span{font-size:13px;color:var(--muted)}
 
@@ -1317,8 +1328,9 @@
   .hz-dot{color:rgba(236,238,231,.35)}
   .hz-streak{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 13px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);transition:background .35s,border-color .35s}
   .hz-streak.lit{background:linear-gradient(100deg,rgba(232,137,95,.20),rgba(240,168,131,.06));border-color:rgba(232,137,95,.32)}
-  .hz-flame{font-size:25px;line-height:1;filter:grayscale(.9) brightness(.72);transform-origin:50% 85%;transition:filter .35s}
-  .hz-streak.lit .hz-flame{filter:none;animation:hzFlicker 1.9s ease-in-out infinite}
+  .hz-flame{width:24px;height:24px;line-height:1;color:rgba(236,238,231,.38);transform-origin:50% 85%;transition:color .35s}
+  .hz-flame .ico{width:24px;height:24px;vertical-align:0}
+  .hz-streak.lit .hz-flame{color:#f0a883;animation:hzFlicker 1.9s ease-in-out infinite}
   @keyframes hzFlicker{0%,100%{transform:scale(1) rotate(-1.5deg);opacity:.9}45%{transform:scale(1.13) rotate(2deg);opacity:1}72%{transform:scale(.96) rotate(-2deg);opacity:.95}}
   .hz-streak-main{flex:1;min-width:0}
   .hz-streak-num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;font-weight:700;color:#f6e9df;line-height:1;letter-spacing:-.02em}
@@ -1410,9 +1422,9 @@
       </div>
     </div>
     <div class="mini" id="miniStats"></div>
-    <button class="iconbtn" id="cloudBtn" title="Cloud sync">☁</button>
+    <button class="iconbtn" id="cloudBtn" title="Cloud sync"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-1.5A4 4 0 1 0 6 19h11.5Z"/></svg></button>
     <button class="iconbtn" id="unitBtn" title="Toggle distance unit">km</button>
-    <button class="iconbtn" id="themeBtn" title="Toggle theme">🌙</button>
+    <button class="iconbtn" id="themeBtn" title="Toggle theme"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
     <div class="menuwrap">
       <button class="iconbtn" id="menuBtn" title="Plan / backup / data">⋯</button>
       <div class="menu" id="menu" hidden>
@@ -1545,7 +1557,7 @@
 
   <div class="dropzone" id="dropzone">
     <div class="dz-inner">
-      <div class="dz-emoji">📄</div>
+      <div class="dz-emoji"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg></div>
       <b>Drop a CSV to load a plan</b>
       <span>…or a .json backup to restore everything</span>
     </div>
@@ -1964,7 +1976,7 @@ const weeksEl = $("#weeks");
 function render(){
   document.documentElement.dataset.theme = state.theme;
   const mt=document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute("content", state.theme==="dark"?"#1d201b":"#f1f3ef");
-  $("#themeBtn").textContent = state.theme==="dark" ? "🌙" : "☀️";
+  $("#themeBtn").innerHTML = state.theme==="dark" ? ICO.moon : ICO.sun;
   $("#unitBtn").textContent = state.unit;
   const home = !state.activeId;
   if(state.activeId) lastActivePlanId = state.activeId;
@@ -2294,12 +2306,12 @@ function hzStreakHTML(rec){
   let sub;
   if(s.cur===0)        sub = s.best>0 ? `Your best is ${s.best} — rebuild it today` : (s.todayHas ? "Complete today's session to start a streak" : "Your streak begins with the next session");
   else if(canExtend)   sub = "Keep it alive — today's session is waiting";
-  else if(s.todayDone) sub = (s.cur>=s.best && s.cur>=3) ? "🏆 Your best run yet" : (s.best>s.cur ? `Best ${s.best} · keep stacking` : "Logged today — nice");
+  else if(s.todayDone) sub = (s.cur>=s.best && s.cur>=3) ? "★ Your best run yet" : (s.best>s.cur ? `Best ${s.best} · keep stacking` : "Logged today — nice");
   else                 sub = s.best>s.cur ? `Best ${s.best} · streak safe` : "Resting today — streak safe";
   const dots = s.last.map(on=>`<i class="${on?'on':'miss'}"></i>`).join("") + (canExtend?`<i class="next"></i>`:"");
   const num = s.cur>=1 ? `${s.cur}<span>in a row</span>` : `<em>${s.best>0?"Streak reset":"Start a streak"}</em>`;
   return `<div class="hz-streak${lit?' lit':''}${canExtend?' urgent':''}">
-    <div class="hz-flame" aria-hidden="true">🔥</div>
+    <div class="hz-flame" aria-hidden="true">${ICO.flame}</div>
     <div class="hz-streak-main"><div class="hz-streak-num">${num}</div><div class="hz-streak-sub">${sub}</div></div>
     ${dots?`<div class="hz-streak-dots" aria-hidden="true">${dots}</div>`:""}
   </div>`;
@@ -2320,7 +2332,7 @@ function hzMissionHTML(rec){
   const vol=hzWeekVol(rec), volPct = vol.planK? Math.round(vol.doneK/vol.planK*100):0, unit=state.unit;
   const brand = athleteName()? athleteName()+"'s climb" : "Horizon";
   return `<div class="hz-mission vw-fade">
-    <div class="hz-brand"><span class="hz-logo">▲</span><span>${esc(brand)}</span><button class="hz-gear" data-hzsettings title="Zones & settings">⚙</button></div>
+    <div class="hz-brand"><span class="hz-logo">▲</span><span>${esc(brand)}</span><button class="hz-gear" data-hzsettings title="Zones & settings">${ICO.gear}</button></div>
     <div class="hz-eye">Active mission</div>
     <div class="hz-title2">${esc(mission)}</div>
     <div class="hz-phase"><span class="hz-wk">Week ${curWk} of ${totWk}</span><span class="hz-dot">·</span>${esc(phase)}</div>
@@ -2340,8 +2352,8 @@ function hzPillsHTML(rec){
   const sc=readinessScore(state.readiness&&state.readiness[t]);
   const feel = sc==null?"Tap to log": sc>=80?"Fresh": sc>=60?"Good": sc>=45?"Tired":"Run-down";
   return `<div class="hz-pills">
-    <button class="hz-pill" data-tile="readiness"><span class="hz-pill-ic">◐</span><div><div class="hz-pill-l">Readiness</div><div class="hz-pill-v">${sc==null?feel:feel}</div></div></button>
-    <div class="hz-pill"><span class="hz-pill-ic">△</span><div><div class="hz-pill-l">Today's terrain</div><div class="hz-pill-v">${esc(terrain)}</div></div></div>
+    <button class="hz-pill" data-tile="readiness"><span class="hz-pill-ic">${ICO.gauge}</span><div><div class="hz-pill-l">Readiness</div><div class="hz-pill-v">${sc==null?feel:feel}</div></div></button>
+    <div class="hz-pill"><span class="hz-pill-ic">${ICO.mountain}</span><div><div class="hz-pill-l">Today's terrain</div><div class="hz-pill-v">${esc(terrain)}</div></div></div>
   </div>`;
 }
 // Build an artistic intensity profile (0..1 over normalised time) from the session structure.
@@ -2576,6 +2588,24 @@ function synthStrengthDays(log){
 }
 function sdFmtDate(isoStr){ if(!isoStr) return ""; const dt=d(isoStr); return `${WD[dt.getDay()]} ${dt.getDate()} ${MO[dt.getMonth()]}`; }
 
+// Unified stroke-icon set — replaces the scattered chrome emoji with one consistent, palette-aware
+// (currentColor) language. Each is a bare 24×24 stroke SVG sized by its container's .ico rule.
+const _ico=p=>`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICO={
+  flame:_ico(`<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>`),
+  bolt:_ico(`<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>`),
+  chart:_ico(`<path d="M3 20h18"/><path d="M5 16l5-6 4 3.5L20 6"/><path d="M16.5 6H20v3.5"/>`),
+  moon:_ico(`<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>`),
+  sun:_ico(`<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>`),
+  cloud:_ico(`<path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-1.5A4 4 0 1 0 6 19h11.5Z"/>`),
+  fileUp:_ico(`<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/>`),
+  gauge:_ico(`<path d="M22 12h-3l-3 8L8 4l-3 8H2"/>`),
+  calendar:_ico(`<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2.5" x2="8" y2="6"/><line x1="16" y1="2.5" x2="16" y2="6"/>`),
+  heart:_ico(`<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/>`),
+  clock:_ico(`<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.8"/>`),
+  mountain:_ico(`<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>`),
+  gear:_ico(`<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>`),
+};
 const SD_CHECK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
 const SD_CARET=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
 const SD_EDIT=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`;
@@ -3052,7 +3082,7 @@ function coachPropHTML(){
     : `<button class="btn primary" data-coach-apply="1">Apply — ${p.recommendation==="ease"?"easier":"harder"} week</button><button class="btn" data-coach-dismiss="1">Dismiss</button>`;
   const when=p.weekOf? mdShort(p.weekOf) : "";
   return `<div class="coach-prop">
-    <div class="cp-head"><span class="cp-eyebrow">⚡ Coach suggestion</span>${when?`<span class="cp-plan">· week of ${esc(when)}</span>`:""}<span class="cp-rec ${rc.cls}">${esc(rc.label)}</span></div>
+    <div class="cp-head"><span class="cp-eyebrow">${ICO.bolt} Coach suggestion</span>${when?`<span class="cp-plan">· week of ${esc(when)}</span>`:""}<span class="cp-rec ${rc.cls}">${esc(rc.label)}</span></div>
     ${p.headline?`<div class="cp-head-line">${esc(p.headline)}</div>`:""}
     ${p.reasoning?`<p class="cp-reason">${esc(p.reasoning)}</p>`:""}
     ${chips.length?`<div class="cp-chips">${chips.join("")}</div>`:""}
@@ -3088,7 +3118,7 @@ function coachNextHTML(){
   const days=Math.floor(ms/86400000), hrs=Math.floor((ms%86400000)/3600000);
   const when = days>=1 ? `in ${days} day${days===1?"":"s"}` : (hrs>=1 ? `in ${hrs} hour${hrs===1?"":"s"}` : "within the hour");
   const dlabel = `${WD[r.getDay()]} ${r.getDate()} ${MO[r.getMonth()]}`;
-  return `<div class="coach-next">⚡ Coach reviews your training every Sunday — next review <b>${when}</b> · ${dlabel}</div>`;
+  return `<div class="coach-next">${ICO.bolt} Coach reviews your training every Sunday — next review <b>${when}</b> · ${dlabel}</div>`;
 }
 /* ---- Race predictor (free, formula-based: Riegel T2 = T1 × (D2/D1)^1.06) ---- */
 function parseRaceTime(s){
@@ -3498,7 +3528,7 @@ function renderRaceShape(){
   const teaser=`Week ${m.curIdx+1} · fitness ${cur.fit}%${mult}`;
   host.innerHTML=`<div class="rs-collapse${open?" open":""}">
     <button class="rs-toggle" data-rstoggle aria-expanded="${open}">
-      <span class="rs-tg-ic">📈</span>
+      <span class="rs-tg-ic">${ICO.chart}</span>
       <span class="rs-tg-main"><span class="rs-tg-title">Race shape</span><span class="rs-tg-sub">${esc(teaser)}</span></span>
       <span class="rs-tg-pill ${m.status.c}">${esc(m.status.w)}</span>
       <span class="rs-tg-caret">${SD_CARET}</span></button>
@@ -3895,7 +3925,7 @@ function cardHTML(id){
   if(lg.hr) meta.push(`<span class="pill">${lg.hr} bpm</span>`);
   if(state.done[id]){ const es=execScore(w,lg); if(es) meta.push(`<span class="pill exec ${es.level}" title="${execLabel(es)} — ${(es.basis==="time"?fmtDur(es.actual):fmtDist(es.actual))} done vs ${(es.basis==="time"?fmtDur(es.planned):fmtDist(es.planned))} planned">${es.pct}%</span>`); }
   const ld = state.done[id] ? sessionLoad(id) : plannedLoad(w);
-  if(ld) meta.push(`<span class="pill load" title="${state.done[id]?"Training load (from your session)":"Estimated training load"}">⚡ ${Math.round(ld/5)*5}</span>`);
+  if(ld) meta.push(`<span class="pill load" title="${state.done[id]?"Training load (from your session)":"Estimated training load"}">${ICO.bolt} ${Math.round(ld/5)*5}</span>`);
   const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
   const surf = surfaceLabel(w);
   return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
@@ -4036,9 +4066,9 @@ const SURFACES=["road","trail","fell","track"];
 function surfaceOptions(cur){ return SURFACES.map(s=>`<option value="${s}" ${cur===s?"selected":""}>${s[0].toUpperCase()+s.slice(1)}</option>`).join(""); }
 function segMetrics(idx, noPace){
   const h=hrRangeLabel(idx);
-  if(noPace) return (h?`<span class="pill">♥ ${esc(h)}</span>`:"")+`<span class="pill">by effort</span>`;   // fell: HR + effort, no km pace
+  if(noPace) return (h?`<span class="pill">${ICO.heart} ${esc(h)}</span>`:"")+`<span class="pill">by effort</span>`;   // fell: HR + effort, no km pace
   const p=paceRangeLabel(idx);
-  return (p?`<span class="pill">⏱ ${esc(p)}</span>`:"")+(h?`<span class="pill">♥ ${esc(h)}</span>`:"");
+  return (p?`<span class="pill">${ICO.clock} ${esc(p)}</span>`:"")+(h?`<span class="pill">${ICO.heart} ${esc(h)}</span>`:"");
 }
 function sessionPlanHTML(w){
   const plan=sessionPlan(w); if(!plan) return "";
@@ -4922,7 +4952,7 @@ function seasonNudgeHTML(){
   const next=PLAN_LIBRARY.find(p=> !libHave(p.title) && p.end>lastDate);
   if(!next) return "";
   const ended = lastDate<todayISO();
-  return `<div class="pg-goal" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">🗓 <span style="flex:1;min-width:200px">Your training ${ended?"finished "+mdShort(lastDate):"runs out on "+mdShort(lastDate)} — the season doesn't stop there. Next block: <b>${esc(next.title)}</b> · ${mdShort(next.start)} – ${mdShort(next.end)}.</span><button class="btn primary" data-libadd="${esc(next.title)}">Add next block</button></div>`;
+  return `<div class="pg-goal" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ICO.calendar} <span style="flex:1;min-width:200px">Your training ${ended?"finished "+mdShort(lastDate):"runs out on "+mdShort(lastDate)} — the season doesn't stop there. Next block: <b>${esc(next.title)}</b> · ${mdShort(next.start)} – ${mdShort(next.end)}.</span><button class="btn primary" data-libadd="${esc(next.title)}">Add next block</button></div>`;
 }
 
 /* ============================ MENU ============================ */
@@ -5079,8 +5109,8 @@ function cloudDisconnect(){
 
 /* ---- cloud UI ---- */
 function renderCloud(){
-  const b=$("#cloudBtn"); if(b){ const tick={synced:" ✓",saving:" …",checking:" …",error:" !","bad-token":" !"}[cloud.status]||"";
-    b.textContent="☁"+tick; b.dataset.state=cloud.status; b.classList.toggle("on", cloud.status==="synced"||cloud.status==="saving"); }
+  const b=$("#cloudBtn"); if(b){ const tick={synced:"✓",saving:"…",checking:"…",error:"!","bad-token":"!"}[cloud.status]||"";
+    b.innerHTML=ICO.cloud+(tick?`<span class="cb-tick">${tick}</span>`:""); b.dataset.state=cloud.status; b.classList.toggle("on", cloud.status==="synced"||cloud.status==="saving"); }
   const sb=$("#syncBackdrop"); if(sb && sb.classList.contains("open")) renderSyncBody();
 }
 function renderSyncBody(){
