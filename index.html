@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zj" />
+<meta name="app-build" content="2026-06-08zk" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -755,6 +755,20 @@
   .se-fed b{color:var(--muted);font-weight:600}
   .se-foot{font-size:12px;line-height:1.55;color:var(--muted);margin:15px 0 0;padding-top:13px;border-top:1px solid var(--line)}
   .se-foot b{color:var(--txt)}
+  /* Day-of autoregulation — "Today, adjusted" */
+  .areg{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--areg-c,var(--accent));border-radius:13px;padding:12px 14px;margin-top:12px}
+  .areg.good,.areg.applied{--areg-c:var(--good)} .areg.ok,.areg.none{--areg-c:var(--faint)}
+  .areg.warn{--areg-c:var(--warn)} .areg.bad{--areg-c:var(--bad)}
+  .areg-eye{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:7px;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .areg-head{display:flex;align-items:center;gap:8px}
+  .areg-ic{color:var(--areg-c,var(--accent));display:flex;align-items:center;flex:0 0 auto}
+  .areg-ic .ico{width:17px;height:17px;vertical-align:0}
+  .areg-verdict{font-weight:700;font-size:14px;letter-spacing:-.01em}
+  .areg-detail{font-size:12.5px;color:var(--muted);line-height:1.5;margin:6px 0 0}
+  .areg-act{margin-top:11px}
+  .areg-btn{appearance:none;border:0;border-radius:9px;background:var(--areg-c,var(--accent));color:#fff;font:inherit;font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .13s}
+  .areg-btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
+  .areg-btn:active{transform:scale(.97)}
   /* Time vs training-stress visual */
   .ts-bars{margin:2px 0 9px}
   .ts-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -2453,7 +2467,7 @@ function hzHeroHTML(rec){
   const grid = isRest? "" : `<div class="hz-statgrid"><div class="hz-hstat"><div class="l">Target distance</div><div class="v">${w.k!=null?esc(fmtDist(w.k)):"—"}</div></div><div class="hz-hstat"><div class="l">Planned duration</div><div class="v">${w.d?esc(fmtDur(w.d)):"—"}</div></div></div>`;
   return `<div class="hz-hero ${done?'done':''} vw-fade" data-homeopen="${esc(focus.id)}">
     <div class="hz-hero-top"><span class="hz-up">Up next · ${esc(ty.label)}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
-    <div class="hz-hero-title">${esc(w.n)}</div>${quote}${chart}${grid}${cta}</div>`;
+    <div class="hz-hero-title">${esc(w.n)}</div>${quote}${chart}${grid}${cta}</div>${autoregBlockHTML(getWO(focus.id), focus.id)}`;
 }
 function hzDoneHTML(rec){
   const startMon=recStartMon(rec);
@@ -2918,6 +2932,93 @@ $("#readinessCard").addEventListener("click", e=>{
   const r=state.readiness[t]||{}; r.feel=+b.dataset.feel; state.readiness[t]=r;
   save(); renderReadinessCard(); renderToday();   // re-render so the hero's readiness nudge updates too
 });
+/* ===== Day-of autoregulation — turns the morning check-in (readiness + niggles) and recent load
+   into a concrete call on TODAY's session, with one tap to apply it. ===== */
+const AREG_HARD=["Threshold","Hills","Simulation"];
+const AREG_NAME={Threshold:"threshold session",Hills:"hill session",Simulation:"race-sim",Long:"long run"};
+function _aregName(w){ return AREG_NAME[w.t] || (TYPES[w.t]&&TYPES[w.t].label||"session").toLowerCase(); }
+function _cap(s){ return s? s[0].toUpperCase()+s.slice(1):s; }
+function lowerLimbNiggle(){
+  const r=state.readiness&&state.readiness[todayISO()]; if(!r||!r.niggles) return null;
+  let area=null, sev=0;
+  for(const k in r.niggles){ if(k!=="other" && r.niggles[k]>sev){ sev=r.niggles[k]; area=k; } }
+  if(!area && r.niggles.other){ area="other"; sev=r.niggles.other; }
+  return sev>=1 ? {area, sev} : null;
+}
+function trimReps(name){
+  const m=/(\d+)\s*[×x]\s*(\d+)\s*(min|mins|m|s|sec|secs)?/i.exec(name||"");
+  if(!m) return null; const reps=+m[1]; if(reps<=2) return null;
+  const unit=m[3]?(/^s/i.test(m[3])?"s":" min"):"";
+  return { oldReps:reps, newReps:reps-1, label:(reps-1)+"×"+m[2]+unit, newName:String(name).replace(/(\d+)(\s*[×x]\s*\d+)/, (_,a,b)=>(reps-1)+b) };
+}
+function autoreg(w, id){
+  if(!w || (state.done&&state.done[id])) return null;
+  const t=todayISO();
+  if(!(state.board[t]||[]).includes(id)) return null;             // today's session only
+  if(w.areg) return {lvl:"applied", verdict:"Tuned to today", detail:"Today's session is adjusted to how you're feeling — run this version, or undo to put the original back.", action:"undo"};
+  if(w.t==="Rest" || w.t==="Race" || w.t==="Sauna") return null;
+  const score=readinessScore(state.readiness&&state.readiness[t]);
+  const nig=lowerLimbNiggle();
+  const acwr=acwrLoadDays()>=10 ? currentAcwr() : null;
+  const hard=AREG_HARD.includes(w.t), long=w.t==="Long", quality=hard||long;
+  if(score==null && !nig) return {lvl:"none", verdict:"Adapt today to how you feel", detail:"Log this morning's check-in and I'll tell you exactly how to run today's session.", action:"checkin"};
+  if(nig && nig.area!=="other" && nig.sev>=2){
+    return quality
+      ? {lvl:"bad", verdict:`Protect the ${nig.area}`, detail:`You flagged your ${nig.area} at ${nig.sev}/3 — never load a niggle on a hard day. Swap the ${_aregName(w)} for an easy 40–45 min spin: same aerobic stimulus, zero pounding. Reassess tomorrow.`, action:"bike"}
+      : {lvl:"warn", verdict:`Mind the ${nig.area}`, detail:`${_cap(nig.area)} at ${nig.sev}/3 — keep today flat, short and easy, and stop the moment it sharpens. The bike is a safe swap if you'd rather not pound it.`, action:"bike"};
+  }
+  if(nig && nig.area!=="other" && nig.sev===1 && quality){
+    return {lvl:"warn", verdict:`Watch the ${nig.area}`, detail:`A mild ${nig.area} (1/3) — probably fine, but warm up thoroughly and bin the session the moment it talks to you during the reps.`, action:"none"};
+  }
+  if(score!=null){
+    if(score<35) return quality
+      ? {lvl:"bad", verdict:"Rest or jog — not today", detail:`Deep in the red (${score}/100). A ${_aregName(w)} won't go well and the risk outweighs the reward. Rest, or 20–30 min easy if you're twitchy, and move the quality to a fresher day.`, action:"rest"}
+      : {lvl:"warn", verdict:"Keep it minimal", detail:`Run-down (${score}/100). An easy day is right — keep it short and genuinely easy, or take it off. Recovery is where the gains land.`, action:"easy"};
+    if(score<50){
+      if(hard){ const tr=trimReps(w.n||""); return {lvl:"warn", verdict:"Dial it back", detail:`Running flat (${score}/100). Cut the ${_aregName(w)}${tr?` — drop to ${tr.label}`:" by a set"} and hold a notch easier, ~2 reps in reserve. A smaller session done well beats a big one survived.`, action:"ease"}; }
+      if(long) return {lvl:"warn", verdict:"Shorten it", detail:`A bit flat (${score}/100). Trim ~20% and keep it steady and aerobic — time on feet matters more than the last few km today.`, action:"ease"};
+      return {lvl:"ok", verdict:"Easy as planned", detail:`Low-ish (${score}/100), but an easy day is exactly what you need — keep it honest-easy and let it restore you.`, action:"none"};
+    }
+    if(acwr!=null && acwr>1.5 && quality){ const tr=hard?trimReps(w.n||""):null; return {lvl:"warn", verdict:"Load is spiking", detail:`You feel ok (${score}/100), but your load is ramping fast (ACWR ${acwr.toFixed(2)}). Resist piling on${tr?` — run it but trim to ${tr.label}`:" — keep it a touch shorter"}, or save the big effort for next week.`, action:"ease"}; }
+    if(score>=85 && quality) return {lvl:"good", verdict:"Green light — attack it", detail:`Fresh and ready (${score}/100). A day to commit to the ${_aregName(w)} and hit the targets — capitalise on feeling good.`, action:"none"};
+    return {lvl:"ok", verdict:"Train as planned", detail:`Solid (${score}/100). Run the ${_aregName(w)} as written, ease into it, and let the legs decide the last reps.`, action:"none"};
+  }
+  return null;
+}
+function _aregActLabel(a){ return a==="bike"?"Swap to the bike":a==="easy"?"Make it easy":a==="rest"?"Take a rest day":a==="ease"?"Ease today's session":"Apply"; }
+function autoregBlockHTML(w, id){
+  const ar=autoreg(w, id); if(!ar) return "";
+  const lvlIcon = ar.lvl==="good"?ICO.bolt : (ar.action==="bike"||ar.lvl==="bad")?ICO.heart : ar.lvl==="applied"?ICO.info : ICO.gauge;
+  let btn="";
+  if(ar.action==="checkin") btn=`<button class="areg-btn" data-areg-ci="1">Log check-in</button>`;
+  else if(ar.action==="undo") btn=`<button class="areg-btn ghost" data-areg-undo="1">Undo</button>`;
+  else if(ar.action!=="none") btn=`<button class="areg-btn" data-areg-apply="${esc(ar.action)}" data-areg-id="${esc(id)}">${_aregActLabel(ar.action)}</button>`;
+  return `<div class="areg ${ar.lvl}">
+    <div class="areg-eye">Today, adjusted</div>
+    <div class="areg-head"><span class="areg-ic">${lvlIcon}</span><span class="areg-verdict">${esc(ar.verdict)}</span></div>
+    <div class="areg-detail">${esc(ar.detail)}</div>
+    ${btn?`<div class="areg-act">${btn}</div>`:""}
+  </div>`;
+}
+function applyAutoreg(id, action){
+  const w=getWO(id); if(!w) return;
+  pushUndo();
+  const e=Object.assign({}, state.edits[id]||{}); e.areg=action;
+  const orig=w.n||(TYPES[w.t]&&TYPES[w.t].label)||"session";
+  if(action==="bike"){ const nig=lowerLimbNiggle(); e.t="Bike"; e.z="Z1"; e.sf="bike"; e.n=`Easy spin${nig&&nig.area!=="other"?` — easy on the ${nig.area}`:""}`; e.d=Math.max(30,Math.round(w.d||45)); e.k=null; e.v=null;
+    e.note=`Swapped from "${orig}" to protect a niggle — spin easy, no impact, no pressure on the joint.`; }
+  else if(action==="easy"){ e.t="Easy"; e.z="Z2"; e.sf=w.sf==="fell"?"trail":(w.sf||"road"); e.n="Easy aerobic"; e.d=Math.max(20,Math.round((w.d||40)*0.7)); if(w.k!=null) e.k=Math.round((w.k)*0.7*10)/10; e.v=null;
+    e.note=`Quality moved off today — readiness low. Swapped from "${orig}". Keep it genuinely easy.`; }
+  else if(action==="rest"){ e.t="Rest"; e.n="Rest"; e.z="—"; e.d=null; e.k=null; e.v=null;
+    e.note=`Rest taken — readiness in the red. "${orig}" moved to a fresher day.`; }
+  else if(action==="ease"){ const tr=trimReps(w.n||"");
+    if(tr){ e.n=tr.newName; const f=tr.newReps/tr.oldReps; if(w.d) e.d=Math.round(w.d*(0.45+0.55*f)); if(w.k!=null) e.k=Math.round(w.k*(0.45+0.55*f)*10)/10; }
+    else { if(w.d) e.d=Math.round(w.d*0.8); if(w.k!=null) e.k=Math.round(w.k*0.8*10)/10; }
+    e.note=(w.note? w.note+"\n":"")+`Eased for readiness${tr?` — ${tr.oldReps}→${tr.newReps} reps`:""}. Hold ~2 reps in reserve.`; }
+  else return;
+  state.edits[id]=e; save(); render();
+  if(editingId===id && document.querySelector("#backdrop.open")){ const nw=getWO(id); if(nw) $("#mBody").innerHTML=modalViewHTML(nw); }
+}
 function renderToday(){
   const host=$("#todayCard"); if(!host) return;
   const t=todayISO();
@@ -2979,7 +3080,7 @@ function renderToday(){
     : "Feeling Wiped — easy or off today. Adaptation happens in recovery, not in a forced session.";
   // ---- Horizon hero (dark, with the artistic intensity line) ----
   const sched = mode==="today" ? "Today" : (dd===1?"Tomorrow":`${WD_FULL[d(fdate).getDay()]} ${d(fdate).getDate()}`);
-  const quoteText = coachMsg || why;
+  const quoteText = why;   // readiness now drives the richer "Today, adjusted" block below the hero
   const vertBadge = (w.v!=null&&w.v>0) ? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>` : "";
   const chart = isRest ? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`;
   const grid = isRest ? "" : `<div class="hz-statgrid">
@@ -2992,7 +3093,7 @@ function renderToday(){
   host.innerHTML = `<div class="hz-hero ${done?'done':''}" data-open="${focus.id}">
       <div class="hz-hero-top"><span class="hz-up">${mode==="today"?"Today":"Up next"} · ${esc(ty.label)}${isKey?" ★":""}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
       <div class="hz-hero-title">${esc(w.n)}</div>
-      ${quoteText?`<div class="hz-quote">${esc(quoteText)}</div>`:""}${chart}${grid}${cta}</div>`;
+      ${quoteText?`<div class="hz-quote">${esc(quoteText)}</div>`:""}${chart}${grid}${cta}</div>${mode==="today"?autoregBlockHTML(w, focus.id):""}`;
 }
 function renderRaceBanner(){
   const host=$("#raceBanner"); if(!host) return;
@@ -3250,6 +3351,13 @@ function renderCoach(){
   host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>${predictorHTML()}${coachNextHTML()}`;
 }
 document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
+// Day-of autoregulation actions (apply / log check-in / undo) — works from the today card and the modal
+document.addEventListener("click", e=>{
+  const ap=e.target.closest("[data-areg-apply]");
+  if(ap){ e.stopPropagation(); applyAutoreg(ap.getAttribute("data-areg-id"), ap.getAttribute("data-areg-apply")); return; }
+  if(e.target.closest("[data-areg-ci]")){ e.stopPropagation(); openCheckin(); return; }
+  if(e.target.closest("[data-areg-undo]")){ e.stopPropagation(); undo(); return; }
+});
 document.addEventListener("click", e=>{
   if(e.target.closest("[data-coach-apply]")) applyCoachProposal();
   else if(e.target.closest("[data-coach-dismiss]")) dismissCoachProposal();
@@ -4643,7 +4751,7 @@ function modalViewHTML(w){
     logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
   }
   const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
-  return `<div class="mv2">${sesCard}${planCard}${whyCard}${logCard}</div>`;
+  return `<div class="mv2">${sesCard}${autoregBlockHTML(w, editingId)}${planCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
