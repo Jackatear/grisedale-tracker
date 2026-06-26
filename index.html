@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zm" />
+<meta name="app-build" content="2026-06-08zn" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -2308,6 +2308,40 @@ function openTileInfo(key){
 }
 /* The Fitness Engine — interactive Fitness/Fatigue/Form teaching toy. Embedded as an isolated
    iframe overlay because its generic class names (.card/.btn/.head) + global ids would collide if inlined. */
+// Map one of the athlete's sessions → the engine's session vocabulary (rest/recovery/easy/tempo/long/threshold/intervals/race).
+function feKeyFor(w){
+  if(!w) return "rest";
+  const t=w.t;
+  if(t==="Race") return "race";
+  if(t==="Rest"||t==="Sauna") return "rest";
+  if(t==="Recovery") return "recovery";
+  if(t==="Bike") return "easy";
+  if(t==="Long"||t==="Simulation") return "long";
+  if(t==="Hills") return "intervals";
+  const zi=zoneTextToIdx(w.z);
+  if(t==="Threshold") return (zi!=null&&zi>=3)?"threshold":"tempo";
+  if(t==="Descent") return "tempo";
+  if(t==="Easy") return "easy";
+  return zi==null?"easy":(zi>=4?"intervals":zi>=3?"threshold":zi>=2?"tempo":"easy");
+}
+// Build a day-by-day key array for the active plan (start Monday → race day) to feed the engine.
+function feBuildPlan(){
+  const startMon = (typeof planStartMonday==="function") ? planStartMonday() : mondayOf(todayISO());
+  const races=allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.t==="Race"&&w.date).map(w=>w.date).sort();
+  let endDate = races.length ? races[races.length-1] : null;
+  if(!endDate){ const ds=allRaw().map(s=>getWO(s.id)).filter(w=>w&&w.date).map(w=>w.date).sort(); endDate = ds.length ? ds[ds.length-1] : null; }
+  if(!endDate || endDate<startMon) return null;
+  const plan=[];
+  for(let dte=startMon; dte<=endDate; dte=addDays(dte,1)){
+    const ids=state.board[dte]||[]; let key="rest", best=-1, isRace=false;
+    ids.forEach(id=>{ const w=getWO(id); if(!w) return; if(w.t==="Race") isRace=true; const ld=(typeof plannedLoad==="function"?plannedLoad(w):0)||0; if(ld>best){ best=ld; key=feKeyFor(w); } });
+    plan.push(isRace?"race":key);
+  }
+  if(plan.length<7) return null;
+  if(plan[plan.length-1]!=="race") plan[plan.length-1]="race";
+  const rec=(typeof primaryPlanRec==="function")?primaryPlanRec():null;
+  return { plan, name:(rec&&rec.planName)||"My block" };
+}
 function openFitnessEngine(){
   closeFitnessEngine();
   const o=document.createElement("div"); o.className="fe-overlay"; o.id="feOverlay";
@@ -2316,6 +2350,9 @@ function openFitnessEngine(){
     <iframe class="fe-frame" src="fitness-engine.html?theme=${encodeURIComponent(th)}" title="The Fitness Engine"></iframe>`;
   o.addEventListener("click", e=>{ if(e.target.closest("[data-fe-close]")) closeFitnessEngine(); });
   document.body.appendChild(o);
+  // hand the engine the athlete's real plan once the iframe is ready
+  const pdata = (typeof feBuildPlan==="function") ? feBuildPlan() : null;
+  if(pdata){ const fr=o.querySelector("iframe.fe-frame"); fr.addEventListener("load", ()=>{ try{ fr.contentWindow.postMessage({type:"loadPlan", plan:pdata.plan, name:pdata.name}, "*"); }catch(e){} }); }
   if(typeof refreshScrollLock==="function") refreshScrollLock();
   requestAnimationFrame(()=>o.classList.add("open"));
 }

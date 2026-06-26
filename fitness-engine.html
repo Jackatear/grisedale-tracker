@@ -181,7 +181,7 @@
     <div>
       <div class="eyebrow"><span class="pulse-dot"></span> Training Science · Live</div>
       <h1>The <span class="grad">Fitness Engine</span></h1>
-      <p class="sub">Build an 8-week block and watch how each session <b style="color:var(--fit)">builds</b>, <b style="color:var(--fat)">drains</b> and <b style="color:var(--form)">sharpens</b> you for race day.</p>
+      <p class="sub">Watch how each session <b style="color:var(--fit)">builds</b>, <b style="color:var(--fat)">drains</b> and <b style="color:var(--form)">sharpens</b> you — your real plan, or a story below.</p>
     </div>
     <div class="ring-wrap">
       <div class="ring">
@@ -222,7 +222,7 @@
 
   <!-- BUILDER -->
   <div class="card pad mt">
-    <div class="sect-h"><h2>Build your own plan</h2><span class="hint">8 weeks to race day</span></div>
+    <div class="sect-h"><h2>Build &amp; tweak your plan</h2><span class="hint">to race day</span></div>
     <p class="builder-hint"><b>1.</b> Pick a session below &nbsp;·&nbsp; <b>2.</b> Tap any day to paint it in. The curves update live.</p>
     <div class="palette" id="palette"></div>
     <div class="weeks" id="weeks"></div>
@@ -420,8 +420,8 @@
   var svg = $("chart");
 
   function buildStatic(){
-    var bg="";
-    for(var w=1;w<8;w++){
+    var bg="", weeks=Math.ceil(N/7);
+    for(var w=1;w<weeks;w++){
       var x=xAt(w*7);
       bg+='<line class="wsep" x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(H-padB)+'"/>';
     }
@@ -485,10 +485,14 @@
   }
 
   function drawAxis(){
-    var g=$("gAxis"), labels=[[0,"Day 1"],[13,"Wk 2"],[27,"Wk 4"],[41,"Wk 6"],[55,"Race"]], s="";
+    var g=$("gAxis"), weeks=Math.ceil(N/7), s="";
+    var labels=[[0,"Day 1"]];
+    var step = weeks<=5?1 : weeks<=9?2 : 3;            // label every `step` weeks so it never crowds
+    for(var w=step; w<weeks; w+=step){ if((weeks-1-w)<1) break; labels.push([w*7,"Wk "+(w+1)]); }
+    labels.push([N-1,"Race"]);
     for(var i=0;i<labels.length;i++){
       var x=xAt(labels[i][0]);
-      var anchor= labels[i][0]===0?"start":(labels[i][0]===55?"end":"middle");
+      var anchor= labels[i][0]===0?"start":(labels[i][0]===N-1?"end":"middle");
       s+='<text class="axis-t" x="'+x.toFixed(1)+'" y="'+(H-10)+'" text-anchor="'+anchor+'">'+labels[i][1]+'</text>';
     }
     g.innerHTML=s;
@@ -609,9 +613,9 @@
     return bars;
   }
   function renderGrid(){
-    var c=$("weeks"), html="", labels=["W1","W2","W3","W4","W5","W6","W7","W8"];
-    for(var wk=0;wk<8;wk++){
-      html+='<div class="wrow"><div class="wlab">'+labels[wk]+'</div><div class="wcells">';
+    var c=$("weeks"), html="", weeks=Math.ceil(N/7);
+    for(var wk=0;wk<weeks;wk++){
+      html+='<div class="wrow"><div class="wlab">W'+(wk+1)+'</div><div class="wcells">';
       for(var dd=0;dd<7;dd++){
         var i=wk*7+dd; if(i>=N)break;
         var key=state.plan[i], w=WORKOUTS[key]||WORKOUTS.rest, isRace=(key==="race");
@@ -693,9 +697,7 @@
   $("presets").addEventListener("click", function(e){
     var btn=e.target.closest(".preset"); if(!btn)return;
     var k=btn.getAttribute("data-preset");
-    state.plan=PRESETS[k].plan.slice();
-    state.activePreset=k; state.cursor=RACE;
-    renderPresets(); update(true); updateInsight();
+    loadPlanArr(PRESETS[k].plan.slice(), k);
   });
 
   $("btnClear").addEventListener("click", function(){
@@ -738,12 +740,38 @@
       i++;
       if(i>=N){ stopPlay(); state.cursor=RACE; drawCursor(); updateReadout(); updateInsight(); renderGrid(); return; }
       state.cursor=i; drawCursor(); updateReadout(); updateInsight(); renderGrid();
-    }, 110);
+    }, Math.max(45, Math.round(5600/N)));
   });
   function stopPlay(){
     playing=false; clearInterval(playTimer);
     $("playIcon").textContent="▶"; $("playTxt").textContent="Play the story";
   }
+
+  /* ---------------- dynamic length (presets are 8wk; a real plan can be any length) ---------------- */
+  function setN(n){
+    N=Math.max(7,n|0); RACE=N-1;
+    displayed={ctl:[],atl:[],tsb:[]};
+    for(var i=0;i<N;i++){ displayed.ctl.push(START_CTL); displayed.atl.push(START_ATL); displayed.tsb.push(0); }
+    buildStatic(); drawAxis();
+  }
+  function loadPlanArr(arr, presetKey){
+    if(arr.length!==N) setN(arr.length);
+    state.plan=arr.slice();
+    if(presetKey!==undefined) state.activePreset=presetKey;
+    state.cursor=RACE;
+    renderPresets(); update(true); updateInsight();
+  }
+
+  /* ---------------- receive the athlete's real plan from the app ---------------- */
+  window.addEventListener("message", function(ev){
+    var d=ev.data; if(!d || d.type!=="loadPlan" || !Array.isArray(d.plan) || d.plan.length<7) return;
+    PRESETS.mine = {emoji:"⭐", name:(d.name||"My block"), sub:"your real plan", plan:d.plan.slice()};
+    // put "mine" first
+    var ordered={mine:PRESETS.mine}; for(var k in PRESETS){ if(k!=="mine") ordered[k]=PRESETS[k]; }
+    PRESETS=ordered;
+    state.cursor=d.plan.length-1;
+    loadPlanArr(d.plan.slice(), "mine");
+  });
 
   /* ---------------- boot ---------------- */
   buildStatic();
