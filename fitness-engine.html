@@ -112,6 +112,11 @@
   /* ---------- builder ---------- */
   .builder-hint{font-size:11.5px;color:var(--txt-2);line-height:1.4;margin:-3px 0 11px;}
   .builder-hint b{color:var(--txt);font-weight:700;}
+  .wkctl{display:flex;align-items:center;gap:7px;}
+  .wkbtn{width:26px;height:26px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--txt);font-size:17px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:transform .12s,opacity .15s;}
+  .wkbtn:active{transform:scale(.9);}
+  .wkbtn:disabled{opacity:.3;cursor:default;}
+  .wkn{font-size:11px;font-weight:700;color:var(--txt-2);min-width:44px;text-align:center;font-family:var(--mono);}
   .palette{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 7px;scrollbar-width:none;-ms-overflow-style:none;}
   .palette::-webkit-scrollbar{display:none;}
   .chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:62px;padding:9px 8px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:transform .12s,border-color .15s,background .15s;color:var(--c-easy);}
@@ -222,8 +227,9 @@
 
   <!-- BUILDER -->
   <div class="card pad mt">
-    <div class="sect-h"><h2>Build &amp; tweak your plan</h2><span class="hint">to race day</span></div>
-    <p class="builder-hint"><b>1.</b> Pick a session below &nbsp;·&nbsp; <b>2.</b> Tap any day to paint it in. The curves update live.</p>
+    <div class="sect-h"><h2>Build &amp; tweak your plan</h2>
+      <div class="wkctl"><button class="wkbtn" id="wkMinus" aria-label="Remove a week">−</button><span class="wkn" id="wkN">—</span><button class="wkbtn" id="wkPlus" aria-label="Add a week">+</button></div></div>
+    <p class="builder-hint"><b>1.</b> Pick a session below &nbsp;·&nbsp; <b>2.</b> Tap any day to paint it. Use <b>−/+</b> to drop or add a week.</p>
     <div class="palette" id="palette"></div>
     <div class="weeks" id="weeks"></div>
     <div class="tools">
@@ -663,6 +669,7 @@
     currentSim=sim;
     var dv=derive(sim);
     renderGrid();
+    updateWkN();
     updateInsight();
     updateVerdict(dv);
     renderBadges(dv);
@@ -699,6 +706,9 @@
     var k=btn.getAttribute("data-preset");
     loadPlanArr(PRESETS[k].plan.slice(), k);
   });
+
+  $("wkPlus").addEventListener("click", addWeek);
+  $("wkMinus").addEventListener("click", removeWeek);
 
   $("btnClear").addEventListener("click", function(){
     for(var i=0;i<N;i++){ if(state.plan[i]!=="race") state.plan[i]="rest"; }
@@ -759,6 +769,26 @@
     state.plan=arr.slice();
     if(presetKey!==undefined) state.activePreset=presetKey;
     state.cursor=RACE;
+    renderPresets(); update(true); updateInsight();
+  }
+  function updateWkN(){
+    $("wkN").textContent=Math.ceil(N/7)+" wk"+(Math.ceil(N/7)===1?"":"s");
+    $("wkMinus").disabled = N<=14; $("wkPlus").disabled = N>=154;
+  }
+  // Add/remove a 7-day week just before race day (the race always stays last). Works on any loaded plan.
+  function addWeek(){
+    if(N>=154) return;
+    var at=state.plan.length-1, src=[];               // 7 days ending just before race → continue the block naturally
+    for(var i=0;i<7;i++){ var idx=at-7+i; src.push(idx>=0?state.plan[idx]:"easy"); }
+    var np=state.plan.slice(0,at).concat(src).concat(state.plan.slice(at));
+    state.activePreset=null; setN(np.length); state.plan=np; state.cursor=RACE;
+    renderPresets(); update(true); updateInsight();
+  }
+  function removeWeek(){
+    if(N<=14) return;
+    var at=state.plan.length-1, start=Math.max(0,at-7);
+    var np=state.plan.slice(0,start).concat(state.plan.slice(at));
+    state.activePreset=null; setN(np.length); state.plan=np; state.cursor=RACE;
     renderPresets(); update(true); updateInsight();
   }
 
