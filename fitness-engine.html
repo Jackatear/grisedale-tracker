@@ -6,142 +6,163 @@
 <title>The Fitness Engine</title>
 <style>
   :root{
-    --bg:#070a10;
-    --card:rgba(255,255,255,0.035);
-    --card-2:rgba(255,255,255,0.055);
-    --stroke:rgba(255,255,255,0.08);
-    --stroke-2:rgba(255,255,255,0.14);
-    --txt:#eef2f8;
-    --txt-2:#9aa6b8;
-    --txt-3:#5f6b7d;
-    --fit:#38bdf8;     /* fitness  - cyan */
-    --fat:#fb7185;     /* fatigue  - coral */
-    --form:#34d399;    /* form     - mint */
-    --formneg:#f59e0b; /* form negative - amber */
-    --radius:20px;
-    --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --bg:#f1f3ef; --bg2:#e7eae4; --panel:#fbfcfa; --panel2:#f2f4f0;
+    --line:#dfe3db; --line2:#c6ccc0;
+    --txt:#22261f; --txt-2:#646b5e; --txt-3:#919889;
+    --accent:#b14a22; --accent2:#c4612f;
+    --fit:#5f6691;      /* fitness  - blue   */
+    --fat:#9c3c2e;      /* fatigue  - red    */
+    --form:#5d7350;     /* form +   - green  */
+    --formneg:#a8762a;  /* form -   - amber  */
+    --shadow:0 1px 2px rgba(60,52,30,.05),0 10px 26px rgba(60,52,30,.09);
+    --ink:#fbfcfa;      /* dot halo = panel bg */
+    /* session palette */
+    --c-rest:#8a8472; --c-recovery:#7d98a8; --c-easy:#5d7350; --c-tempo:#a8762a;
+    --c-long:#6f679e; --c-threshold:#c4612f; --c-intervals:#9c3c2e; --c-race:#b14a22;
+    --radius:16px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  :root[data-theme="dark"]{
+    --bg:#1d201b; --bg2:#262a23; --panel:#232720; --panel2:#2a2e26;
+    --line:#363b32; --line2:#484e42;
+    --txt:#e8ebe3; --txt-2:#a6ac9c; --txt-3:#7b8172;
+    --accent:#d4683c; --accent2:#df7d52;
+    --fit:#8d94c0; --fat:#c25a48; --form:#8aa379; --formneg:#c79a4b;
+    --shadow:0 10px 30px rgba(0,0,0,.4);
+    --ink:#232720;
+    --c-rest:#8f8a78; --c-recovery:#92aebd; --c-easy:#8aa379; --c-tempo:#c79a4b;
+    --c-long:#968dc1; --c-threshold:#df7d52; --c-intervals:#c25a48; --c-race:#d4683c;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    font-family:var(--font);
-    color:var(--txt);
-    background:
-      radial-gradient(1200px 700px at 80% -10%, rgba(56,189,248,0.10), transparent 60%),
-      radial-gradient(900px 600px at -10% 110%, rgba(52,211,153,0.08), transparent 55%),
-      var(--bg);
-    background-attachment:fixed;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    padding:18px 14px 40px;
+    font-family:var(--font);color:var(--txt);background:var(--bg);
+    -webkit-font-smoothing:antialiased;min-height:100vh;
+    display:flex;justify-content:center;padding:16px 14px 44px;
   }
   .app{width:100%;max-width:560px;}
 
   /* ---------- header ---------- */
-  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:6px 2px 18px;}
-  .head .eyebrow{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt-2);font-weight:600;margin-bottom:7px;}
-  .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--fit);box-shadow:0 0 0 0 rgba(56,189,248,.55);animation:pulse 2.2s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(56,189,248,.5)}70%{box-shadow:0 0 0 10px rgba(56,189,248,0)}100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}}
-  h1{margin:0;font-size:27px;line-height:1.05;letter-spacing:-.02em;font-weight:800;}
-  h1 .grad{background:linear-gradient(95deg,#38bdf8,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  .sub{margin:7px 0 0;font-size:13.5px;line-height:1.45;color:var(--txt-2);max-width:330px;}
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:2px 2px 16px;}
+  .head .eyebrow{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt-3);font-weight:700;margin-bottom:8px;font-family:var(--mono);}
+  .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(177,74,34,.5);animation:pulse 2.4s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(177,74,34,.45)}70%{box-shadow:0 0 0 9px rgba(177,74,34,0)}100%{box-shadow:0 0 0 0 rgba(177,74,34,0)}}
+  h1{margin:0;font-size:25px;line-height:1.06;letter-spacing:-.02em;font-weight:800;}
+  h1 .grad{color:var(--accent);}
+  .sub{margin:8px 0 0;font-size:13px;line-height:1.45;color:var(--txt-2);max-width:330px;}
 
   /* readiness ring */
   .ring-wrap{flex:0 0 auto;text-align:center;}
-  .ring{position:relative;width:96px;height:96px;}
+  .ring{position:relative;width:94px;height:94px;}
   .ring svg{transform:rotate(-90deg);}
   #ringArc{transition:stroke-dashoffset .7s cubic-bezier(.2,.8,.2,1),stroke .4s ease;}
   .ring .score{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-  .ring .score b{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;}
-  .ring .score span{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;}
-  .ring-label{font-size:10.5px;font-weight:700;letter-spacing:.04em;margin-top:6px;text-transform:uppercase;}
+  .ring .score b{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1;font-family:var(--mono);}
+  .ring .score span{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;font-weight:700;}
+  .ring-label{font-size:10px;font-weight:700;letter-spacing:.04em;margin-top:6px;text-transform:uppercase;}
 
   /* ---------- cards ---------- */
-  .card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
-  .pad{padding:16px 16px 14px;}
-  .mt{margin-top:14px;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+  .pad{padding:15px 16px 14px;}
+  .mt{margin-top:13px;}
 
   /* ---------- chart ---------- */
-  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;}
   .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--txt-2);font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;}
   .lg .sw{width:11px;height:11px;border-radius:4px;}
-  .lg.off{opacity:.32;}
+  .lg.off{opacity:.3;}
   .chart-svg{width:100%;display:block;touch-action:none;}
-  .readout{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding-top:11px;border-top:1px solid var(--stroke);}
+  .howto{font-size:11px;color:var(--txt-3);line-height:1.45;margin:9px 0 0;}
+  .howto b{color:var(--txt-2);font-weight:700;}
+  .readout{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding-top:11px;border-top:1px solid var(--line);}
   .readout .day{font-size:12px;color:var(--txt-2);font-weight:600;}
   .readout .day b{color:var(--txt);font-weight:700;}
   .rstats{display:flex;gap:13px;}
   .rstat{text-align:right;}
-  .rstat .v{font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1;}
-  .rstat .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;}
+  .rstat .v{font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1;font-family:var(--mono);}
+  .rstat .k{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-3);margin-top:3px;font-weight:700;}
+
+  /* ---------- chart svg elements (themed) ---------- */
+  #zeroLine{stroke:var(--line2);stroke-width:1;stroke-dasharray:3 4;}
+  .wsep{stroke:var(--line);stroke-width:1;}
+  .curline{stroke:var(--txt-3);stroke-width:1.2;opacity:.65;}
+  #fitLine{stroke:var(--fit);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  #atlLine{stroke:var(--fat);stroke-width:2.3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  #formLine{stroke:url(#formGrad);stroke-width:2.3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  #fitArea{fill:url(#fitFill);stroke:none;}
+  #formArea{fill:url(#formGrad);opacity:.14;stroke:none;}
+  #ffTop{stop-color:var(--fit);stop-opacity:.24;} #ffBot{stop-color:var(--fit);stop-opacity:0;}
+  #fgTop,#fgMid1{stop-color:var(--form);} #fgMid2,#fgBot{stop-color:var(--formneg);}
+  .axis-t{fill:var(--txt-3);font-size:11px;font-weight:600;font-family:var(--font);}
 
   /* ---------- section titles ---------- */
   .sect-h{display:flex;align-items:center;justify-content:space-between;margin:0 0 11px;}
-  .sect-h h2{margin:0;font-size:13px;font-weight:700;letter-spacing:.02em;}
+  .sect-h h2{margin:0;font-size:12.5px;font-weight:700;letter-spacing:.02em;}
   .sect-h .hint{font-size:11px;color:var(--txt-3);}
 
   /* ---------- presets ---------- */
   .presets{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-  .preset{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:13px;border:1px solid var(--stroke);background:var(--card-2);color:var(--txt);font-size:12px;font-weight:600;cursor:pointer;text-align:left;line-height:1.15;transition:transform .12s,border-color .2s,background .2s;}
+  .preset{display:flex;align-items:center;gap:9px;padding:11px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer;text-align:left;line-height:1.15;transition:transform .12s,border-color .2s,background .2s;font-family:var(--font);}
   .preset:active{transform:scale(.97);}
-  .preset.active{border-color:var(--stroke-2);background:rgba(56,189,248,0.09);}
-  .preset .pe{font-size:17px;line-height:1;}
+  .preset.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel2));}
+  .preset .pe{font-size:18px;line-height:1;flex:0 0 auto;}
   .preset small{display:block;color:var(--txt-3);font-weight:500;font-size:10px;margin-top:2px;}
 
-  /* ---------- palette ---------- */
-  .palette{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 6px;scrollbar-width:none;-ms-overflow-style:none;}
+  /* ---------- builder ---------- */
+  .builder-hint{font-size:11.5px;color:var(--txt-2);line-height:1.4;margin:-3px 0 11px;}
+  .builder-hint b{color:var(--txt);font-weight:700;}
+  .palette{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 7px;scrollbar-width:none;-ms-overflow-style:none;}
   .palette::-webkit-scrollbar{display:none;}
-  .chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px;padding:9px 8px;border-radius:13px;border:1px solid var(--stroke);background:var(--card-2);cursor:pointer;transition:transform .12s,border-color .15s,background .15s;position:relative;}
+  .chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:62px;padding:9px 8px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:transform .12s,border-color .15s,background .15s;color:var(--c-easy);}
   .chip:active{transform:scale(.95);}
   .chip .ce{font-size:19px;line-height:1;}
-  .chip .cn{font-size:10.5px;font-weight:700;letter-spacing:-.01em;}
-  .chip .cl{font-size:9px;color:var(--txt-3);font-weight:600;}
-  .chip.armed{box-shadow:inset 0 0 0 1.5px currentColor;}
+  .chip .cn{font-size:10.5px;font-weight:700;letter-spacing:-.01em;color:var(--txt);}
+  .chip .cl{font-size:9px;color:var(--txt-3);font-weight:600;font-family:var(--mono);}
+  .chip.armed{box-shadow:inset 0 0 0 2px currentColor;border-color:currentColor;}
 
   /* ---------- week grid ---------- */
-  .weeks{display:flex;flex-direction:column;gap:7px;margin-top:13px;}
+  .weeks{display:flex;flex-direction:column;gap:6px;margin-top:13px;}
   .wrow{display:flex;align-items:center;gap:7px;}
-  .wlab{flex:0 0 20px;font-size:9px;font-weight:700;color:var(--txt-3);text-align:center;line-height:1.1;letter-spacing:.02em;}
-  .wcells{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;flex:1;}
-  .cell{position:relative;aspect-ratio:1/1.04;border-radius:11px;border:1px solid var(--stroke);background:var(--card-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;overflow:hidden;}
-  .cell:active{transform:scale(.93);}
-  .cell .num{position:absolute;top:3px;left:5px;font-size:8px;color:var(--txt-3);font-weight:700;}
-  .cell .ce{font-size:16px;line-height:1;}
+  .wlab{flex:0 0 22px;font-size:9px;font-weight:700;color:var(--txt-3);text-align:center;line-height:1.1;letter-spacing:.02em;font-family:var(--mono);}
+  .wcells{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;flex:1;}
+  .cell{position:relative;aspect-ratio:1/1.02;border-radius:10px;border:1px solid var(--line);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;overflow:hidden;}
+  .cell:active{transform:scale(.92);}
+  .cell .num{position:absolute;top:2px;left:4px;font-size:7.5px;color:var(--txt-3);font-weight:700;font-family:var(--mono);}
+  .cell .ce{font-size:15px;line-height:1;}
   .cell .bars{display:flex;gap:1.5px;height:3px;margin-top:2px;}
   .cell .bars i{width:3px;border-radius:1px;background:currentColor;opacity:.85;}
-  .cell.sel{box-shadow:inset 0 0 0 2px var(--fit);}
-  .cell.cursor::after{content:"";position:absolute;inset:0;border-radius:11px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5);}
-  .cell.race{background:repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 6px,rgba(255,255,255,.015) 6px 12px);border-color:var(--stroke-2);cursor:default;}
-  .cell.race .ce{font-size:18px;}
+  .cell.sel{box-shadow:inset 0 0 0 2px var(--accent);}
+  .cell.cursor::after{content:"";position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 2px var(--accent);}
+  .cell.race{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--accent) 10%,transparent) 0 6px,transparent 6px 12px);border-color:var(--accent);cursor:default;}
+  .cell.race .ce{font-size:17px;}
 
   .tools{display:flex;gap:8px;margin-top:13px;}
-  .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:13px;border:1px solid var(--stroke);background:var(--card-2);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer;transition:transform .12s,background .15s,border-color .15s;font-family:var(--font);}
+  .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer;transition:transform .12s,background .15s,border-color .15s;font-family:var(--font);}
   .btn:active{transform:scale(.97);}
-  .btn.primary{background:linear-gradient(95deg,rgba(56,189,248,.16),rgba(52,211,153,.16));border-color:rgba(56,189,248,.3);}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
 
   /* ---------- insight ---------- */
   .insight-top{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
-  .insight-emoji{flex:0 0 auto;width:46px;height:46px;border-radius:13px;background:var(--card-2);border:1px solid var(--stroke);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .insight-emoji{flex:0 0 auto;width:46px;height:46px;border-radius:13px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;}
   .insight-title{font-size:15px;font-weight:800;letter-spacing:-.01em;}
   .insight-tag{font-size:10.5px;color:var(--txt-2);font-weight:600;margin-top:1px;}
   .insight-body{font-size:13px;line-height:1.5;color:var(--txt-2);}
   .insight-body b{color:var(--txt);font-weight:700;}
-  .ibars{display:grid;grid-template-columns:auto 1fr;gap:6px 11px;margin-top:11px;align-items:center;}
-  .ibars .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-3);font-weight:700;}
-  .ibar{height:7px;border-radius:5px;background:rgba(255,255,255,.06);overflow:hidden;}
+  .ibars{display:grid;grid-template-columns:auto 1fr;gap:7px 11px;margin-top:12px;align-items:center;}
+  .ibars .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt-3);font-weight:700;}
+  .ibar{height:7px;border-radius:5px;background:var(--bg2);overflow:hidden;}
   .ibar i{display:block;height:100%;border-radius:5px;transition:width .5s cubic-bezier(.2,.8,.2,1);}
 
   /* ---------- verdict ---------- */
-  .verdict{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:14px;border:1px solid var(--stroke);margin-top:13px;background:var(--card-2);}
+  .verdict{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:14px;border:1px solid var(--line);border-left:3px solid var(--accent);margin-top:13px;background:var(--panel2);}
   .verdict .vi{font-size:20px;line-height:1;margin-top:1px;}
   .verdict .vt{font-size:12.5px;font-weight:800;letter-spacing:.01em;margin-bottom:2px;}
   .verdict .vb{font-size:12px;line-height:1.45;color:var(--txt-2);}
 
   /* ---------- badges ---------- */
   .badges{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px;}
-  .badge{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;border:1px solid var(--stroke);background:var(--card-2);transition:opacity .3s,border-color .3s,transform .2s;}
+  .badge{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);transition:opacity .3s,border-color .3s,transform .2s;}
   .badge.locked{opacity:.32;}
   .badge.just{transform:scale(1.04);border-color:var(--form);}
   .badge .be{font-size:18px;}
@@ -160,12 +181,12 @@
     <div>
       <div class="eyebrow"><span class="pulse-dot"></span> Training Science · Live</div>
       <h1>The <span class="grad">Fitness Engine</span></h1>
-      <p class="sub">Build 3 weeks of training and watch how intensity <b style="color:var(--fit)">builds</b>, <b style="color:var(--fat)">drains</b> and <b style="color:var(--form)">sharpens</b> you for race day.</p>
+      <p class="sub">Build an 8-week block and watch how each session <b style="color:var(--fit)">builds</b>, <b style="color:var(--fat)">drains</b> and <b style="color:var(--form)">sharpens</b> you for race day.</p>
     </div>
     <div class="ring-wrap">
       <div class="ring">
-        <svg width="96" height="96" viewBox="0 0 96 96">
-          <circle cx="48" cy="48" r="40" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="8"/>
+        <svg width="94" height="94" viewBox="0 0 96 96">
+          <circle cx="48" cy="48" r="40" fill="none" stroke="var(--bg2)" stroke-width="8"/>
           <circle id="ringArc" cx="48" cy="48" r="40" fill="none" stroke="var(--form)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3"/>
         </svg>
         <div class="score"><b id="ringScore">0</b><span>Ready</span></div>
@@ -182,8 +203,9 @@
       <div class="lg" data-series="tsb"><span class="sw" style="background:var(--form)"></span>Form</div>
     </div>
     <svg id="chart" class="chart-svg" viewBox="0 0 700 330" preserveAspectRatio="none"></svg>
+    <p class="howto"><b>Form = Fitness − Fatigue</b> — the blue-minus-red gap. You want it <b>high and positive</b> on race day: real fitness, but fresh legs. Drag across the chart to scrub any day.</p>
     <div class="readout">
-      <div class="day">Day <b id="roDay">21</b> · <b id="roName">Race</b></div>
+      <div class="day">Day <b id="roDay">56</b> · <b id="roName">Race</b></div>
       <div class="rstats">
         <div class="rstat"><div class="v" style="color:var(--fit)" id="roFit">36</div><div class="k">Fitness</div></div>
         <div class="rstat"><div class="v" style="color:var(--fat)" id="roFat">36</div><div class="k">Fatigue</div></div>
@@ -200,11 +222,12 @@
 
   <!-- BUILDER -->
   <div class="card pad mt">
-    <div class="sect-h"><h2>Build your own plan</h2><span class="hint">pick a session · paint the days</span></div>
+    <div class="sect-h"><h2>Build your own plan</h2><span class="hint">8 weeks to race day</span></div>
+    <p class="builder-hint"><b>1.</b> Pick a session below &nbsp;·&nbsp; <b>2.</b> Tap any day to paint it in. The curves update live.</p>
     <div class="palette" id="palette"></div>
     <div class="weeks" id="weeks"></div>
     <div class="tools">
-      <button class="btn" id="btnClear"><span>🧹</span> Reset</button>
+      <button class="btn" id="btnClear"><span>↺</span> Reset</button>
       <button class="btn primary" id="btnPlay"><span id="playIcon">▶</span> <span id="playTxt">Play the story</span></button>
     </div>
   </div>
@@ -225,7 +248,7 @@
     </div>
     <div class="verdict" id="verdict">
       <div class="vi" id="vIcon">🎯</div>
-      <div><div class="vt" id="vTitle">Build a plan to begin</div><div class="vb" id="vBody">Load a story above or paint your own week.</div></div>
+      <div><div class="vt" id="vTitle">Build a plan to begin</div><div class="vb" id="vBody">Load a story above or paint your own weeks.</div></div>
     </div>
   </div>
 
@@ -243,58 +266,79 @@
 (function(){
   "use strict";
 
+  /* ---------------- theme (match the app) ---------------- */
+  var theme = (new URLSearchParams(location.search).get("theme")==="dark") ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+  var PAL_LIGHT = {fit:"#5f6691",fat:"#9c3c2e",form:"#5d7350",formneg:"#a8762a",accent:"#b14a22",ink:"#fbfcfa",
+    rest:"#8a8472",recovery:"#7d98a8",easy:"#5d7350",tempo:"#a8762a",long:"#6f679e",threshold:"#c4612f",intervals:"#9c3c2e",race:"#b14a22"};
+  var PAL_DARK  = {fit:"#8d94c0",fat:"#c25a48",form:"#8aa379",formneg:"#c79a4b",accent:"#d4683c",ink:"#232720",
+    rest:"#8f8a78",recovery:"#92aebd",easy:"#8aa379",tempo:"#c79a4b",long:"#968dc1",threshold:"#df7d52",intervals:"#c25a48",race:"#d4683c"};
+  var PAL = theme==="dark" ? PAL_DARK : PAL_LIGHT;
+
   /* ---------------- model constants ---------------- */
-  var N = 21;                 // days incl. race
-  var RACE = N - 1;           // race index (last day)
+  var N = 56;                 // 8 weeks incl. race day
+  var RACE = N - 1;
   var START_CTL = 38, START_ATL = 38;
   var K_CTL = 1 - Math.exp(-1/12);   // fitness time-constant (slow, durable)
   var K_ATL = 1 - Math.exp(-1/5);    // fatigue time-constant (fast, spiky)
 
   var WORKOUTS = {
-    rest:      {key:"rest",      name:"Rest",      short:"Rest",   emoji:"😴", load:0,   color:"#6b7689",
+    rest:      {key:"rest",      name:"Rest",      short:"Rest",   emoji:"😴", load:0,
                 title:"Rest Day", tag:"Recovery & repair",
                 body:"This is when you actually get <b>fitter</b>. Muscle fibres rebuild stronger, glycogen refills and the nervous system resets. Skip rest and the adaptation never lands.", stim:0, cost:0},
-    recovery:  {key:"recovery",  name:"Recovery",  short:"Easy",   emoji:"🚶", load:25,  color:"#38bdf8",
+    recovery:  {key:"recovery",  name:"Recovery",  short:"Easy",   emoji:"🚶", load:25,
                 title:"Recovery Jog", tag:"Active recovery",
                 body:"Gentle blood flow that <b>flushes fatigue</b> without adding real stress. Keeps the engine ticking over on tired legs.", stim:18, cost:15},
-    easy:      {key:"easy",      name:"Easy",      short:"Easy",   emoji:"🏃", load:45,  color:"#34d399",
+    easy:      {key:"easy",      name:"Easy",      short:"Easy",   emoji:"🏃", load:45,
                 title:"Easy Run", tag:"Aerobic base",
                 body:"Builds the <b>durable foundation</b> — more mitochondria, denser capillaries, better fat-burning. Slow to build, slow to fade. The bedrock of fitness.", stim:45, cost:32},
-    tempo:     {key:"tempo",     name:"Tempo",     short:"Tempo",  emoji:"🌊", load:65,  color:"#fbbf24",
+    tempo:     {key:"tempo",     name:"Tempo",     short:"Tempo",  emoji:"🌊", load:65,
                 title:"Tempo Run", tag:"Aerobic threshold",
-                body:"“Comfortably hard.” Raises the pace you can <b>hold</b> before fatigue floods in. Strong fitness gains for a manageable cost.", stim:68, cost:60},
-    long:      {key:"long",      name:"Long",      short:"Long",   emoji:"🛣️", load:80,  color:"#a78bfa",
+                body:"&ldquo;Comfortably hard.&rdquo; Raises the pace you can <b>hold</b> before fatigue floods in. Strong fitness gains for a manageable cost.", stim:68, cost:60},
+    long:      {key:"long",      name:"Long",      short:"Long",   emoji:"🛣️", load:80,
                 title:"Long Run", tag:"Endurance",
                 body:"Teaches the body to <b>spare fuel and resist fatigue</b>. A big aerobic stimulus — but it leaves the legs drained for a day or two.", stim:78, cost:72},
-    threshold: {key:"threshold", name:"Threshold", short:"Thresh", emoji:"🔥", load:90,  color:"#fb923c",
+    threshold: {key:"threshold", name:"Threshold", short:"Thresh", emoji:"🔥", load:90,
                 title:"Threshold", tag:"Lactate threshold",
-                body:"Pushes your <b>redline</b> higher so “hard” feels easier. A potent stimulus — but the fatigue cost is real and needs recovery to pay off.", stim:88, cost:84},
-    intervals: {key:"intervals", name:"Intervals", short:"VO₂",    emoji:"🚀", load:110, color:"#fb7185",
+                body:"Pushes your <b>redline</b> higher so &ldquo;hard&rdquo; feels easier. A potent stimulus — but the fatigue cost is real and needs recovery to pay off.", stim:88, cost:84},
+    intervals: {key:"intervals", name:"Intervals", short:"VO₂",    emoji:"🚀", load:110,
                 title:"VO₂max Intervals", tag:"Top-end power",
                 body:"Raises your aerobic <b>ceiling</b> and switches on the highest gears. Maximum stimulus, maximum damage — it only builds fitness <b>if you recover hard</b> afterwards.", stim:100, cost:100},
-    race:      {key:"race",      name:"Race",      short:"Race",   emoji:"🏁", load:0,   color:"#eef2f8",
+    race:      {key:"race",      name:"Race",      short:"Race",   emoji:"🏁", load:0,
                 title:"Race Day", tag:"The verdict on your training",
                 body:"Your <b>Form</b> on the start line decides the result. High fitness plus fresh legs is a breakthrough. Scrub the chart or tap any day to see how each session shapes the curves.", stim:0, cost:0}
   };
+  for(var wk0 in WORKOUTS){ WORKOUTS[wk0].color = PAL[wk0] || PAL.rest; }
   var ORDER = ["rest","recovery","easy","tempo","long","threshold","intervals"];
 
+  /* ---------------- presets — built from weekly patterns (8 weeks → race) ---------------- */
+  // Smart build progresses through week 6, then a 2-week taper; the others repeat a weekly shape.
+  var WK = {
+    s1:["easy","tempo","easy","recovery","long","easy","rest"],
+    s2:["easy","threshold","tempo","easy","long","easy","rest"],
+    s3:["easy","threshold","tempo","recovery","long","easy","rest"],
+    s4:["easy","intervals","tempo","easy","long","threshold","rest"],
+    s5:["easy","intervals","threshold","tempo","long","easy","rest"],
+    s6:["easy","intervals","threshold","tempo","long","recovery","rest"],
+    s7:["easy","tempo","easy","recovery","easy","rest","easy"],
+    s8:["easy","easy","recovery","rest","tempo","rest","race"],
+    grind:   ["tempo","intervals","threshold","intervals","tempo","long","threshold"],
+    grindR:  ["intervals","tempo","intervals","threshold","intervals","intervals","race"],
+    warrior: ["rest","rest","easy","rest","rest","long","rest"],
+    warriorR:["rest","rest","easy","rest","rest","rest","race"],
+    allEasy: ["easy","easy","recovery","easy","rest","long","recovery"],
+    allEasyR:["easy","easy","recovery","easy","rest","easy","race"]
+  };
+  function cc(){ var a=[]; for(var i=0;i<arguments.length;i++) a=a.concat(arguments[i]); return a; }
   var PRESETS = {
-    smart: {emoji:"🎯", name:"Smart Build + Taper", sub:"the textbook peak",
-      plan:["easy","threshold","tempo","intervals","recovery","long","rest",
-            "easy","intervals","threshold","tempo","recovery","long","rest",
-            "easy","tempo","rest","easy","recovery","rest","race"]},
-    toomuch:{emoji:"🥵", name:"Too Much Too Soon", sub:"all gas, no brakes",
-      plan:["tempo","intervals","threshold","intervals","tempo","long","threshold",
-            "intervals","threshold","tempo","intervals","threshold","long","intervals",
-            "threshold","intervals","tempo","threshold","intervals","long","race"]},
+    smart:  {emoji:"🎯", name:"Smart Build + Taper", sub:"the textbook peak",
+             plan: cc(WK.s1,WK.s2,WK.s3,WK.s4,WK.s5,WK.s6,WK.s7,WK.s8)},
+    toomuch:{emoji:"🥵", name:"Too Much, Too Soon", sub:"all gas, no brakes",
+             plan: cc(WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grindR)},
     warrior:{emoji:"🛋️", name:"Weekend Warrior", sub:"too little, too rare",
-      plan:["rest","rest","easy","rest","rest","long","rest",
-            "rest","rest","easy","rest","rest","long","rest",
-            "rest","rest","easy","rest","rest","rest","race"]},
-    easy:  {emoji:"🌱", name:"All Easy Miles", sub:"base, but no sharpness",
-      plan:["easy","easy","recovery","easy","rest","easy","recovery",
-            "easy","easy","recovery","easy","rest","long","recovery",
-            "easy","easy","recovery","easy","rest","easy","race"]}
+             plan: cc(WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warriorR)},
+    easy:   {emoji:"🌱", name:"All Easy Miles", sub:"base, but no edge",
+             plan: cc(WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasyR)}
   };
 
   /* ---------------- state ---------------- */
@@ -309,8 +353,6 @@
 
   /* ---------------- simulation ---------------- */
   function simulate(plan){
-    // "morning" state entering each day: form = fitness - fatigue, so all three
-    // series stay mutually consistent (Form is literally the blue/red gap on the chart).
     var ctl=[], atl=[], tsb=[], cP=START_CTL, aP=START_ATL;
     for(var i=0;i<plan.length;i++){
       ctl.push(cP); atl.push(aP); tsb.push(cP - aP);
@@ -322,9 +364,7 @@
   }
 
   function readiness(ctl, tsb){
-    // performance = fitness gated by freshness. The overtrainer has high
-    // fitness but negative form gates it down; the perfect taper is fresh AND fit.
-    var fitTerm  = clamp((ctl-12)/34, 0, 1) * 0.72 + 0.28;        // 0.28 .. 1.00
+    var fitTerm  = clamp((ctl-12)/40, 0, 1) * 0.72 + 0.28;
     var formTerm = clamp(0.28 + 0.72*Math.exp(-Math.pow((tsb-8)/15, 2)), 0.05, 1);
     return clamp(Math.round(100 * fitTerm * formTerm), 0, 100);
   }
@@ -354,16 +394,12 @@
   function yAt(v){ return padT + (1-(v-yMin)/(yMax-yMin))*(H-padT-padB); }
 
   function computeBounds(sim){
-    var lo=0, hi=-Infinity;   // always include the zero line (form crosses it)
-    for(var i=0;i<N;i++){
-      lo=Math.min(lo, sim.tsb[i]);
-      hi=Math.max(hi, sim.ctl[i], sim.atl[i]);
-    }
+    var lo=0, hi=-Infinity;
+    for(var i=0;i<N;i++){ lo=Math.min(lo, sim.tsb[i]); hi=Math.max(hi, sim.ctl[i], sim.atl[i]); }
     yMin=Math.floor((lo-6)/10)*10;
     yMax=Math.ceil((hi+8)/10)*10;
   }
 
-  // Catmull-Rom -> smooth path
   function smoothPath(pts){
     if(pts.length<2) return "";
     var d="M"+pts[0][0].toFixed(1)+","+pts[0][1].toFixed(1);
@@ -380,45 +416,38 @@
   /* ---------------- chart render ---------------- */
   var displayed = {ctl:[], atl:[], tsb:[]};
   for(var z=0;z<N;z++){ displayed.ctl.push(START_CTL); displayed.atl.push(START_ATL); displayed.tsb.push(0); }
-  var curDerive = null;
-  var currentSim = null;   // source of truth for numbers (independent of the curve tween)
+  var currentSim = null;
   var svg = $("chart");
 
   function buildStatic(){
     var bg="";
-    // week separators
-    for(var w=1;w<3;w++){
+    for(var w=1;w<8;w++){
       var x=xAt(w*7);
-      bg+='<line x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(H-padB)+'" stroke="rgba(255,255,255,.05)" stroke-width="1"/>';
+      bg+='<line class="wsep" x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(H-padB)+'"/>';
     }
     svg.innerHTML =
       '<defs>'+
       '<linearGradient id="fitFill" x1="0" y1="0" x2="0" y2="1">'+
-        '<stop offset="0" stop-color="#38bdf8" stop-opacity="0.30"/>'+
-        '<stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>'+
+        '<stop id="ffTop" offset="0"/><stop id="ffBot" offset="1"/>'+
       '</linearGradient>'+
       '<linearGradient id="formGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="0">'+
-        '<stop id="fgTop" offset="0" stop-color="#34d399"/>'+
-        '<stop id="fgMid1" offset="0.5" stop-color="#34d399"/>'+
-        '<stop id="fgMid2" offset="0.5" stop-color="#f59e0b"/>'+
-        '<stop id="fgBot" offset="1" stop-color="#f59e0b"/>'+
+        '<stop id="fgTop" offset="0"/><stop id="fgMid1" offset="0.5"/>'+
+        '<stop id="fgMid2" offset="0.5"/><stop id="fgBot" offset="1"/>'+
       '</linearGradient>'+
       '</defs>'+
       '<g id="gGrid">'+bg+'</g>'+
-      '<line id="zeroLine" stroke="rgba(255,255,255,.16)" stroke-width="1" stroke-dasharray="3 4"/>'+
-      '<path id="formArea" fill="url(#formGrad)" opacity="0.16" stroke="none"/>'+
-      '<path id="fitArea" fill="url(#fitFill)" stroke="none"/>'+
-      '<path id="atlLine" fill="none" stroke="#fb7185" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+
-      '<path id="formLine" fill="none" stroke="url(#formGrad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+
-      '<path id="fitLine" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<line id="zeroLine"/>'+
+      '<path id="formArea"/>'+
+      '<path id="fitArea"/>'+
+      '<path id="atlLine"/>'+
+      '<path id="formLine"/>'+
+      '<path id="fitLine"/>'+
       '<g id="gCursor"></g>'+
       '<g id="gAxis"></g>';
   }
 
   function drawAll(){
-    var d=displayed;
-    var zeroY=yAt(0);
-    // form gradient: green above zero, amber below — transition at zero line
+    var d=displayed, zeroY=yAt(0);
     var top=yAt(yMax), bot=yAt(yMin);
     var grad=$("formGrad");
     grad.setAttribute("x1","0"); grad.setAttribute("y1",top.toFixed(1));
@@ -430,18 +459,13 @@
     $("zeroLine").setAttribute("x1",padL); $("zeroLine").setAttribute("y1",zeroY.toFixed(1));
     $("zeroLine").setAttribute("x2",W-padR); $("zeroLine").setAttribute("y2",zeroY.toFixed(1));
 
-    // fitness area + line
-    var fp=pointsFor(d.ctl);
-    var fitLineD=smoothPath(fp);
+    var fp=pointsFor(d.ctl), fitLineD=smoothPath(fp);
     $("fitLine").setAttribute("d", state.series.ctl?fitLineD:"");
     $("fitArea").setAttribute("d", state.series.ctl ? fitLineD+"L"+xAt(N-1).toFixed(1)+","+(H-padB)+"L"+padL+","+(H-padB)+"Z" : "");
 
-    // fatigue
     $("atlLine").setAttribute("d", state.series.atl?smoothPath(pointsFor(d.atl)):"");
 
-    // form line + signed area to zero
-    var tp=pointsFor(d.tsb);
-    var formD=smoothPath(tp);
+    var tp=pointsFor(d.tsb), formD=smoothPath(tp);
     $("formLine").setAttribute("d", state.series.tsb?formD:"");
     $("formArea").setAttribute("d", state.series.tsb ? formD+"L"+xAt(N-1).toFixed(1)+","+zeroY.toFixed(1)+"L"+padL+","+zeroY.toFixed(1)+"Z" : "");
 
@@ -450,27 +474,27 @@
 
   function drawCursor(){
     var i=state.cursor, x=xAt(i), g=$("gCursor"), d=displayed, s="";
-    s+='<line x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(H-padB)+'" stroke="rgba(255,255,255,.22)" stroke-width="1.2"/>';
-    if(state.series.ctl) s+=dot(x,yAt(d.ctl[i]),"#38bdf8");
-    if(state.series.atl) s+=dot(x,yAt(d.atl[i]),"#fb7185");
-    if(state.series.tsb) s+=dot(x,yAt(d.tsb[i]),d.tsb[i]>=0?"#34d399":"#f59e0b");
+    s+='<line class="curline" x1="'+x.toFixed(1)+'" y1="'+padT+'" x2="'+x.toFixed(1)+'" y2="'+(H-padB)+'"/>';
+    if(state.series.ctl) s+=dot(x,yAt(d.ctl[i]),PAL.fit);
+    if(state.series.atl) s+=dot(x,yAt(d.atl[i]),PAL.fat);
+    if(state.series.tsb) s+=dot(x,yAt(d.tsb[i]),d.tsb[i]>=0?PAL.form:PAL.formneg);
     g.innerHTML=s;
   }
   function dot(x,y,c){
-    return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4.5" fill="'+c+'" stroke="#070a10" stroke-width="2"/>';
+    return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4.5" fill="'+c+'" stroke="'+PAL.ink+'" stroke-width="2"/>';
   }
 
   function drawAxis(){
-    var g=$("gAxis"), labels=[[0,"Day 1"],[6,"Wk 1"],[13,"Wk 2"],[20,"Race"]], s="";
+    var g=$("gAxis"), labels=[[0,"Day 1"],[13,"Wk 2"],[27,"Wk 4"],[41,"Wk 6"],[55,"Race"]], s="";
     for(var i=0;i<labels.length;i++){
       var x=xAt(labels[i][0]);
-      var anchor= labels[i][0]===0?"start":(labels[i][0]===20?"end":"middle");
-      s+='<text x="'+x.toFixed(1)+'" y="'+(H-10)+'" fill="#5f6b7d" font-size="11" font-weight="600" text-anchor="'+anchor+'" font-family="-apple-system,sans-serif">'+labels[i][1]+'</text>';
+      var anchor= labels[i][0]===0?"start":(labels[i][0]===55?"end":"middle");
+      s+='<text class="axis-t" x="'+x.toFixed(1)+'" y="'+(H-10)+'" text-anchor="'+anchor+'">'+labels[i][1]+'</text>';
     }
     g.innerHTML=s;
   }
 
-  /* ---------------- tween (curve only; numbers are exact via currentSim) ---------------- */
+  /* ---------------- tween ---------------- */
   var raf=null, finTimer=null;
   function animateTo(sim){
     computeBounds(sim);
@@ -494,7 +518,6 @@
     if(raf) cancelAnimationFrame(raf);
     if(finTimer) clearTimeout(finTimer);
     raf=requestAnimationFrame(step);
-    // safety net: guarantee the curve reaches its final shape even if rAF is throttled
     finTimer=setTimeout(finalize, dur+140);
   }
 
@@ -506,8 +529,7 @@
     $("roName").textContent=w.name;
     $("roFit").textContent=Math.round(d.ctl[i]);
     $("roFat").textContent=Math.round(d.atl[i]);
-    var f=Math.round(d.tsb[i]);
-    var fe=$("roForm");
+    var f=Math.round(d.tsb[i]), fe=$("roForm");
     fe.textContent=(f>0?"+":"")+f;
     fe.style.color = f>=0 ? "var(--form)" : "var(--formneg)";
   }
@@ -516,10 +538,9 @@
     var d=currentSim||displayed;
     var sc=readiness(d.ctl[RACE], d.tsb[RACE]);
     $("ringScore").textContent=sc;
-    var off=251.3*(1-sc/100);
-    var arc=$("ringArc");
+    var off=251.3*(1-sc/100), arc=$("ringArc");
     arc.setAttribute("stroke-dashoffset", off.toFixed(1));
-    var col = sc>=75?"var(--form)":(sc>=50?"#fbbf24":"var(--fat)");
+    var col = sc>=75?"var(--form)":(sc>=50?"var(--formneg)":"var(--fat)");
     arc.setAttribute("stroke", col);
     $("ringScore").style.color=col;
   }
@@ -544,7 +565,7 @@
   function updateVerdict(dv){
     var tsb=dv.raceForm, ctl=dv.raceFit, v;
     if(dv.minTsb<=-15 || tsb<=-12){
-      v={ic:"🥵",t:"Overreached — you buried yourself",b:"Form crashed deep into the red. The fitness is there, but the legs are wrecked — big injury & burnout risk. You needed recovery days and a taper."};
+      v={ic:"🥵",t:"Overreached — you buried yourself",b:"Form crashed deep into the red. The fitness is there, but the legs are wrecked — big injury & burnout risk. You needed recovery days and a proper taper."};
     } else if(tsb<=-3){
       v={ic:"😮‍💨",t:"Fatigued — fit but flat",b:"Training load is still sitting in the legs. You're stronger, but you haven't shed the fatigue to actually show it on race day."};
     } else if(tsb<=4){
@@ -561,20 +582,19 @@
 
   /* ---------------- badges ---------------- */
   var BADGE_DEFS=[
-    {id:"peak",   e:"🎯", n:"Peak Performer", d:"Race-ready taper",     test:function(d){return d.raceForm>=3&&d.raceForm<=22&&d.raceFit>=36;}},
-    {id:"engine", e:"🏗️", n:"Engine Builder", d:"Peak fitness 50+",     test:function(d){return d.peakFit>=50;}},
+    {id:"peak",   e:"🎯", n:"Peak Performer", d:"Race-ready taper",     test:function(d){return d.raceForm>=3&&d.raceForm<=22&&d.raceFit>=38;}},
+    {id:"engine", e:"🏗️", n:"Engine Builder", d:"Peak fitness 55+",     test:function(d){return d.peakFit>=55;}},
     {id:"fresh",  e:"🌿", n:"Fresh Legs",     d:"Positive race form",   test:function(d){return d.raceForm>=5;}},
-    {id:"hard",   e:"🔥", n:"Hard Charger",   d:"6+ hard sessions",     test:function(d){return d.hard>=6;}},
+    {id:"hard",   e:"🔥", n:"Hard Charger",   d:"10+ hard sessions",    test:function(d){return d.hard>=10;}},
     {id:"cooked", e:"⚠️", n:"Overcooked",     d:"Buried in fatigue",     test:function(d){return d.minTsb<=-16;}},
-    {id:"under",  e:"🛋️", n:"Undertrained",   d:"Race fitness under 28", test:function(d){return d.raceFit<28;}}
+    {id:"under",  e:"🛋️", n:"Undertrained",   d:"Race fitness under 30", test:function(d){return d.raceFit<30;}}
   ];
   function renderBadges(dv){
     var c=$("badges"), html="", got=0;
     for(var i=0;i<BADGE_DEFS.length;i++){
       var b=BADGE_DEFS[i], on=b.test(dv);
       if(on)got++;
-      var was=state.earned[b.id];
-      var just=(on&&!was)?" just":"";
+      var just=(on&&!state.earned[b.id])?" just":"";
       state.earned[b.id]=on;
       html+='<div class="badge'+(on?"":" locked")+just+'"><span class="be">'+b.e+'</span><div><div class="bn">'+b.n+'</div><div class="bd">'+b.d+'</div></div></div>';
     }
@@ -584,24 +604,19 @@
 
   /* ---------------- grid + palette ---------------- */
   function loadColorBars(load){
-    var n = load===0?0 : load<=30?1 : load<=55?2 : load<=78?3 : load<=95?4 : 5;
-    var bars="";
-    for(var i=0;i<5;i++){
-      var h=3+i*2;
-      bars+='<i style="height:'+h+'px;opacity:'+(i<n?0.95:0.16)+'"></i>';
-    }
+    var n = load===0?0 : load<=30?1 : load<=55?2 : load<=78?3 : load<=95?4 : 5, bars="";
+    for(var i=0;i<5;i++){ var h=3+i*2; bars+='<i style="height:'+h+'px;opacity:'+(i<n?0.95:0.16)+'"></i>'; }
     return bars;
   }
   function renderGrid(){
-    var c=$("weeks"), html="", labels=["W1","W2","W3"];
-    for(var wk=0;wk<3;wk++){
+    var c=$("weeks"), html="", labels=["W1","W2","W3","W4","W5","W6","W7","W8"];
+    for(var wk=0;wk<8;wk++){
       html+='<div class="wrow"><div class="wlab">'+labels[wk]+'</div><div class="wcells">';
       for(var dd=0;dd<7;dd++){
         var i=wk*7+dd; if(i>=N)break;
-        var key=state.plan[i], w=WORKOUTS[key]||WORKOUTS.rest;
-        var isRace=(key==="race");
+        var key=state.plan[i], w=WORKOUTS[key]||WORKOUTS.rest, isRace=(key==="race");
         var cls="cell"+(isRace?" race":"")+(i===state.cursor?" cursor":"");
-        var tint = isRace?"":'background:'+hexA(w.color,0.10)+';border-color:'+hexA(w.color,0.40)+';';
+        var tint = isRace?"":'background:'+hexA(w.color,0.10)+';border-color:'+hexA(w.color,0.42)+';';
         html+='<div class="'+cls+'" data-i="'+i+'" style="color:'+w.color+';'+tint+'">'+
               '<span class="num">'+(i+1)+'</span>'+
               '<span class="ce">'+w.emoji+'</span>'+
@@ -615,11 +630,10 @@
   function renderPalette(){
     var c=$("palette"), html="";
     for(var i=0;i<ORDER.length;i++){
-      var w=WORKOUTS[ORDER[i]];
-      var armed=(state.armed===w.key)?" armed":"";
+      var w=WORKOUTS[ORDER[i]], armed=(state.armed===w.key)?" armed":"";
       html+='<div class="chip'+armed+'" data-key="'+w.key+'" style="color:'+w.color+'">'+
             '<span class="ce">'+w.emoji+'</span>'+
-            '<span class="cn" style="color:var(--txt)">'+w.name+'</span>'+
+            '<span class="cn">'+w.name+'</span>'+
             '<span class="cl">'+(w.load===0?"rest":w.load)+'</span>'+
             '</div>';
     }
@@ -628,8 +642,7 @@
   function renderPresets(){
     var c=$("presets"), html="";
     for(var k in PRESETS){
-      var p=PRESETS[k];
-      var a=(state.activePreset===k)?" active":"";
+      var p=PRESETS[k], a=(state.activePreset===k)?" active":"";
       html+='<button class="preset'+a+'" data-preset="'+k+'"><span class="pe">'+p.emoji+'</span><span>'+p.name+'<small>'+p.sub+'</small></span></button>';
     }
     c.innerHTML=html;
@@ -644,16 +657,14 @@
   function update(animate){
     var sim=simulate(state.plan);
     currentSim=sim;
-    curDerive=derive(sim);
+    var dv=derive(sim);
     renderGrid();
     updateInsight();
-    updateVerdict(curDerive);
-    renderBadges(curDerive);
-    var lab=$("ringLabel");
-    var sc=curDerive.score;
+    updateVerdict(dv);
+    renderBadges(dv);
+    var lab=$("ringLabel"), sc=dv.score;
     lab.textContent = sc>=75?"Race ready":(sc>=50?"Getting there":"Not ready");
-    lab.style.color = sc>=75?"var(--form)":(sc>=50?"#fbbf24":"var(--fat)");
-    // numbers update instantly & exactly; only the chart curve animates
+    lab.style.color = sc>=75?"var(--form)":(sc>=50?"var(--formneg)":"var(--fat)");
     updateReadout(); updateRing();
     if(animate){ animateTo(sim); }
     else{
@@ -665,8 +676,7 @@
   /* ---------------- interactions ---------------- */
   $("palette").addEventListener("click", function(e){
     var chip=e.target.closest(".chip"); if(!chip)return;
-    state.armed=chip.getAttribute("data-key");
-    renderPalette();
+    state.armed=chip.getAttribute("data-key"); renderPalette();
   });
 
   $("weeks").addEventListener("click", function(e){
@@ -677,20 +687,15 @@
       state.plan[i]=state.armed;
       state.activePreset=null; renderPresets();
       update(true);
-    } else {
-      updateInsight(); drawCursor(); updateReadout();
-    }
+    } else { updateInsight(); drawCursor(); updateReadout(); }
   });
 
   $("presets").addEventListener("click", function(e){
     var btn=e.target.closest(".preset"); if(!btn)return;
     var k=btn.getAttribute("data-preset");
     state.plan=PRESETS[k].plan.slice();
-    state.activePreset=k;
-    state.cursor=RACE;
-    renderPresets();
-    update(true);
-    updateInsight();
+    state.activePreset=k; state.cursor=RACE;
+    renderPresets(); update(true); updateInsight();
   });
 
   $("btnClear").addEventListener("click", function(){
@@ -699,7 +704,6 @@
     renderPresets(); update(true); updateInsight();
   });
 
-  // legend toggles
   document.querySelector(".legend").addEventListener("click", function(e){
     var lg=e.target.closest(".lg"); if(!lg)return;
     var s=lg.getAttribute("data-series");
@@ -708,16 +712,14 @@
     drawAll();
   });
 
-  // chart scrub
+  /* ---------------- chart scrub ---------------- */
   function scrubFromEvent(ev){
     var rect=svg.getBoundingClientRect();
     var cx=(ev.touches?ev.touches[0].clientX:ev.clientX)-rect.left;
     var vx=cx/rect.width*W;
     var i=Math.round((vx-padL)/(W-padL-padR)*(N-1));
     i=clamp(i,0,N-1);
-    if(i!==state.cursor){
-      state.cursor=i; drawCursor(); updateReadout(); updateInsight(); renderGrid();
-    }
+    if(i!==state.cursor){ state.cursor=i; drawCursor(); updateReadout(); updateInsight(); renderGrid(); }
   }
   var scrubbing=false;
   svg.addEventListener("pointerdown", function(e){ scrubbing=true; scrubFromEvent(e); });
@@ -736,7 +738,7 @@
       i++;
       if(i>=N){ stopPlay(); state.cursor=RACE; drawCursor(); updateReadout(); updateInsight(); renderGrid(); return; }
       state.cursor=i; drawCursor(); updateReadout(); updateInsight(); renderGrid();
-    }, 300);
+    }, 110);
   });
   function stopPlay(){
     playing=false; clearInterval(playTimer);
@@ -748,7 +750,6 @@
   drawAxis();
   renderPalette();
   renderPresets();
-  // seed earned=false so first compute flags none as "just"
   for(var bi=0;bi<BADGE_DEFS.length;bi++) state.earned[BADGE_DEFS[bi].id]=false;
   update(true);
 

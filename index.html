@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zl" />
+<meta name="app-build" content="2026-06-08zm" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -778,13 +778,13 @@
   .fe-launch-main b{font-size:14px;font-weight:700;letter-spacing:-.01em}
   .fe-launch-main span{font-size:12px;color:var(--muted);line-height:1.4}
   .fe-launch-go{flex:0 0 auto;color:var(--faint);font-size:12px}
-  .fe-overlay{position:fixed;inset:0;z-index:150;background:#070a10;display:flex;flex-direction:column;opacity:0;transition:opacity .25s ease}
+  .fe-overlay{position:fixed;inset:0;z-index:150;background:var(--bg);display:flex;flex-direction:column;opacity:0;transition:opacity .25s ease}
   .fe-overlay.open{opacity:1}
-  .fe-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(11px + env(safe-area-inset-top)) 16px 11px;background:#070a10;border-bottom:1px solid rgba(255,255,255,.08)}
-  .fe-title{color:#eef2f8;font-weight:700;font-size:15px;letter-spacing:-.01em}
-  .fe-close{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#9aa6b8;width:32px;height:32px;border-radius:9px;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .fe-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(11px + env(safe-area-inset-top)) 16px 11px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .fe-title{color:var(--txt);font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .fe-close{appearance:none;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);width:32px;height:32px;border-radius:9px;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .fe-close:active{transform:scale(.95)}
-  .fe-frame{flex:1;width:100%;border:0;background:#070a10}
+  .fe-frame{flex:1;width:100%;border:0;background:var(--bg)}
   /* Time vs training-stress visual */
   .ts-bars{margin:2px 0 9px}
   .ts-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -2311,8 +2311,9 @@ function openTileInfo(key){
 function openFitnessEngine(){
   closeFitnessEngine();
   const o=document.createElement("div"); o.className="fe-overlay"; o.id="feOverlay";
+  const th=document.documentElement.dataset.theme||state.theme||"light";
   o.innerHTML=`<div class="fe-bar"><span class="fe-title">The Fitness Engine</span><button class="fe-close" data-fe-close aria-label="Close">✕</button></div>
-    <iframe class="fe-frame" src="fitness-engine.html" title="The Fitness Engine"></iframe>`;
+    <iframe class="fe-frame" src="fitness-engine.html?theme=${encodeURIComponent(th)}" title="The Fitness Engine"></iframe>`;
   o.addEventListener("click", e=>{ if(e.target.closest("[data-fe-close]")) closeFitnessEngine(); });
   document.body.appendChild(o);
   if(typeof refreshScrollLock==="function") refreshScrollLock();
