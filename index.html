@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#f1f3ef" />
-<meta name="app-build" content="2026-06-08zk" />
+<meta name="app-build" content="2026-06-08zl" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -769,6 +769,22 @@
   .areg-btn{appearance:none;border:0;border-radius:9px;background:var(--areg-c,var(--accent));color:#fff;font:inherit;font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .13s}
   .areg-btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
   .areg-btn:active{transform:scale(.97)}
+  /* The Fitness Engine — launcher card + iframe overlay */
+  .fe-launch{display:flex;align-items:center;gap:13px;width:100%;text-align:left;cursor:pointer;font:inherit;color:var(--txt);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 15px;margin-bottom:14px;box-shadow:var(--shadow-soft);-webkit-tap-highlight-color:transparent;transition:transform .14s cubic-bezier(.22,.61,.36,1)}
+  .fe-launch:active{transform:scale(.99)}
+  .fe-launch-ic{flex:0 0 auto;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(52,211,153,.16));color:#2a98c0}
+  .fe-launch-ic .ico{width:21px;height:21px;vertical-align:0}
+  .fe-launch-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+  .fe-launch-main b{font-size:14px;font-weight:700;letter-spacing:-.01em}
+  .fe-launch-main span{font-size:12px;color:var(--muted);line-height:1.4}
+  .fe-launch-go{flex:0 0 auto;color:var(--faint);font-size:12px}
+  .fe-overlay{position:fixed;inset:0;z-index:150;background:#070a10;display:flex;flex-direction:column;opacity:0;transition:opacity .25s ease}
+  .fe-overlay.open{opacity:1}
+  .fe-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(11px + env(safe-area-inset-top)) 16px 11px;background:#070a10;border-bottom:1px solid rgba(255,255,255,.08)}
+  .fe-title{color:#eef2f8;font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .fe-close{appearance:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#9aa6b8;width:32px;height:32px;border-radius:9px;font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .fe-close:active{transform:scale(.95)}
+  .fe-frame{flex:1;width:100%;border:0;background:#070a10}
   /* Time vs training-stress visual */
   .ts-bars{margin:2px 0 9px}
   .ts-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -1462,6 +1478,7 @@
         <button data-act="rename">Rename this plan</button>
         <button data-act="exportCsv">Export this plan (CSV)</button>
         <button data-act="library">Season library — next blocks…</button>
+        <button data-act="fitness">The Fitness Engine — play with form</button>
         <button data-act="templateCsv">Blank template (CSV)</button>
         <div class="sep"></div>
         <button data-act="importCsv">Import plan (CSV…)</button>
@@ -2289,6 +2306,19 @@ function openTileInfo(key){
   });
   document.body.appendChild(b); refreshScrollLock();
 }
+/* The Fitness Engine — interactive Fitness/Fatigue/Form teaching toy. Embedded as an isolated
+   iframe overlay because its generic class names (.card/.btn/.head) + global ids would collide if inlined. */
+function openFitnessEngine(){
+  closeFitnessEngine();
+  const o=document.createElement("div"); o.className="fe-overlay"; o.id="feOverlay";
+  o.innerHTML=`<div class="fe-bar"><span class="fe-title">The Fitness Engine</span><button class="fe-close" data-fe-close aria-label="Close">✕</button></div>
+    <iframe class="fe-frame" src="fitness-engine.html" title="The Fitness Engine"></iframe>`;
+  o.addEventListener("click", e=>{ if(e.target.closest("[data-fe-close]")) closeFitnessEngine(); });
+  document.body.appendChild(o);
+  if(typeof refreshScrollLock==="function") refreshScrollLock();
+  requestAnimationFrame(()=>o.classList.add("open"));
+}
+function closeFitnessEngine(){ const o=document.getElementById("feOverlay"); if(o) o.remove(); if(typeof refreshScrollLock==="function") refreshScrollLock(); }
 function openProofInfo(){
   const old=document.querySelector("#proofInfoBack"); if(old) old.remove();
   const b=document.createElement("div"); b.className="sd-pick-back"; b.id="proofInfoBack";
@@ -3961,6 +3991,11 @@ function renderProgress(){
     ${recordsHTML}
     ${routesHTML}
     ${pgSpeedEnginesHTML()}
+    <button class="fe-launch" data-fe-open>
+      <span class="fe-launch-ic">${ICO.chart}</span>
+      <span class="fe-launch-main"><b>The Fitness Engine</b><span>Play with fitness, fatigue &amp; form — build a 3-week plan and watch it peak you (or bury you).</span></span>
+      <span class="fe-launch-go">▶</span>
+    </button>
     <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
       ${engineBody}</div>
     <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
@@ -4027,6 +4062,7 @@ function openBenchSheet(){
   back.querySelector("#bmName").focus();
 }
 $("#progressView").addEventListener("click", e=>{
+  if(e.target.closest("[data-fe-open]")){ openFitnessEngine(); return; }
   if(e.target.closest("[data-proofinfo]")){ openProofInfo(); return; }
   if(e.target.closest("[data-addrace]")){ openRaceSheet(); return; }
   if(e.target.closest("[data-addbench]")){ openBenchSheet(); return; }
@@ -5132,6 +5168,7 @@ menu.addEventListener("click", e=>{
     case "exportCsv":  if(state.activeId) exportPlanCSV(state.activeId); break;
     case "templateCsv": download("plan-template.csv", csvTemplate(), "text/csv"); break;
     case "library":    openLibrarySheet(); break;
+    case "fitness":    openFitnessEngine(); break;
     case "runner":     openRunnerWorld(); break;
     case "importCsv":  $("#importCsvFile").click(); break;
     case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;

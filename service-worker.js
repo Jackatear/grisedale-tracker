@@ -2,8 +2,8 @@
    Strategy: network-first for the page (fresh app when online, cached when offline),
    cache-first for same-origin static assets. Cross-origin calls (GitHub gist, Strava
    Worker) are never intercepted — they just need the network and fail gracefully offline. */
-const CACHE = 'grisedale-2026-06-08zk';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-maskable.svg'];
+const CACHE = 'grisedale-2026-06-08zl';
+const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-maskable.svg', './fitness-engine.html'];
 
 self.addEventListener('install', e => {
   // cache the shell; allSettled so one missing file can't break the whole install
