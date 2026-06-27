@@ -106,7 +106,7 @@
   .preset{display:flex;align-items:center;gap:9px;padding:11px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer;text-align:left;line-height:1.15;transition:transform .12s,border-color .2s,background .2s;font-family:var(--font);}
   .preset:active{transform:scale(.97);}
   .preset.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel2));}
-  .preset .pe{font-size:18px;line-height:1;flex:0 0 auto;}
+  .preset .pdot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;}
   .preset small{display:block;color:var(--txt-3);font-weight:500;font-size:10px;margin-top:2px;}
 
   /* ---------- builder ---------- */
@@ -121,7 +121,7 @@
   .palette::-webkit-scrollbar{display:none;}
   .chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:62px;padding:9px 8px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:transform .12s,border-color .15s,background .15s;color:var(--c-easy);}
   .chip:active{transform:scale(.95);}
-  .chip .ce{font-size:19px;line-height:1;}
+  .chip .sw{width:20px;height:20px;border-radius:6px;}
   .chip .cn{font-size:10.5px;font-weight:700;letter-spacing:-.01em;color:var(--txt);}
   .chip .cl{font-size:9px;color:var(--txt-3);font-weight:600;font-family:var(--mono);}
   .chip.armed{box-shadow:inset 0 0 0 2px currentColor;border-color:currentColor;}
@@ -134,13 +134,14 @@
   .cell{position:relative;aspect-ratio:1/1.02;border-radius:10px;border:1px solid var(--line);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;overflow:hidden;}
   .cell:active{transform:scale(.92);}
   .cell .num{position:absolute;top:2px;left:4px;font-size:7.5px;color:var(--txt-3);font-weight:700;font-family:var(--mono);}
-  .cell .ce{font-size:15px;line-height:1;}
-  .cell .bars{display:flex;gap:1.5px;height:3px;margin-top:2px;}
-  .cell .bars i{width:3px;border-radius:1px;background:currentColor;opacity:.85;}
+  .cell .ab{font-size:9.5px;font-weight:700;font-family:var(--mono);letter-spacing:-.03em;line-height:1;}
+  .cell.rest{background:var(--panel2);border-color:var(--line);}
+  .cell.rest .ab{color:var(--txt-3);}
   .cell.sel{box-shadow:inset 0 0 0 2px var(--accent);}
   .cell.cursor::after{content:"";position:absolute;inset:0;border-radius:10px;box-shadow:inset 0 0 0 2px var(--accent);}
-  .cell.race{background:repeating-linear-gradient(45deg,color-mix(in srgb,var(--accent) 10%,transparent) 0 6px,transparent 6px 12px);border-color:var(--accent);cursor:default;}
-  .cell.race .ce{font-size:17px;}
+  .cell.race{background:var(--accent);border-color:var(--accent);cursor:default;}
+  .cell.race .ab{color:#fff;}
+  .cell.race .num{color:rgba(255,255,255,.65);}
 
   .tools{display:flex;gap:8px;margin-top:13px;}
   .btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:13px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);font-size:12px;font-weight:700;cursor:pointer;transition:transform .12s,background .15s,border-color .15s;font-family:var(--font);}
@@ -149,7 +150,7 @@
 
   /* ---------- insight ---------- */
   .insight-top{display:flex;align-items:center;gap:11px;margin-bottom:10px;}
-  .insight-emoji{flex:0 0 auto;width:46px;height:46px;border-radius:13px;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;}
+  .insight-emoji{flex:0 0 auto;width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;font-family:var(--mono);letter-spacing:-.02em;color:#fff;}
   .insight-title{font-size:15px;font-weight:800;letter-spacing:-.01em;}
   .insight-tag{font-size:10.5px;color:var(--txt-2);font-weight:600;margin-top:1px;}
   .insight-body{font-size:13px;line-height:1.5;color:var(--txt-2);}
@@ -161,7 +162,11 @@
 
   /* ---------- verdict ---------- */
   .verdict{display:flex;gap:11px;align-items:flex-start;padding:12px 13px;border-radius:14px;border:1px solid var(--line);border-left:3px solid var(--accent);margin-top:13px;background:var(--panel2);}
-  .verdict .vi{font-size:20px;line-height:1;margin-top:1px;}
+  .verdict .vi{flex:0 0 auto;width:10px;height:10px;border-radius:50%;margin-top:4px;background:var(--txt-3);}
+  .verdict .vi.good{background:var(--form);} .verdict .vi.fit{background:var(--fit);}
+  .verdict .vi.warn{background:var(--formneg);} .verdict .vi.bad{background:var(--fat);}
+  .verdict.good{border-left-color:var(--form);} .verdict.fit{border-left-color:var(--fit);}
+  .verdict.warn{border-left-color:var(--formneg);} .verdict.bad{border-left-color:var(--fat);}
   .verdict .vt{font-size:12.5px;font-weight:800;letter-spacing:.01em;margin-bottom:2px;}
   .verdict .vb{font-size:12px;line-height:1.45;color:var(--txt-2);}
 
@@ -170,7 +175,8 @@
   .badge{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);transition:opacity .3s,border-color .3s,transform .2s;}
   .badge.locked{opacity:.32;}
   .badge.just{transform:scale(1.04);border-color:var(--form);}
-  .badge .be{font-size:18px;}
+  .badge .bdot{flex:0 0 auto;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--bg2);color:var(--txt-3);border:1px solid var(--line2);}
+  .badge:not(.locked) .bdot{background:var(--form);color:#fff;border-color:var(--form);}
   .badge .bn{font-size:11px;font-weight:700;line-height:1.1;}
   .badge .bd{font-size:9px;color:var(--txt-3);font-weight:500;line-height:1.1;margin-top:1px;}
 
@@ -241,7 +247,7 @@
   <!-- INSIGHT -->
   <div class="card pad mt">
     <div class="insight-top">
-      <div class="insight-emoji" id="insEmoji">🏁</div>
+      <div class="insight-emoji" id="insEmoji" style="background:var(--accent)">Race</div>
       <div>
         <div class="insight-title" id="insTitle">Race Day</div>
         <div class="insight-tag" id="insTag">The verdict on your training</div>
@@ -253,7 +259,7 @@
       <span class="lbl">Fatigue cost</span><div class="ibar"><i id="barCost" style="background:var(--fat)"></i></div>
     </div>
     <div class="verdict" id="verdict">
-      <div class="vi" id="vIcon">🎯</div>
+      <div class="vi neutral" id="vIcon"></div>
       <div><div class="vt" id="vTitle">Build a plan to begin</div><div class="vb" id="vBody">Load a story above or paint your own weeks.</div></div>
     </div>
   </div>
@@ -316,6 +322,7 @@
   };
   for(var wk0 in WORKOUTS){ WORKOUTS[wk0].color = PAL[wk0] || PAL.rest; }
   var ORDER = ["rest","recovery","easy","tempo","long","threshold","intervals"];
+  var AB = {rest:"Rest",recovery:"Rec",easy:"Easy",tempo:"Tempo",long:"Long",threshold:"Thr",intervals:"VO₂",race:"Race"};
 
   /* ---------------- presets — built from weekly patterns (8 weeks → race) ---------------- */
   // Smart build progresses through week 6, then a 2-week taper; the others repeat a weekly shape.
@@ -337,13 +344,13 @@
   };
   function cc(){ var a=[]; for(var i=0;i<arguments.length;i++) a=a.concat(arguments[i]); return a; }
   var PRESETS = {
-    smart:  {emoji:"🎯", name:"Smart Build + Taper", sub:"the textbook peak",
+    smart:  {c:"var(--form)", name:"Smart Build + Taper", sub:"the textbook peak",
              plan: cc(WK.s1,WK.s2,WK.s3,WK.s4,WK.s5,WK.s6,WK.s7,WK.s8)},
-    toomuch:{emoji:"🥵", name:"Too Much, Too Soon", sub:"all gas, no brakes",
+    toomuch:{c:"var(--fat)", name:"Too Much, Too Soon", sub:"all gas, no brakes",
              plan: cc(WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grind,WK.grindR)},
-    warrior:{emoji:"🛋️", name:"Weekend Warrior", sub:"too little, too rare",
+    warrior:{c:"var(--txt-3)", name:"Weekend Warrior", sub:"too little, too rare",
              plan: cc(WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warrior,WK.warriorR)},
-    easy:   {emoji:"🌱", name:"All Easy Miles", sub:"base, but no edge",
+    easy:   {c:"var(--fit)", name:"All Easy Miles", sub:"base, but no edge",
              plan: cc(WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasy,WK.allEasyR)}
   };
 
@@ -558,7 +565,7 @@
   /* ---------------- insight panel ---------------- */
   function updateInsight(){
     var key=state.plan[state.cursor], w=WORKOUTS[key]||WORKOUTS.rest;
-    $("insEmoji").textContent=w.emoji;
+    var ie=$("insEmoji"); ie.textContent=AB[key]; ie.style.background=w.color; ie.style.color="#fff";
     $("insTitle").textContent=w.title;
     $("insTag").textContent=w.tag;
     $("insBody").innerHTML=w.body;
@@ -575,17 +582,18 @@
   function updateVerdict(dv){
     var tsb=dv.raceForm, ctl=dv.raceFit, v;
     if(dv.minTsb<=-15 || tsb<=-12){
-      v={ic:"🥵",t:"Overreached — you buried yourself",b:"Form crashed deep into the red. The fitness is there, but the legs are wrecked — big injury & burnout risk. You needed recovery days and a proper taper."};
+      v={cl:"bad",t:"Overreached — you buried yourself",b:"Form crashed deep into the red. The fitness is there, but the legs are wrecked — big injury & burnout risk. You needed recovery days and a proper taper."};
     } else if(tsb<=-3){
-      v={ic:"😮‍💨",t:"Fatigued — fit but flat",b:"Training load is still sitting in the legs. You're stronger, but you haven't shed the fatigue to actually show it on race day."};
+      v={cl:"warn",t:"Fatigued — fit but flat",b:"Training load is still sitting in the legs. You're stronger, but you haven't shed the fatigue to actually show it on race day."};
     } else if(tsb<=4){
-      v={ic:"😐",t:"Neutral — solid, not sharp",b:"A balanced state — good to train from, but it isn't a race peak. Ease off in the final days to let fatigue drain and form rise."};
+      v={cl:"neutral",t:"Neutral — solid, not sharp",b:"A balanced state — good to train from, but it isn't a race peak. Ease off in the final days to let fatigue drain and form rise."};
     } else if(tsb<=20){
-      v={ic:ctl>=38?"🎯":"🌿",t:ctl>=38?"Peaked — race ready!":"Fresh, but light on fitness",b:ctl>=38?"Fresh legs sitting on top of real fitness — exactly how a taper should look. Go chase a PB.":"Nicely tapered and fresh, but the engine is small. Add more aerobic running across the weeks to lift the ceiling."};
+      v={cl:ctl>=38?"good":"fit",t:ctl>=38?"Peaked — race ready!":"Fresh, but light on fitness",b:ctl>=38?"Fresh legs sitting on top of real fitness — exactly how a taper should look. Go chase a PB.":"Nicely tapered and fresh, but the engine is small. Add more aerobic running across the weeks to lift the ceiling."};
     } else {
-      v={ic:"🪫",t:"Detrained — tapered too long",b:"Super fresh, but fitness has slipped from too much rest. The sharpness is wasted without an engine underneath it."};
+      v={cl:"warn",t:"Detrained — tapered too long",b:"Super fresh, but fitness has slipped from too much rest. The sharpness is wasted without an engine underneath it."};
     }
-    $("vIcon").textContent=v.ic;
+    $("vIcon").className="vi "+(v.cl||"neutral");
+    $("verdict").className="verdict "+(v.cl||"neutral");
     $("vTitle").textContent=v.t;
     $("vBody").textContent=v.b;
   }
@@ -606,7 +614,7 @@
       if(on)got++;
       var just=(on&&!state.earned[b.id])?" just":"";
       state.earned[b.id]=on;
-      html+='<div class="badge'+(on?"":" locked")+just+'"><span class="be">'+b.e+'</span><div><div class="bn">'+b.n+'</div><div class="bd">'+b.d+'</div></div></div>';
+      html+='<div class="badge'+(on?"":" locked")+just+'"><span class="bdot">'+(on?"✓":"")+'</span><div><div class="bn">'+b.n+'</div><div class="bd">'+b.d+'</div></div></div>';
     }
     c.innerHTML=html;
     $("badgeCount").textContent=got+" / "+BADGE_DEFS.length;
@@ -624,13 +632,12 @@
       html+='<div class="wrow"><div class="wlab">W'+(wk+1)+'</div><div class="wcells">';
       for(var dd=0;dd<7;dd++){
         var i=wk*7+dd; if(i>=N)break;
-        var key=state.plan[i], w=WORKOUTS[key]||WORKOUTS.rest, isRace=(key==="race");
-        var cls="cell"+(isRace?" race":"")+(i===state.cursor?" cursor":"");
-        var tint = isRace?"":'background:'+hexA(w.color,0.10)+';border-color:'+hexA(w.color,0.42)+';';
-        html+='<div class="'+cls+'" data-i="'+i+'" style="color:'+w.color+';'+tint+'">'+
+        var key=state.plan[i], w=WORKOUTS[key]||WORKOUTS.rest, isRace=(key==="race"), isRest=(key==="rest");
+        var cls="cell"+(isRace?" race":"")+(isRest?" rest":"")+(i===state.cursor?" cursor":"");
+        var style = (isRace||isRest)?'' : 'color:'+w.color+';background:'+hexA(w.color,0.13)+';border-color:'+hexA(w.color,0.40)+';';
+        html+='<div class="'+cls+'" data-i="'+i+'" style="'+style+'">'+
               '<span class="num">'+(i+1)+'</span>'+
-              '<span class="ce">'+w.emoji+'</span>'+
-              (isRace?'':'<span class="bars">'+loadColorBars(w.load)+'</span>')+
+              '<span class="ab">'+AB[key]+'</span>'+
               '</div>';
       }
       html+='</div></div>';
@@ -642,9 +649,9 @@
     for(var i=0;i<ORDER.length;i++){
       var w=WORKOUTS[ORDER[i]], armed=(state.armed===w.key)?" armed":"";
       html+='<div class="chip'+armed+'" data-key="'+w.key+'" style="color:'+w.color+'">'+
-            '<span class="ce">'+w.emoji+'</span>'+
+            '<span class="sw" style="background:'+w.color+'"></span>'+
             '<span class="cn">'+w.name+'</span>'+
-            '<span class="cl">'+(w.load===0?"rest":w.load)+'</span>'+
+            '<span class="cl">'+(w.load===0?"rest":"·"+w.load)+'</span>'+
             '</div>';
     }
     c.innerHTML=html;
@@ -653,7 +660,7 @@
     var c=$("presets"), html="";
     for(var k in PRESETS){
       var p=PRESETS[k], a=(state.activePreset===k)?" active":"";
-      html+='<button class="preset'+a+'" data-preset="'+k+'"><span class="pe">'+p.emoji+'</span><span>'+p.name+'<small>'+p.sub+'</small></span></button>';
+      html+='<button class="preset'+a+'" data-preset="'+k+'"><span class="pdot" style="background:'+(p.c||"var(--txt-3)")+'"></span><span>'+p.name+'<small>'+p.sub+'</small></span></button>';
     }
     c.innerHTML=html;
   }
@@ -795,7 +802,7 @@
   /* ---------------- receive the athlete's real plan from the app ---------------- */
   window.addEventListener("message", function(ev){
     var d=ev.data; if(!d || d.type!=="loadPlan" || !Array.isArray(d.plan) || d.plan.length<7) return;
-    PRESETS.mine = {emoji:"⭐", name:(d.name||"My block"), sub:"your real plan", plan:d.plan.slice()};
+    PRESETS.mine = {c:"var(--accent)", name:(d.name||"My block"), sub:"your real plan", plan:d.plan.slice()};
     // put "mine" first
     var ordered={mine:PRESETS.mine}; for(var k in PRESETS){ if(k!=="mine") ordered[k]=PRESETS[k]; }
     PRESETS=ordered;
