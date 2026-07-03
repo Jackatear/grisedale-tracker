@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0f1713" />
-<meta name="app-build" content="2026-06-08zs" />
+<meta name="app-build" content="2026-06-08zt" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -281,7 +281,7 @@
   .day-cell.is-today{background:color-mix(in srgb,var(--accent) 9%,transparent);box-shadow:inset 2px 0 0 var(--accent)}
   .day-head{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px}
   .day-head .dnum{font-weight:600;color:var(--txt)}
-  .day-head.today .dnum{background:var(--accent);color:#fff;padding:1px 8px;border-radius:999px}
+  .day-head.today .dnum{background:var(--accent);color:#16241b;padding:1px 8px;border-radius:999px}
   .day-head .addbtn{opacity:0;border:0;background:transparent;color:var(--faint);font-size:16px;line-height:1;padding:0 4px;transition:.15s}
   .day-cell:hover .addbtn{opacity:1}
   .day-head .addbtn:hover{color:var(--txt)}
@@ -366,7 +366,7 @@
   .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
   .btn{border:1px solid var(--line2);background:transparent;color:var(--txt);padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;transition:.15s}
   .btn:hover{border-color:var(--faint)}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#16241b}
   .btn.primary:hover{filter:brightness(1.06);border-color:var(--accent)}
   .btn.danger{color:#d9685f;border-color:color-mix(in srgb,#d9685f 35%,var(--line2))}
   .btn.danger:hover{border-color:#d9685f}
@@ -663,13 +663,6 @@
   .rpe-row{display:flex;gap:4px}
   .rpe-row button{flex:1;min-width:0;padding:8px 0;font:inherit;font-size:12.5px;font-weight:600;background:var(--bg2);border:1px solid var(--line2);color:var(--muted);border-radius:2px;cursor:pointer}
   .rpe-row button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fbfcfa}
-  /* niggle chips (morning check-in): tap cycles severity 0→3 */
-  .nig-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1;justify-content:flex-end}
-  .nig{font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border-radius:2px;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);cursor:pointer}
-  .nig b{font-variant-numeric:tabular-nums}
-  .nig[data-sev="1"]{border-color:var(--warn);color:var(--warn)}
-  .nig[data-sev="2"]{background:color-mix(in srgb,var(--accent) 16%,var(--bg2));border-color:var(--accent);color:var(--accent)}
-  .nig[data-sev="3"]{background:var(--bad);border-color:var(--bad);color:#fbfcfa}
   .pg-svg{display:block;width:100%;height:auto;margin-top:6px}
   /* "This week" strip — planned vs done at the very top of the plan page */
   .weekstrip{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin-bottom:12px}
@@ -721,20 +714,6 @@
   .se-fed b{color:var(--muted);font-weight:600}
   .se-foot{font-size:12px;line-height:1.55;color:var(--muted);margin:15px 0 0;padding-top:13px;border-top:1px solid var(--line)}
   .se-foot b{color:var(--txt)}
-  /* Day-of autoregulation — "Today, adjusted" */
-  .areg{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--areg-c,var(--accent));border-radius:13px;padding:12px 14px;margin-top:12px}
-  .areg.good,.areg.applied{--areg-c:var(--good)} .areg.ok,.areg.none{--areg-c:var(--faint)}
-  .areg.warn{--areg-c:var(--warn)} .areg.bad{--areg-c:var(--bad)}
-  .areg-eye{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:7px;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
-  .areg-head{display:flex;align-items:center;gap:8px}
-  .areg-ic{color:var(--areg-c,var(--accent));display:flex;align-items:center;flex:0 0 auto}
-  .areg-ic .ico{width:17px;height:17px;vertical-align:0}
-  .areg-verdict{font-weight:700;font-size:14px;letter-spacing:-.01em}
-  .areg-detail{font-size:12.5px;color:var(--muted);line-height:1.5;margin:6px 0 0}
-  .areg-act{margin-top:11px}
-  .areg-btn{appearance:none;border:0;border-radius:9px;background:var(--areg-c,var(--accent));color:#fff;font:inherit;font-weight:600;font-size:13px;padding:9px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .13s}
-  .areg-btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
-  .areg-btn:active{transform:scale(.97)}
   /* The Fitness Engine — iframe overlay */
   .fe-overlay{position:fixed;inset:0;z-index:150;background:var(--bg);display:flex;flex-direction:column;opacity:0;transition:opacity .25s ease}
   .fe-overlay.open{opacity:1}
@@ -772,7 +751,7 @@
   .pg-spark i{flex:1;background:var(--accent);border-radius:1.5px;min-height:2px;opacity:.8}
   /* PWA "new version available" prompt */
   #updbar{position:fixed;left:12px;right:12px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:80;background:var(--panel);border:1px solid var(--line2);box-shadow:var(--shadow);border-radius:12px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;color:var(--txt)}
-  #updbar button{background:var(--accent);border:0;color:#fff;border-radius:8px;padding:8px 15px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto}
+  #updbar button{background:var(--accent);border:0;color:#16241b;border-radius:8px;padding:8px 15px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto}
   @media(min-width:701px){ #updbar{left:auto;right:18px;bottom:18px;max-width:340px} }
   .cc-chart{margin-top:auto;padding-top:13px}
   .cc-chart-cap{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint);font-weight:600;margin-bottom:8px}
@@ -789,10 +768,6 @@
   .ci-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0}
   .ci-lab{font-size:13.5px;font-weight:500}
   .ci-lab small{color:var(--faint);font-weight:400}
-  .ci-scale{display:flex;gap:6px}
-  .ci-scale button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line2);background:var(--bg2);color:var(--muted);font:inherit;font-size:15px;font-weight:600}
-  .ci-scale button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .ci-ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin:-3px 2px 0}
 
   .weekadd{display:flex;justify-content:center;gap:10px;margin:16px 0 46px;flex-wrap:wrap}
   .weekadd-btn{border-style:dashed;color:var(--muted)}
@@ -825,7 +800,7 @@
   .fm-line{display:flex;justify-content:space-between;align-items:center;text-align:left;width:100%;background:transparent;border:0;color:var(--txt);padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
   .fm-line:hover{background:var(--bg2)}
   .undobtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;transition:.15s;cursor:pointer}
-  .undobtn:hover:not(:disabled){background:var(--accent);color:#fff}
+  .undobtn:hover:not(:disabled){background:var(--accent);color:#16241b}
   .undobtn:disabled{border-color:var(--line2);background:transparent;color:var(--faint);opacity:.5;cursor:default;font-weight:500}
 
   /* tabs + strength view */
@@ -974,7 +949,7 @@
   .sd-foot{display:flex;gap:8px;align-items:center;padding:12px 15px;border-top:1px solid var(--line);margin-top:8px}
   .sd-btn{border-radius:9px;padding:9px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line2);background:var(--panel);color:var(--txt)}
   .sd-btn:hover{border-color:var(--faint)}
-  .sd-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;flex:1}
+  .sd-btn.primary{background:var(--accent);border-color:var(--accent);color:#16241b;flex:1}
   .sd-btn.primary:hover{filter:brightness(1.05);border-color:var(--accent)}
   .sd-btn.ghost{margin-left:auto;color:var(--muted);background:none;border-color:transparent;padding:9px 4px}
   .sd-btn.ghost:hover{color:var(--bad);border-color:transparent}
@@ -1298,24 +1273,6 @@
   .hero-coach{background:rgba(255,255,255,.16);border-radius:13px;padding:12px 14px;margin-bottom:16px;font-size:13.5px;line-height:1.5;color:#fff}
   .hero-coach span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:3px}
 
-  /* morning check-in card — single Wiped→Flying feeling scale */
-  .rd-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 17px;margin-bottom:16px;box-shadow:var(--shadow-soft)}
-  .rd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .rd-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);font-weight:700;font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
-  .rd-hint{font-size:12px;color:var(--muted)}
-  .rd-word{font-family:var(--sans);font-size:27px;font-weight:700;letter-spacing:-.02em;line-height:1}
-  .rd-word.unset{color:var(--faint)}
-  .rd-word.f1{color:var(--bad)} .rd-word.f2{color:var(--warn)} .rd-word.f3{color:var(--txt)} .rd-word.f4{color:var(--good)} .rd-word.f5{color:var(--accent)}
-  .rd-sub{font-size:12.5px;color:var(--muted);margin:3px 0 14px}
-  .rd-track{position:relative;height:6px;border-radius:999px;background:var(--bg2);margin:0 4px 14px}
-  .rd-fill{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--accent);transition:width .25s ease}
-  .rd-knob{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--accent);border:3px solid var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.2);transform:translate(-50%,-50%);transition:left .25s ease}
-  .rd-knob.off{display:none}
-  .rd-labels{display:flex;gap:2px}
-  .rd-lab{flex:1;min-width:0;background:none;border:0;font:inherit;font-size:11.5px;color:var(--faint);font-weight:600;cursor:pointer;padding:4px 0;text-align:center;-webkit-tap-highlight-color:transparent}
-  .rd-lab.on{color:var(--accent);font-weight:700}
-  .rd-more{display:block;width:100%;text-align:center;margin-top:12px;padding-top:11px;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}
-  .rd-more:hover{color:var(--txt)}
 
   /* home dashboard: Readiness / Load / Balance tiles + plans footer */
   /* ===== HORIZON home — mission dashboard ===== */
@@ -1325,29 +1282,10 @@
   .hz-logo{color:#a3e635;font-size:15px}
   .hz-gear{margin-left:auto;background:rgba(255,255,255,.08);border:0;color:rgba(236,238,231,.7);width:30px;height:30px;border-radius:9px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .hz-gear:hover{background:rgba(255,255,255,.14);color:#fff}
-  .hz-eye{margin-top:16px;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:rgba(236,238,231,.5);font-weight:600}
-  .hz-title2{font-family:var(--sans);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:4px}
+  .hz-title2{font-family:var(--sans);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:14px}
   .hz-phase{margin-top:8px;font-size:13px;color:rgba(236,238,231,.62);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .hz-wk{background:#3f6212;color:#e4f7c0;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 9px;border-radius:6px}
   .hz-dot{color:rgba(236,238,231,.35)}
-  .hz-streak{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 13px;border-radius:13px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);transition:background .35s,border-color .35s}
-  .hz-streak.lit{background:linear-gradient(100deg,rgba(163,230,53,.20),rgba(180,238,90,.06));border-color:rgba(163,230,53,.32)}
-  .hz-flame{width:24px;height:24px;line-height:1;color:rgba(236,238,231,.38);transform-origin:50% 85%;transition:color .35s}
-  .hz-flame .ico{width:24px;height:24px;vertical-align:0}
-  .hz-streak.lit .hz-flame{color:#b4ee5a;animation:hzFlicker 1.9s ease-in-out infinite}
-  @keyframes hzFlicker{0%,100%{transform:scale(1) rotate(-1.5deg);opacity:.9}45%{transform:scale(1.13) rotate(2deg);opacity:1}72%{transform:scale(.96) rotate(-2deg);opacity:.95}}
-  .hz-streak-main{flex:1;min-width:0}
-  .hz-streak-num{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;font-weight:700;color:#f6e9df;line-height:1;letter-spacing:-.02em}
-  .hz-streak-num span{font-family:var(--sans);font-size:11.5px;font-weight:600;color:rgba(236,238,231,.5);margin-left:7px;letter-spacing:0}
-  .hz-streak-num em{font-family:var(--sans);font-size:14px;font-style:normal;font-weight:600;color:rgba(236,238,231,.6);letter-spacing:0}
-  .hz-streak-sub{font-size:11.5px;color:rgba(236,238,231,.6);margin-top:5px}
-  .hz-streak.urgent .hz-streak-sub{color:#b4ee5a;font-weight:600}
-  .hz-streak-dots{display:flex;gap:4px;align-items:center;flex:0 0 auto}
-  .hz-streak-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.16)}
-  .hz-streak-dots i.on{background:#a3e635}
-  .hz-streak-dots i.miss{background:rgba(255,255,255,.10)}
-  .hz-streak-dots i.next{background:transparent;border:1.5px solid rgba(180,238,90,.65);width:7px;height:7px;animation:hzPulse 1.5s ease-in-out infinite}
-  @keyframes hzPulse{0%,100%{opacity:.45;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
   .hz-vol{margin-top:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:13px 14px}
   .hz-vol-lab{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:rgba(236,238,231,.5);font-weight:600}
   .hz-vol-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:7px}
@@ -1356,12 +1294,6 @@
   .hz-vol-pct{font-size:12px;font-weight:600;color:#a3e635;text-align:right}
   .hz-vol-bar{margin-top:11px;height:6px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
   .hz-vol-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#a3e635,#a3e635)}
-  .hz-pills{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:0 0 6px}
-  .hz-pill{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;font:inherit;text-align:left;color:var(--txt);cursor:default;box-shadow:var(--shadow-soft);min-width:0}
-  button.hz-pill{cursor:pointer}
-  .hz-pill-ic{flex:0 0 auto;width:32px;height:32px;border-radius:9px;background:var(--bg2);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px}
-  .hz-pill-l{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .hz-pill-v{font-size:15px;font-weight:700;letter-spacing:-.01em;margin-top:2px}
   .hz-sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 2px 11px}
   .hz-sec span{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:600}
   .hz-fulllog{background:none;border:0;color:var(--accent);font:inherit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;cursor:pointer}
@@ -1381,7 +1313,7 @@
   .hz-hstat{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 13px}
   .hz-hstat .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:rgba(236,238,231,.5);font-weight:600}
   .hz-hstat .v{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:21px;font-weight:700;margin-top:5px}
-  .hz-complete{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:16px;background:linear-gradient(180deg,#b6431f,#9d3a1a);border:0;border-radius:13px;padding:15px;font:inherit;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:filter .15s,transform .13s}
+  .hz-complete{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:16px;background:linear-gradient(180deg,var(--accent2),var(--accent));border:0;border-radius:13px;padding:15px;font:inherit;font-size:16px;font-weight:700;color:#16241b;cursor:pointer;transition:filter .15s,transform .13s}
   .hz-complete:hover{filter:brightness(1.08)}
   .hz-complete:active{transform:scale(.99)}
   .hz-complete.done{background:rgba(255,255,255,.08);color:#9fcf8e;cursor:default}
@@ -1400,6 +1332,7 @@
   .hz-done-meta{font-size:12px;color:var(--muted);margin-top:3px;font-variant-numeric:tabular-nums}
   .hz-done-check{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--good) 45%,transparent);color:var(--good);display:flex;align-items:center;justify-content:center;font-size:12px}
   .dash-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .dash-tiles.two{grid-template-columns:1fr 1fr;margin-top:12px}
   .dt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 12px 12px;text-align:left;min-width:0;box-shadow:var(--shadow-soft);font:inherit;color:var(--txt);display:block;cursor:default}
   button.dt{cursor:pointer}
   .dt-l{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1473,7 +1406,6 @@
     <div id="planView">
     <div id="raceBanner"></div>
     <div id="weekStrip"></div>
-    <div id="readinessCard"></div>
     <div id="todayCard"></div>
     <div id="raceShape"></div>
 
@@ -2009,7 +1941,6 @@ function render(){
   renderCountdown();
   renderRaceBanner();
   renderWeekStrip();
-  renderReadinessCard();
   renderToday();
   renderRaceShape();
   renderChips();
@@ -2197,55 +2128,7 @@ function primaryPlanRec(){
   return best||ps[0];
 }
 function recStartMon(rec){ const ds=(rec.plan||[]).filter(w=>w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>w.date).sort(); return ds.length? mondayOf(ds[0]) : mondayOf(todayISO()); }
-function homeRaceBannerHTML(rec){
-  const t=todayISO();
-  const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
-  const future=races.filter(r=>daysBetween(t,r.date)>=0); const goal=future.length?future[future.length-1]:null;
-  if(!goal) return "";
-  const dd=daysBetween(t,goal.date), wks=Math.round(dd/7), farWk=dd>=14;
-  const startMon=recStartMon(rec), totalDays=Math.max(1,daysBetween(startMon,goal.date)), elapsed=Math.min(totalDays,Math.max(0,daysBetween(startMon,t))), pct=Math.round(elapsed/totalDays*100);
-  const totWk=Math.max(1,Math.round(totalDays/7)), curWk=Math.min(totWk,Math.max(1,Math.floor(elapsed/7)+1));
-  const gd=d(goal.date), name=(goal.n||"Race").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim();
-  return `<button class="racebanner" data-homeopen="${esc(goal.id)}">
-    <div class="rb-top"><span class="rb-icon">🏁</span><span class="rb-main"><span class="rb-name">${esc(name)}</span><span class="rb-date">${WD_FULL[gd.getDay()]} ${gd.getDate()} ${MONTHS_FULL[gd.getMonth()]}</span></span>
-      <span class="rb-dd"><b>${farWk?wks:dd}</b><i>${farWk?"weeks to go":(dd===1?"day to go":"days to go")}</i></span></div>
-    <div class="rb-bar"><i style="width:${pct}%"></i></div>
-    <div class="rb-foot"><span>Week ${curWk} of ${totWk}</span><span>${pct}% complete</span></div></button>`;
-}
-function homeHeroHTML(rec){
-  const t=todayISO();
-  const on=date=>((rec.board&&rec.board[date])||[]).map(id=>({id,w:recWO(rec,id)})).filter(x=>x.w);
-  let focus=null, mode="today", fdate=t; const today=on(t);
-  focus = today.find(x=>x.w.t!=="Rest" && !(rec.done&&rec.done[x.id])) || today.find(x=>x.w.t!=="Rest") || today.find(x=>x.w.t==="Rest");
-  if(!focus){ const up=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date>t&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])).sort((a,b)=>a.date<b.date?-1:1); if(up.length){ focus={id:up[0].id,w:recWO(rec,up[0].id)}; mode="next"; fdate=up[0].date; } }
-  if(!focus) return "";
-  const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!(rec.done&&rec.done[focus.id]), isRest=w.t==="Rest";
-  const dd=daysBetween(t,fdate), zi=zoneTextToIdx(w.z), fell=isFellSurface(w), pace=paceStr(w.d,w.k);
-  const dayPill = mode==="today"?"Today's run":(dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]);
-  let stats="";
-  if(!isRest){ let a=null,b=null;
-    if(w.k!=null && pace && !fell){ a=[fmtDist(w.k,false),state.unit]; b=[pace,"/"+state.unit]; }
-    else if(w.d && w.v!=null && w.v>0){ a=[fmtDur(w.d),""]; b=["↗ "+fmtVert(w.v,false),state.unit==="mi"?"ft":"m"]; }
-    else if(w.d){ a=[fmtDur(w.d),""]; b=(w.z&&w.z!=="—")?[w.z,""]:null; }
-    else if(w.k!=null){ a=[fmtDist(w.k,false),state.unit]; b=null; }
-    if(a) stats=`<div class="hero-stats"><div class="hs"><b>${esc(a[0])}</b>${a[1]?`<i>${esc(a[1])}</i>`:""}</div>${b?`<span class="hs-div"></span><div class="hs"><b>${esc(b[0])}</b>${b[1]?`<i>${esc(b[1])}</i>`:""}</div>`:""}</div>`;
-  }
-  const sc=readinessScore(state.readiness&&state.readiness[t]);
-  let coach="";
-  if(sc!=null && mode==="today" && !done && !isRest){
-    const msg = sc>=80?"good to run as planned": sc>=60?"good to go — run as planned": sc>=45?"a bit tired — keep it controlled":"run down — ease right back or rest";
-    coach=`<div class="hero-coach"><span>Readiness ${sc}</span>${msg}</div>`;
-  }
-  const cta = isRest ? `<div class="hero-rest">Rest day — recovery is where the gains land.</div>`
-    : done ? `<div class="hero-cta done">✓ Completed</div>`
-    : mode==="today" ? `<button class="hero-cta" data-homedone="${esc(focus.id)}">Mark done</button>`
-    : `<div class="hero-cta ghost">View session →</div>`;
-  return `<div class="hero ${done?'done':''} ${isRest?'rest':''}" style="--c:${ty.c}" data-homeopen="${esc(focus.id)}">
-      <div class="hero-top"><span class="hero-day">${esc(dayPill)}</span><span class="hero-type">${esc(ty.label)}</span></div>
-      <div class="hero-title">${esc(w.n)}</div>${stats}${coach}${cta}</div>`;
-}
 const TILE_INFO={
-  readiness:{t:"Readiness", d:"Your own 'how I feel today' score (0–100, higher = fresher). Tap the morning check-in to set it. It tunes today's session note and the weekly coach's call.", action:true},
   load:{t:"Training load · 7 days", d:"How much training you've banked in the last 7 days — a TRIMP-style score where harder and longer count more (your RPE × minutes when you log effort, otherwise heart-rate time-in-zone). The bars show the last 6 weeks.", action:false},
   balance:{t:"Balance — acute : chronic ratio", d:"This week's load compared with your recent average. About 0.8–1.3 is the safe 'building' zone; above ~1.5 means you're ramping up too fast (raised injury risk); below ~0.8 is easing or tapering. Smoothed so it won't false-spike when you start logging.", action:false}
 };
@@ -2255,10 +2138,8 @@ function openTileInfo(key){
   const b=document.createElement("div"); b.className="sd-pick-back"; b.id="tileInfoBack";
   b.innerHTML=`<div class="sd-pick"><h3>${esc(it.t)}</h3>
     <p style="font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 14px">${esc(it.d)}</p>
-    ${it.action?`<button class="btn primary" id="tiAction" style="width:100%;margin-bottom:8px">Log morning check-in</button>`:""}
     <button class="btn" id="tiOk" style="width:100%">Got it</button></div>`;
   b.addEventListener("click", ev=>{
-    if(ev.target.id==="tiAction"){ b.remove(); refreshScrollLock(); openCheckin(); return; }
     if(ev.target===b || ev.target.id==="tiOk"){ b.remove(); refreshScrollLock(); }
   });
   document.body.appendChild(b); refreshScrollLock();
@@ -2332,14 +2213,10 @@ function homeTilesHTML(){
   let load7=0; for(let i=0;i<7;i++) load7+=(map[addDays(t,-i)]||0); load7=Math.round(load7);
   const wkL=[]; for(let i=5;i>=0;i--){ let l=0; const mon=addDays(mondayOf(t),-7*i); for(let di=0;di<7;di++) l+=(map[addDays(mon,di)]||0); wkL.push(l); }
   const mx=Math.max(...wkL,1); const bars=wkL.map((v,i)=>`<i style="height:${Math.max(12,Math.round(v/mx*100))}%;opacity:${i===5?1:.5}"></i>`).join("");
-  const sc=readinessScore(state.readiness&&state.readiness[t]);
-  const scWord = sc==null?"Tap to log": sc>=80?"Fresh": sc>=60?"Good": sc>=45?"Tired":"Low";
-  const scCol = sc==null?"var(--faint)": sc>=60?"var(--good)": sc>=45?"var(--warn)":"var(--bad)";
   const ready=acwrLoadDays()>=10, acwr=ready?currentAcwr():null, band=loadBand(acwr, ready);
   const bandCol = band.lvl==="good"?"var(--good)": band.lvl==="warn"?"var(--warn)": band.lvl==="bad"?"var(--bad)":"var(--faint)";
   const bandWord = band.label.split(" ·")[0];
-  return `<div class="dash-tiles">
-    <button class="dt" data-tile="readiness" title="${esc(TILE_INFO.readiness.d)}"><div class="dt-l">Readiness</div><div class="dt-v">${sc==null?"—":sc}</div><div class="dt-s"><span class="dt-dot" style="background:${scCol}"></span>${scWord}</div></button>
+  return `<div class="dash-tiles two">
     <button class="dt" data-tile="load" title="${esc(TILE_INFO.load.d)}"><div class="dt-l">Load · 7d</div><div class="dt-v">${load7||"—"}</div><div class="dt-bars">${bars}</div></button>
     <button class="dt" data-tile="balance" title="${esc(TILE_INFO.balance.d)}"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></button>
   </div>`;
@@ -2349,40 +2226,6 @@ function hzWeekVol(rec){
   const t=todayISO(), mon=mondayOf(t); let doneK=0, planK=0;
   for(let di=0;di<7;di++){ const date=addDays(mon,di); ((rec.board&&rec.board[date])||[]).forEach(id=>{ const w=recWO(rec,id); if(!w||w.t==="Rest"||w.t==="Sauna")return; const lg=(rec.log&&rec.log[id])||{}; planK+=(w.k||0); if(rec.done&&rec.done[id]) doneK+=(lg.k!=null&&lg.k!==""?+lg.k:(w.k||0)); }); }
   return {doneK, planK};
-}
-// Consistency streak — the single biggest engagement lever (Duolingo / Strava / Whoop all lean on it).
-// Counts consecutive COMPLETED training sessions: rest days are skipped, and today's unfinished session
-// is "pending" (never breaks it) — only a MISSED past session ends the run. Returns current + best + today's state.
-function trainingStreak(rec){
-  const t=todayISO();
-  const sess=(rec.plan||[]).concat(rec.custom||[])
-    .filter(w=>w&&w.date&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])&&w.date<=t)
-    .sort((a,b)=> a.date<b.date?-1 : a.date>b.date?1 : 0);
-  const isDone=w=>!!(rec.done&&rec.done[w.id]);
-  const arr=sess.slice();
-  while(arr.length && arr[arr.length-1].date===t && !isDone(arr[arr.length-1])) arr.pop();   // today still pending → don't break
-  let cur=0; for(let i=arr.length-1;i>=0;i--){ if(isDone(arr[i])) cur++; else break; }
-  let best=0, run=0; for(const w of arr){ if(isDone(w)){ run++; if(run>best)best=run; } else run=0; }
-  if(cur>best) best=cur;
-  const todayHas=sess.some(w=>w.date===t), todayDone=sess.some(w=>w.date===t && isDone(w));
-  return {cur, best, todayHas, todayDone, last:arr.slice(-7).map(isDone)};
-}
-function hzStreakHTML(rec){
-  const s=trainingStreak(rec);
-  const canExtend = s.todayHas && !s.todayDone;   // a session waiting today → urgency to keep the chain
-  const lit = s.cur>=1;
-  let sub;
-  if(s.cur===0)        sub = s.best>0 ? `Your best is ${s.best} — rebuild it today` : (s.todayHas ? "Complete today's session to start a streak" : "Your streak begins with the next session");
-  else if(canExtend)   sub = "Keep it alive — today's session is waiting";
-  else if(s.todayDone) sub = (s.cur>=s.best && s.cur>=3) ? "★ Your best run yet" : (s.best>s.cur ? `Best ${s.best} · keep stacking` : "Logged today — nice");
-  else                 sub = s.best>s.cur ? `Best ${s.best} · streak safe` : "Resting today — streak safe";
-  const dots = s.last.map(on=>`<i class="${on?'on':'miss'}"></i>`).join("") + (canExtend?`<i class="next"></i>`:"");
-  const num = s.cur>=1 ? `${s.cur}<span>in a row</span>` : `<em>${s.best>0?"Streak reset":"Start a streak"}</em>`;
-  return `<div class="hz-streak${lit?' lit':''}${canExtend?' urgent':''}">
-    <div class="hz-flame" aria-hidden="true">${ICO.flame}</div>
-    <div class="hz-streak-main"><div class="hz-streak-num">${num}</div><div class="hz-streak-sub">${sub}</div></div>
-    ${dots?`<div class="hz-streak-dots" aria-hidden="true">${dots}</div>`:""}
-  </div>`;
 }
 function hzMissionHTML(rec){
   const t=todayISO();
@@ -2401,27 +2244,13 @@ function hzMissionHTML(rec){
   const brand = athleteName()? athleteName()+"'s climb" : "Horizon";
   return `<div class="hz-mission vw-fade">
     <div class="hz-brand"><span class="hz-logo">▲</span><span>${esc(brand)}</span><button class="hz-gear" data-hzsettings title="Zones & settings">${ICO.gear}</button></div>
-    <div class="hz-eye">Active mission</div>
     <div class="hz-title2">${esc(mission)}</div>
     <div class="hz-phase"><span class="hz-wk">Week ${curWk} of ${totWk}</span><span class="hz-dot">·</span>${esc(phase)}</div>
-    ${hzStreakHTML(rec)}
     <div class="hz-vol">
       <div class="hz-vol-lab">Weekly volume</div>
       <div class="hz-vol-row"><div class="hz-vol-num">${fmtDist(vol.doneK,false)}<i> / ${fmtDist(vol.planK,false)} ${unit}</i></div><div class="hz-vol-pct">${st.pct}% plan completion</div></div>
       <div class="hz-vol-bar"><i style="width:${Math.min(100,volPct)}%"></i></div>
     </div>
-  </div>`;
-}
-function hzPillsHTML(rec){
-  const t=todayISO();
-  const todays=((rec.board&&rec.board[t])||[]).map(id=>recWO(rec,id)).filter(w=>w&&w.t!=="Rest");
-  const w=todays.find(x=>!(rec.done))||todays[0];
-  const surf = w? surfaceLabel(w):""; const terrain = surf? surf[0].toUpperCase()+surf.slice(1):"Mixed";
-  const sc=readinessScore(state.readiness&&state.readiness[t]);
-  const feel = sc==null?"Tap to log": sc>=80?"Fresh": sc>=60?"Good": sc>=45?"Tired":"Run-down";
-  return `<div class="hz-pills">
-    <button class="hz-pill" data-tile="readiness"><span class="hz-pill-ic">${ICO.gauge}</span><div><div class="hz-pill-l">Readiness</div><div class="hz-pill-v">${sc==null?feel:feel}</div></div></button>
-    <div class="hz-pill"><span class="hz-pill-ic">${ICO.mountain}</span><div><div class="hz-pill-l">Today's terrain</div><div class="hz-pill-v">${esc(terrain)}</div></div></div>
   </div>`;
 }
 // Build an artistic intensity profile (0..1 over normalised time) from the session structure.
@@ -2482,7 +2311,6 @@ function hzHeroHTML(rec){
   const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!(rec.done&&rec.done[focus.id]), isRest=w.t==="Rest";
   const dd=daysBetween(t,fdate);
   const sched = mode==="today"?"Today":(dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]+" "+d(fdate).getDate());
-  const quote = w.note? `<div class="hz-quote">${esc(w.note)}</div>`:"";
   const vert = (w.v!=null&&w.v>0)? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
   const chart = isRest? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vert}</div>`;
   const cta = isRest? `<div class="hz-complete rest">Rest day — recovery is where the gains land.</div>`
@@ -2492,7 +2320,7 @@ function hzHeroHTML(rec){
   const grid = isRest? "" : `<div class="hz-statgrid"><div class="hz-hstat"><div class="l">Target distance</div><div class="v">${w.k!=null?esc(fmtDist(w.k)):"—"}</div></div><div class="hz-hstat"><div class="l">Planned duration</div><div class="v">${w.d?esc(fmtDur(w.d)):"—"}</div></div></div>`;
   return `<div class="hz-hero ${done?'done':''} vw-fade" data-homeopen="${esc(focus.id)}">
     <div class="hz-hero-top"><span class="hz-up">Up next · ${esc(ty.label)}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
-    <div class="hz-hero-title">${esc(w.n)}</div>${quote}${chart}${grid}${cta}</div>${autoregBlockHTML(getWO(focus.id), focus.id)}`;
+    <div class="hz-hero-title">${esc(w.n)}</div>${chart}${grid}${cta}</div>`;
 }
 function hzDoneHTML(rec){
   const startMon=recStartMon(rec);
@@ -2509,7 +2337,7 @@ function hzDoneHTML(rec){
       <span class="hz-done-check">✓</span></button>`;
   }).join("");
   if(!items) return "";
-  return `<div class="hz-sec"><span>What I have done</span><button class="hz-fulllog" data-hzfulllog>Full log</button></div><div class="hz-donelist">${items}</div>`;
+  return `<div class="hz-sec"><span>Recent</span><button class="hz-fulllog" data-hzfulllog>Full log</button></div><div class="hz-donelist">${items}</div>`;
 }
 function renderHome(){
   const rec=primaryPlanRec();
@@ -2544,12 +2372,9 @@ function renderHome(){
     </div>`;
   $("#homeView").innerHTML = `
     ${rec? hzMissionHTML(rec):""}
-    ${rec? hzPillsHTML(rec):""}
-    <div class="hz-sec"><span>What I need to do</span></div>
     ${rec? hzHeroHTML(rec):""}
     ${homeTilesHTML()}
     ${coachPropHTML()}
-    ${seasonNudgeHTML()}
     ${rec? hzDoneHTML(rec):""}
     ${typeof predictorHTML==="function"? predictorHTML():""}
     <div class="home-plans-head"><span>Your plans · ${(state.plans||[]).length}</span>
@@ -2939,111 +2764,6 @@ function efWeekly(n){
   });
   return mons.map(m=>{ const a=byWeek[m].slice().sort((x,y)=>x-y); return {mon:m, ef:a.length? a[Math.floor(a.length/2)] : null}; });
 }
-const FEEL_WORDS=["Wiped","Tired","Okay","Good","Flying"];
-function todayFeel(){
-  const r=(state.readiness&&state.readiness[todayISO()])||{};
-  if(r.feel) return r.feel;
-  const sc=readinessScore(r);                        // derive from a detailed check-in if no quick feel
-  return sc!=null ? Math.max(1,Math.min(5,Math.round(sc/20))) : null;
-}
-// Inline "morning check-in" — one tap on a Wiped→Flying scale, the day's readiness in 2 seconds.
-function renderReadinessCard(){
-  const host=$("#readinessCard"); if(!host) return;
-  host.hidden=true; host.innerHTML="";   // moved off Plan — log readiness from Home's readiness pill / check-in
-}
-$("#readinessCard").addEventListener("click", e=>{
-  const b=e.target.closest("[data-feel]"); if(!b) return;
-  const t=todayISO(); state.readiness=state.readiness||{};
-  const r=state.readiness[t]||{}; r.feel=+b.dataset.feel; state.readiness[t]=r;
-  save(); renderReadinessCard(); renderToday();   // re-render so the hero's readiness nudge updates too
-});
-/* ===== Day-of autoregulation — turns the morning check-in (readiness + niggles) and recent load
-   into a concrete call on TODAY's session, with one tap to apply it. ===== */
-const AREG_HARD=["Threshold","Hills","Simulation"];
-const AREG_NAME={Threshold:"threshold session",Hills:"hill session",Simulation:"race-sim",Long:"long run"};
-function _aregName(w){ return AREG_NAME[w.t] || (TYPES[w.t]&&TYPES[w.t].label||"session").toLowerCase(); }
-function _cap(s){ return s? s[0].toUpperCase()+s.slice(1):s; }
-function lowerLimbNiggle(){
-  const r=state.readiness&&state.readiness[todayISO()]; if(!r||!r.niggles) return null;
-  let area=null, sev=0;
-  for(const k in r.niggles){ if(k!=="other" && r.niggles[k]>sev){ sev=r.niggles[k]; area=k; } }
-  if(!area && r.niggles.other){ area="other"; sev=r.niggles.other; }
-  return sev>=1 ? {area, sev} : null;
-}
-function trimReps(name){
-  const m=/(\d+)\s*[×x]\s*(\d+)\s*(min|mins|m|s|sec|secs)?/i.exec(name||"");
-  if(!m) return null; const reps=+m[1]; if(reps<=2) return null;
-  const unit=m[3]?(/^s/i.test(m[3])?"s":" min"):"";
-  return { oldReps:reps, newReps:reps-1, label:(reps-1)+"×"+m[2]+unit, newName:String(name).replace(/(\d+)(\s*[×x]\s*\d+)/, (_,a,b)=>(reps-1)+b) };
-}
-function autoreg(w, id){
-  if(!w || (state.done&&state.done[id])) return null;
-  const t=todayISO();
-  if(!(state.board[t]||[]).includes(id)) return null;             // today's session only
-  if(w.areg) return {lvl:"applied", verdict:"Tuned to today", detail:"Today's session is adjusted to how you're feeling — run this version, or undo to put the original back.", action:"undo"};
-  if(w.t==="Rest" || w.t==="Race" || w.t==="Sauna") return null;
-  const score=readinessScore(state.readiness&&state.readiness[t]);
-  const nig=lowerLimbNiggle();
-  const acwr=acwrLoadDays()>=10 ? currentAcwr() : null;
-  const hard=AREG_HARD.includes(w.t), long=w.t==="Long", quality=hard||long;
-  if(score==null && !nig) return {lvl:"none", verdict:"Adapt today to how you feel", detail:"Log this morning's check-in and I'll tell you exactly how to run today's session.", action:"checkin"};
-  if(nig && nig.area!=="other" && nig.sev>=2){
-    return quality
-      ? {lvl:"bad", verdict:`Protect the ${nig.area}`, detail:`You flagged your ${nig.area} at ${nig.sev}/3 — never load a niggle on a hard day. Swap the ${_aregName(w)} for an easy 40–45 min spin: same aerobic stimulus, zero pounding. Reassess tomorrow.`, action:"bike"}
-      : {lvl:"warn", verdict:`Mind the ${nig.area}`, detail:`${_cap(nig.area)} at ${nig.sev}/3 — keep today flat, short and easy, and stop the moment it sharpens. The bike is a safe swap if you'd rather not pound it.`, action:"bike"};
-  }
-  if(nig && nig.area!=="other" && nig.sev===1 && quality){
-    return {lvl:"warn", verdict:`Watch the ${nig.area}`, detail:`A mild ${nig.area} (1/3) — probably fine, but warm up thoroughly and bin the session the moment it talks to you during the reps.`, action:"none"};
-  }
-  if(score!=null){
-    if(score<35) return quality
-      ? {lvl:"bad", verdict:"Rest or jog — not today", detail:`Deep in the red (${score}/100). A ${_aregName(w)} won't go well and the risk outweighs the reward. Rest, or 20–30 min easy if you're twitchy, and move the quality to a fresher day.`, action:"rest"}
-      : {lvl:"warn", verdict:"Keep it minimal", detail:`Run-down (${score}/100). An easy day is right — keep it short and genuinely easy, or take it off. Recovery is where the gains land.`, action:"easy"};
-    if(score<50){
-      if(hard){ const tr=trimReps(w.n||""); return {lvl:"warn", verdict:"Dial it back", detail:`Running flat (${score}/100). Cut the ${_aregName(w)}${tr?` — drop to ${tr.label}`:" by a set"} and hold a notch easier, ~2 reps in reserve. A smaller session done well beats a big one survived.`, action:"ease"}; }
-      if(long) return {lvl:"warn", verdict:"Shorten it", detail:`A bit flat (${score}/100). Trim ~20% and keep it steady and aerobic — time on feet matters more than the last few km today.`, action:"ease"};
-      return {lvl:"ok", verdict:"Easy as planned", detail:`Low-ish (${score}/100), but an easy day is exactly what you need — keep it honest-easy and let it restore you.`, action:"none"};
-    }
-    if(acwr!=null && acwr>1.5 && quality){ const tr=hard?trimReps(w.n||""):null; return {lvl:"warn", verdict:"Load is spiking", detail:`You feel ok (${score}/100), but your load is ramping fast (ACWR ${acwr.toFixed(2)}). Resist piling on${tr?` — run it but trim to ${tr.label}`:" — keep it a touch shorter"}, or save the big effort for next week.`, action:"ease"}; }
-    if(score>=85 && quality) return {lvl:"good", verdict:"Green light — attack it", detail:`Fresh and ready (${score}/100). A day to commit to the ${_aregName(w)} and hit the targets — capitalise on feeling good.`, action:"none"};
-    return {lvl:"ok", verdict:"Train as planned", detail:`Solid (${score}/100). Run the ${_aregName(w)} as written, ease into it, and let the legs decide the last reps.`, action:"none"};
-  }
-  return null;
-}
-function _aregActLabel(a){ return a==="bike"?"Swap to the bike":a==="easy"?"Make it easy":a==="rest"?"Take a rest day":a==="ease"?"Ease today's session":"Apply"; }
-function autoregBlockHTML(w, id){
-  const ar=autoreg(w, id); if(!ar) return "";
-  const lvlIcon = ar.lvl==="good"?ICO.bolt : (ar.action==="bike"||ar.lvl==="bad")?ICO.heart : ar.lvl==="applied"?ICO.info : ICO.gauge;
-  let btn="";
-  if(ar.action==="checkin") btn=`<button class="areg-btn" data-areg-ci="1">Log check-in</button>`;
-  else if(ar.action==="undo") btn=`<button class="areg-btn ghost" data-areg-undo="1">Undo</button>`;
-  else if(ar.action!=="none") btn=`<button class="areg-btn" data-areg-apply="${esc(ar.action)}" data-areg-id="${esc(id)}">${_aregActLabel(ar.action)}</button>`;
-  return `<div class="areg ${ar.lvl}">
-    <div class="areg-eye">Today, adjusted</div>
-    <div class="areg-head"><span class="areg-ic">${lvlIcon}</span><span class="areg-verdict">${esc(ar.verdict)}</span></div>
-    <div class="areg-detail">${esc(ar.detail)}</div>
-    ${btn?`<div class="areg-act">${btn}</div>`:""}
-  </div>`;
-}
-function applyAutoreg(id, action){
-  const w=getWO(id); if(!w) return;
-  pushUndo();
-  const e=Object.assign({}, state.edits[id]||{}); e.areg=action;
-  const orig=w.n||(TYPES[w.t]&&TYPES[w.t].label)||"session";
-  if(action==="bike"){ const nig=lowerLimbNiggle(); e.t="Bike"; e.z="Z1"; e.sf="bike"; e.n=`Easy spin${nig&&nig.area!=="other"?` — easy on the ${nig.area}`:""}`; e.d=Math.max(30,Math.round(w.d||45)); e.k=null; e.v=null;
-    e.note=`Swapped from "${orig}" to protect a niggle — spin easy, no impact, no pressure on the joint.`; }
-  else if(action==="easy"){ e.t="Easy"; e.z="Z2"; e.sf=w.sf==="fell"?"trail":(w.sf||"road"); e.n="Easy aerobic"; e.d=Math.max(20,Math.round((w.d||40)*0.7)); if(w.k!=null) e.k=Math.round((w.k)*0.7*10)/10; e.v=null;
-    e.note=`Quality moved off today — readiness low. Swapped from "${orig}". Keep it genuinely easy.`; }
-  else if(action==="rest"){ e.t="Rest"; e.n="Rest"; e.z="—"; e.d=null; e.k=null; e.v=null;
-    e.note=`Rest taken — readiness in the red. "${orig}" moved to a fresher day.`; }
-  else if(action==="ease"){ const tr=trimReps(w.n||"");
-    if(tr){ e.n=tr.newName; const f=tr.newReps/tr.oldReps; if(w.d) e.d=Math.round(w.d*(0.45+0.55*f)); if(w.k!=null) e.k=Math.round(w.k*(0.45+0.55*f)*10)/10; }
-    else { if(w.d) e.d=Math.round(w.d*0.8); if(w.k!=null) e.k=Math.round(w.k*0.8*10)/10; }
-    e.note=(w.note? w.note+"\n":"")+`Eased for readiness${tr?` — ${tr.oldReps}→${tr.newReps} reps`:""}. Hold ~2 reps in reserve.`; }
-  else return;
-  state.edits[id]=e; save(); render();
-  if(editingId===id && document.querySelector("#backdrop.open")){ const nw=getWO(id); if(nw) $("#mBody").innerHTML=modalViewHTML(nw); }
-}
 function renderToday(){
   const host=$("#todayCard"); if(!host) return;
   const t=todayISO();
@@ -3063,7 +2783,6 @@ function renderToday(){
   const dd=daysBetween(t,fdate);
   const eyebrow = mode==="today" ? "Today" : (dd===1?"Tomorrow":`In ${dd} days · ${WD[d(fdate).getDay()]} ${d(fdate).getDate()} ${MO[d(fdate).getMonth()]}`);
   const meta=[]; if(w.d)meta.push(fmtDur(w.d)); if(w.k!=null)meta.push(fmtDist(w.k)); if(w.v!=null)meta.push("↗ "+fmtVert(w.v)); if(w.z&&w.z!=="—")meta.push(w.z);
-  const why=((w.note||"").split("\n")[0]||"").trim() || ((TYPE_WHY[w.t]||{}).feel||"");
   const isKey = keySessionId(mondayOf(fdate))===focus.id;
   const mon=mondayOf(fdate); const wids=[]; for(let di=0;di<7;di++)(state.board[addDays(mon,di)]||[]).forEach(id=>wids.push(id));
   const T=totals(wids);
@@ -3095,17 +2814,7 @@ function renderToday(){
   else if(w.z&&w.z!=="—") tiles.push(["Effort", w.z]);
   const surf=surfaceLabel(w); if(surf) tiles.push(["Terrain", surf[0].toUpperCase()+surf.slice(1)]);
   const tilesHTML = (!isRest && tiles.length)? `<div class="hero-tiles">${tiles.slice(0,3).map(t=>`<div class="ht"><b>${esc(t[1])}</b><i>${esc(t[0])}</i></div>`).join("")}</div>` : "";
-  // readiness-aware coach note (the "adapts your run" payoff) — advisory, leads the quote when present
-  const feel=(mode==="today" && !done && !isRest) ? todayFeel() : null;
-  const coachMsg = feel==null ? "" :
-      feel>=5 ? "Feeling Flying — green light to attack the quality. Capitalize on a good day."
-    : feel===4 ? "Feeling Good — run it as planned and press where it counts."
-    : feel===3 ? "Feeling Okay — steady as prescribed; let the legs warm into it."
-    : feel===2 ? "Feeling Tired — keep it honest-easy and cut a rep if the legs argue."
-    : "Feeling Wiped — easy or off today. Adaptation happens in recovery, not in a forced session.";
-  // ---- Horizon hero (dark, with the artistic intensity line) ----
   const sched = mode==="today" ? "Today" : (dd===1?"Tomorrow":`${WD_FULL[d(fdate).getDay()]} ${d(fdate).getDate()}`);
-  const quoteText = why;   // readiness now drives the richer "Today, adjusted" block below the hero
   const vertBadge = (w.v!=null&&w.v>0) ? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>` : "";
   const chart = isRest ? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`;
   const grid = isRest ? "" : `<div class="hz-statgrid">
@@ -3118,7 +2827,7 @@ function renderToday(){
   host.innerHTML = `<div class="hz-hero ${done?'done':''}" data-open="${focus.id}">
       <div class="hz-hero-top"><span class="hz-up">${mode==="today"?"Today":"Up next"} · ${esc(ty.label)}${isKey?" ★":""}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
       <div class="hz-hero-title">${esc(w.n)}</div>
-      ${quoteText?`<div class="hz-quote">${esc(quoteText)}</div>`:""}${chart}${grid}${cta}</div>${mode==="today"?autoregBlockHTML(w, focus.id):""}`;
+      ${chart}${grid}${cta}</div>`;
 }
 function renderRaceBanner(){
   const host=$("#raceBanner"); if(!host) return;
@@ -3203,22 +2912,6 @@ function loadBand(acwr, ready){
   if(acwr<0.8) return {lvl:"neutral", label:"Easing · "+acwr.toFixed(2), note:"Load is dropping — ideal in a taper/recovery week, watch for detraining otherwise."};
   return {lvl:"good", label:"On track · "+acwr.toFixed(2), note:"Load is building in the safe zone. Keep it rolling."};
 }
-function readinessScore(r){ if(!r) return null; const v=[r.sleep,r.legs,r.energy,r.mot].filter(x=>x!=null); if(v.length) return Math.round(v.reduce((a,b)=>a+b,0)/(v.length*5)*100); if(r.feel) return r.feel*20; return null; }
-function coachNudge(score, acwr){
-  if(score<=45) return "You're flagging — keep today easy or trim the hard bits. Adaptation happens in recovery.";
-  if(acwr!=null && acwr>1.5) return "Feeling ok, but load is spiking — resist piling more on today.";
-  if(score>=80) return "Fresh and ready — a good day to attack a quality session.";
-  return "Solid — train as planned and listen to the legs.";
-}
-function miniChart(cap, vals, max, labels, curIdx, emptyMsg){
-  if(!vals.some(v=>v!=null && v>0)) return `<div class="cc-chart-empty">${esc(emptyMsg)}</div>`;
-  const m=Math.max(1,max);
-  const bars=vals.map((v,i)=> v==null
-    ? `<i class="empty" title="no data"></i>`
-    : `<i class="${i===curIdx?'cur':''}" style="height:${Math.max(3,Math.round(v/m*32))}px" title="${v}"></i>`).join("");
-  const xl=labels.map((l,i)=>`<span class="${i===curIdx?'cur':''}">${esc(l)}</span>`).join("");
-  return `<div class="cc-chart"><div class="cc-chart-cap">${esc(cap)}</div><div class="cc-bars">${bars}</div><div class="cc-xlabels">${xl}</div></div>`;
-}
 // Weekly coach suggestion (written into state.coachProposal by the Worker). Read-only banner + one-click apply.
 function coachPropHTML(){
   const p=state.coachProposal; if(!p || typeof p!=="object") return "";
@@ -3263,19 +2956,6 @@ function dismissCoachProposal(){
   writeLocal(); cloudPushNow(); render();
 }
 // Next automatic coach run = next Sunday 17:00 UTC (cron "0 17 * * SUN" on the Worker).
-function nextCoachRun(){
-  const now=new Date();
-  const r=new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 17,0,0));
-  while(r.getUTCDay()!==0 || r.getTime()<=now.getTime()) r.setUTCDate(r.getUTCDate()+1);
-  return r;
-}
-function coachNextHTML(){
-  const now=new Date(), r=nextCoachRun(), ms=r-now;
-  const days=Math.floor(ms/86400000), hrs=Math.floor((ms%86400000)/3600000);
-  const when = days>=1 ? `in ${days} day${days===1?"":"s"}` : (hrs>=1 ? `in ${hrs} hour${hrs===1?"":"s"}` : "within the hour");
-  const dlabel = `${WD[r.getDay()]} ${r.getDate()} ${MO[r.getMonth()]}`;
-  return `<div class="coach-next">${ICO.bolt} Coach reviews your training every Sunday — next review <b>${when}</b> · ${dlabel}</div>`;
-}
 /* ---- Race predictor (free, formula-based: Riegel T2 = T1 × (D2/D1)^1.06) ---- */
 function parseRaceTime(s){
   if(!s) return null; const p=String(s).trim().split(":").map(Number);
@@ -3316,8 +2996,7 @@ function fmtRaceTime(min){
 function predPace(minPerKm){ const s=Math.round(minPerKm*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
 function predictorHTML(){
   const a=predictorAnchor();
-  if(!a) return `<div class="coach-card" style="margin-bottom:16px"><h4>Race predictor</h4>
-    <div class="cc-note">Log a few runs with time + distance (or a race on the Progress tab) and your predicted 5K / 10K / half-marathon times appear here. No APIs — pure maths.</div></div>`;
+  if(!a) return "";
   const chips=[["5K",5],["10K",10],["HALF",21.0975]].map(([l,dk])=>{
     const t=a.min*Math.pow(dk/a.km,1.06);
     return `<div class="pred"><div class="pl">${l}</div><div class="pv">${fmtRaceTime(t)}</div><div class="pp">${predPace(t/dk)}/km</div></div>`;
@@ -3329,104 +3008,10 @@ function predictorHTML(){
     <div class="pred-row">${chips}</div>
     <div class="cc-note">${note} Terrain, taper and race day move these — log real races on the Progress tab to sharpen them.</div></div>`;
 }
-function renderCoach(){
-  const host=$("#coachStrip"); if(!host) return;
-  const today=todayISO();
-  // ---- load ----
-  const acute=rollingLoad(today,7), prev=rollingLoad(addDays(today,-7),7);
-  const acwr = currentAcwr();                       // smooth EWMA ratio (no cold-start spike)
-  const ready = acwrLoadDays()>=10;                 // ~10 logged training days before the ratio means anything
-  const trend = prev>0 ? Math.round((acute-prev)/prev*100) : null;
-  const band = loadBand(ready?acwr:null, ready);
-  const wkLoads=[], wkLabels=[];
-  for(let i=5;i>=0;i--){ const mon=addDays(mondayOf(today),-7*i); let l=0; for(let di=0;di<7;di++) l+=dayLoad(addDays(mon,di)); wkLoads.push(Math.round(l)); wkLabels.push(i===0?"now":String(d(mon).getDate())); }
-  const loadChart = miniChart("Weekly load · last 6 wks", wkLoads, Math.max(...wkLoads,1), wkLabels, 5, "Builds as you train — your last 6 weeks of load will chart here.");
-  const trendHTML = trend==null?"":`<span class="cc-trend">${trend>=0?"▲":"▼"} ${Math.abs(trend)}% vs prev 7d</span>`;
-  const loadCard=`<div class="coach-card">
-    <h4>Training load · last 7 days</h4>
-    <div class="cc-big">${Math.round(acute)} ${trendHTML}</div>
-    <div class="cc-badge ${band.lvl}">${esc(band.label)}</div>
-    <div class="cc-note">${band.note}</div>
-    ${loadChart}
-  </div>`;
-  // ---- readiness ----
-  const r=state.readiness&&state.readiness[today], score=readinessScore(r);
-  const days=[], rLabels=[];
-  for(let i=6;i>=0;i--){ const dt=addDays(today,-i); days.push(readinessScore(state.readiness&&state.readiness[dt])); rLabels.push(WD[d(dt).getDay()].slice(0,1)); }
-  const rChart=miniChart("Readiness · last 7 days", days, 100, rLabels, 6, "Check in a few days to see your readiness trend here.");
-  let readyCard;
-  if(score==null){
-    let last=null; for(let i=1;i<=7;i++){ const s=readinessScore(state.readiness&&state.readiness[addDays(today,-i)]); if(s!=null){ last=s; break; } }
-    readyCard=`<div class="coach-card">
-      <h4>Readiness</h4>
-      <button class="btn primary" data-ci="1" style="width:100%;margin-top:9px">Morning check-in ›</button>
-      <div class="cc-note">10-second tap: sleep, legs, energy, motivation.${last!=null?` Last logged: ${last}%.`:""}</div>
-      ${rChart}
-    </div>`;
-  } else {
-    const word = score>=80?"Fresh":score>=60?"Good":score>=45?"A bit tired":"Run down";
-    readyCard=`<div class="coach-card">
-      <h4>Readiness · today</h4>
-      <div class="cc-big">${score}% <span class="cc-trend">${word}</span></div>
-      <div class="cc-note">${coachNudge(score, acwr)}</div>
-      ${rChart}
-      <button class="btn" data-ci="1" style="width:100%;margin-top:11px;font-size:12px;padding:7px">Update check-in</button>
-    </div>`;
-  }
-  host.innerHTML=`${coachPropHTML()}<div class="coach-strip">${loadCard}${readyCard}</div>${predictorHTML()}${coachNextHTML()}`;
-}
-document.addEventListener("click", e=>{ if(e.target.closest("[data-ci]")) openCheckin(); });
-// Day-of autoregulation actions (apply / log check-in / undo) — works from the today card and the modal
-document.addEventListener("click", e=>{
-  const ap=e.target.closest("[data-areg-apply]");
-  if(ap){ e.stopPropagation(); applyAutoreg(ap.getAttribute("data-areg-id"), ap.getAttribute("data-areg-apply")); return; }
-  if(e.target.closest("[data-areg-ci]")){ e.stopPropagation(); openCheckin(); return; }
-  if(e.target.closest("[data-areg-undo]")){ e.stopPropagation(); undo(); return; }
-});
 document.addEventListener("click", e=>{
   if(e.target.closest("[data-coach-apply]")) applyCoachProposal();
   else if(e.target.closest("[data-coach-dismiss]")) dismissCoachProposal();
 });
-const NIGGLE_AREAS=["shin","calf","knee","ankle","hip","foot","other"];
-function openCheckin(){
-  closeCheckin();
-  const today=todayISO(), cur=(state.readiness&&state.readiness[today])||{};
-  const dims=[["sleep","Sleep"],["legs","Legs / freshness"],["energy","Energy"],["mot","Motivation"]];
-  const nig=cur.niggles||{};
-  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="ciBack";
-  back.innerHTML=`<div class="sd-pick"><h3>How are you today?</h3>
-    ${dims.map(d=>`<div class="ci-row"><span class="ci-lab">${d[1]}</span><div class="ci-scale" data-dim="${d[0]}">${[1,2,3,4,5].map(n=>`<button data-n="${n}" aria-pressed="${cur[d[0]]==n}">${n}</button>`).join("")}</div></div>`).join("")}
-    <div class="ci-ends"><span>1 · poor</span><span>great · 5</span></div>
-    <div class="ci-row" style="align-items:flex-start"><span class="ci-lab">Niggles <small>tap to cycle 0–3</small></span>
-      <div class="nig-chips">${NIGGLE_AREAS.map(a=>`<button type="button" class="nig" data-nig="${a}" data-sev="${nig[a]||0}">${a[0].toUpperCase()+a.slice(1)}<b>${nig[a]?` ${nig[a]}`:""}</b></button>`).join("")}</div></div>
-    <div class="ci-row"><span class="ci-lab">Sleep hrs <small>optional</small></span><input id="ciSleepH" class="sd-f" type="number" inputmode="decimal" step="0.5" placeholder="7.5" value="${cur.sleepH??""}" style="width:92px;text-align:center"></div>
-    <div class="ci-row"><span class="ci-lab">Resting HR <small>optional</small></span><input id="ciRhr" class="sd-f" type="number" inputmode="numeric" placeholder="bpm" value="${cur.rhr??""}" style="width:92px;text-align:center"></div>
-    <textarea id="ciNote" class="sd-note" placeholder="Anything notable… (optional)">${esc(cur.note||"")}</textarea>
-    <button class="btn primary" id="ciSave" style="width:100%;margin-top:12px">Save check-in</button></div>`;
-  back.addEventListener("click", ev=>{
-    if(ev.target===back){ closeCheckin(); return; }
-    const ng=ev.target.closest(".nig");
-    if(ng){ const sev=(+ng.dataset.sev+1)%4; ng.dataset.sev=sev; ng.querySelector("b").textContent=sev?` ${sev}`:""; return; }
-    const sb=ev.target.closest(".ci-scale button");
-    if(sb){ [...sb.parentElement.children].forEach(b=>b.setAttribute("aria-pressed","false")); sb.setAttribute("aria-pressed","true"); return; }
-    if(ev.target.id==="ciSave"){ saveCheckin(back); }
-  });
-  document.body.appendChild(back);
-  refreshScrollLock();
-}
-function saveCheckin(back){
-  const today=todayISO(), r={};
-  back.querySelectorAll(".ci-scale").forEach(sc=>{ const sel=sc.querySelector('[aria-pressed="true"]'); if(sel) r[sc.getAttribute("data-dim")]=+sel.getAttribute("data-n"); });
-  const nig={}; back.querySelectorAll(".nig").forEach(b=>{ const s=+b.dataset.sev; if(s>0) nig[b.dataset.nig]=s; });
-  if(Object.keys(nig).length) r.niggles=nig;
-  const sh=back.querySelector("#ciSleepH").value.trim(); if(sh) r.sleepH=+sh;
-  const rhr=back.querySelector("#ciRhr").value.trim(); if(rhr) r.rhr=+rhr;
-  const note=back.querySelector("#ciNote").value.trim(); if(note) r.note=note;
-  state.readiness=state.readiness||{};
-  if(Object.keys(r).length) state.readiness[today]=r; else delete state.readiness[today];
-  closeCheckin(); save(); render();
-}
-function closeCheckin(){ const b=$("#ciBack"); if(b) b.remove(); refreshScrollLock(); }
 
 /* ============================ PROGRESS (athlete view) ============================ */
 /* Long-term, cross-plan layer: weekly volume + vert, intensity balance, races, benchmark tests.
@@ -3484,23 +3069,6 @@ function pgACWRChart(series){
   </svg>`;
 }
 // niggle dots (coloured by worst severity) over faint readiness bars, one column per day
-function pgWellnessChart(days){
-  const today=todayISO(), W=320, H=58, cw=W/days;
-  let bars="", dots="", any=false, anyNig=false;
-  for(let i=0;i<days;i++){
-    const dt=addDays(today,-(days-1-i));
-    const r=state.readiness&&state.readiness[dt];
-    const sc=readinessScore(r);
-    if(sc!=null){ any=true; const h=(sc/100)*(H-18);
-      bars+=`<rect x="${(i*cw+0.5).toFixed(1)}" y="${(H-2-h).toFixed(1)}" width="${Math.max(1,cw-1.2).toFixed(1)}" height="${h.toFixed(1)}" fill="var(--line2)" opacity=".55"><title>${dt} · readiness ${sc}%</title></rect>`; }
-    const sev=r&&r.niggles? Math.max(0,...Object.values(r.niggles)) : 0;
-    if(sev>0){ any=true; anyNig=true;
-      const col=sev>=3?"var(--bad)":sev===2?"var(--accent)":"var(--warn)";
-      const areas=Object.entries(r.niggles).map(([a,s])=>a+" "+s).join(", ");
-      dots+=`<circle cx="${(i*cw+cw/2).toFixed(1)}" cy="7" r="3.1" fill="${col}"><title>${dt} · ${areas}</title></circle>`; }
-  }
-  return any? {svg:`<svg viewBox="0 0 ${W} ${H}" class="pg-svg">${bars}${dots}</svg>`, anyNig} : null;
-}
 function athleteWeeks(n){
   const mons=[]; const thisMon=mondayOf(todayISO());
   for(let i=n-1;i>=0;i--) mons.push(addDays(thisMon,-7*i));
@@ -3863,16 +3431,6 @@ function renderProgress(){
       + (acwrSvg? `<p class="pg-sub" style="margin:12px 0 2px">Ramp rate (ACWR) · last 16 weeks — green band 0.8–1.3 is the safe zone, dashed line 1.5 is spike risk</p>${acwrSvg}`:"")
       + `<p class="pg-verdict">${acwrNote}</p>`
     : `<div class="pg-empty">Fills in as you complete sessions. Load = your RPE × minutes when you log effort, else HR time-in-zone, else planned intensity.</div>`;
-  // wellness: niggle flags over readiness
-  const well=pgWellnessChart(56);
-  const nigDays=[]; for(let i=0;i<14;i++){ const r=state.readiness&&state.readiness[addDays(todayISO(),-i)]; if(r&&r.niggles) Object.entries(r.niggles).forEach(([a,s])=>nigDays.push([a,s])); }
-  const worstByArea={}; nigDays.forEach(([a,s])=>{ worstByArea[a]=Math.max(worstByArea[a]||0,s); });
-  const nigSummary=Object.keys(worstByArea).length
-    ? `Last 14 days: ${Object.entries(worstByArea).map(([a,s])=>`<b>${a} ${s}/3`+"</b>").join(" · ")}. ${Object.values(worstByArea).some(s=>s>=2)?"Anything at 2+ that lasts a few days: ease the week and swap impact for the bike — that's how a niggle stays a niggle.":"Low-grade and noted — exactly what the early-warning system is for."}`
-    : "No niggles flagged in the last 14 days.";
-  const wellCardBody = well
-    ? `${well.svg}<div class="pg-zleg" style="margin-top:7px"><span><span class="dot" style="background:var(--warn)"></span>mild 1</span><span><span class="dot" style="background:var(--accent)"></span>sore 2</span><span><span class="dot" style="background:var(--bad)"></span>bad 3</span><span style="margin-left:auto;color:var(--faint)">bars = daily readiness</span></div><p class="pg-verdict">${nigSummary}</p>`
-    : `<div class="pg-empty">Log the morning check-in (home page) — niggles like shin or calf tenderness get a one-tap flag there, and this timeline becomes your early-warning system.</div>`;
   const cur=wks[wks.length-1];
   const l4=wks.slice(-4);
   const avg4min=l4.reduce((a,w)=>a+w.min,0)/4, avg4vert=l4.reduce((a,w)=>a+w.vert,0)/4;
@@ -3990,8 +3548,6 @@ function renderProgress(){
       ${engineBody}</div>
     <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
       ${loadCardBody}</div>
-    <div class="pg-card"><h4>Niggles &amp; readiness · last 8 weeks</h4><p class="pg-sub">The early-warning system: flag tender shins/calves in the morning check-in before they become injuries.</p>
-      ${wellCardBody}</div>
     <div class="pg-card"><h4>Intensity balance · last 28 days</h4>
       ${ztot?`<div class="pg-zbar">${zbar}</div><div class="pg-zleg">${zleg}</div>`:""}
       <p class="pg-verdict">${verdict}</p></div>
@@ -4776,7 +4332,7 @@ function modalViewHTML(w){
     logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
   }
   const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
-  return `<div class="mv2">${sesCard}${autoregBlockHTML(w, editingId)}${planCard}${whyCard}${logCard}</div>`;
+  return `<div class="mv2">${sesCard}${planCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
@@ -5121,22 +4677,6 @@ function openLibrarySheet(){
     closeSdPicker(); importLibraryPlan(it);
   });
   document.body.appendChild(back); refreshScrollLock();
-}
-// Home banner: when every plan you own is inside its final 2 weeks, offer the season's next block.
-function seasonNudgeHTML(){
-  let lastDate=null;
-  (state.plans||[]).forEach(rec=>{
-    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
-      if(!w||!w.date) return; if(rec.deleted&&rec.deleted[w.id]) return;
-      if(!lastDate||w.date>lastDate) lastDate=w.date;
-    });
-  });
-  if(!lastDate) return "";
-  if(daysBetween(todayISO(), lastDate) > 14 && lastDate>todayISO()) return "";   // not near the end yet
-  const next=PLAN_LIBRARY.find(p=> !libHave(p.title) && p.end>lastDate);
-  if(!next) return "";
-  const ended = lastDate<todayISO();
-  return `<div class="pg-goal" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">${ICO.calendar} <span style="flex:1;min-width:200px">Your training ${ended?"finished "+mdShort(lastDate):"runs out on "+mdShort(lastDate)} — the season doesn't stop there. Next block: <b>${esc(next.title)}</b> · ${mdShort(next.start)} – ${mdShort(next.end)}.</span><button class="btn primary" data-libadd="${esc(next.title)}">Add next block</button></div>`;
 }
 
 /* ============================ MENU ============================ */
