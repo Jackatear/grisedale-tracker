@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0f1713" />
-<meta name="app-build" content="2026-06-08zt" />
+<meta name="app-build" content="2026-06-08zu" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -212,7 +212,15 @@
   .prow b{color:var(--txt);font-variant-numeric:tabular-nums}
 
   /* ---------- Toolbar ---------- */
-  .toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+  .toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .tb-sp{flex:1}
+  .toolbar .tbi{min-height:44px;min-width:44px;justify-content:center}
+  .toolbar .seg button{min-height:40px;padding:0 14px}
+  .searchrow{margin:-4px 0 12px}
+  .searchrow .search{width:100%}
+  .filtermenu{position:fixed!important;left:10px!important;right:10px!important;top:auto!important;bottom:calc(84px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;min-width:0;box-shadow:var(--shadow);padding:12px;max-height:60vh;overflow:auto}
+  .undo-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));z-index:80;display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:11px 16px;box-shadow:var(--shadow);font-size:13px;animation:vwIn .2s ease}
+  .undo-toast button{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;min-height:24px}
   .chips{display:flex;gap:6px;flex-wrap:wrap}
   .chip{
     border:1px solid var(--line2);background:transparent;color:var(--muted);
@@ -234,11 +242,19 @@
   .seg button[aria-pressed="true"]{background:var(--panel);color:var(--txt);font-weight:600}
 
   /* ---------- Weeks ---------- */
-  .week{margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--bg)}
+  .week{margin-bottom:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg)}
+  .week-head{border-radius:calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0}
+  .week.collapsed .week-head{border-radius:calc(var(--radius) - 1px)}
   .week-head{
-    display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;
+    display:flex;align-items:center;gap:11px;padding:12px 15px;cursor:pointer;min-height:48px;
     background:var(--panel);border-bottom:1px solid var(--line);transition:background .15s;
+    position:sticky;top:var(--topbarH,60px);z-index:6;
   }
+  .wh-main{flex:1;min-width:0;display:flex;align-items:baseline;gap:9px;overflow:hidden}
+  .wh-sum{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+  .wh-sub{font-size:12px;color:var(--muted);padding:10px 15px 0;line-height:1.4}
+  .wh-sub b{color:var(--txt);font-weight:700}
+  .wh-dot{margin:0 6px;color:var(--faint)}
   .week.collapsed .week-head{border-bottom:0}
   .week-head:hover{background:var(--panel2)}
   .week-head .caret{transition:.2s;color:var(--faint);font-size:11px}
@@ -253,15 +269,12 @@
   .wstat b{color:var(--txt);font-weight:600;font-variant-numeric:tabular-nums}
   .week.flash-week{animation:wkflash 1.2s ease}
   @keyframes wkflash{0%,100%{box-shadow:none}25%{box-shadow:0 0 0 2px var(--accent)}}
-  .botnav{display:none}
-  @media (max-width:700px){
-    .botnav{display:flex;position:fixed;left:11px;right:11px;bottom:max(8px, calc(env(safe-area-inset-bottom) - 12px));z-index:35;gap:3px;background:linear-gradient(180deg,#30362c,#252b22);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:6px;box-shadow:0 12px 34px rgba(16,20,14,.42)}
-    .botnav .bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 7px;background:none;border:0;border-radius:15px;color:rgba(236,238,231,.5);font:inherit;font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .16s,background .16s}
-    .botnav .bn svg{width:21px;height:21px}
-    .botnav .bn.active{color:#b4ee5a;background:rgba(255,255,255,.07)}
-    .tabsrow{display:none!important}       /* replaced by the bottom nav on phones (must beat the later desktop display:flex) */
-    body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
-  }
+  /* One nav: the floating bottom bar, on every width */
+  .botnav{display:flex;position:fixed;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 22px));bottom:max(8px, calc(env(safe-area-inset-bottom) - 12px));z-index:35;gap:3px;background:linear-gradient(180deg,#1d2a22,#141f19);border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:6px;box-shadow:0 12px 34px rgba(4,10,6,.5)}
+  .botnav .bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:7px 0 6px;background:none;border:0;border-radius:15px;color:rgba(233,241,234,.5);font:inherit;font-size:10px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .16s,background .16s}
+  .botnav .bn svg{width:21px;height:21px}
+  .botnav .bn.active{color:var(--accent);background:rgba(255,255,255,.07)}
+  body{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
   .phasebadge{font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid var(--line2);color:var(--muted)}
   .wk-adj-badge{font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
   .wk-adj-badge.down{color:var(--t-recovery);background:color-mix(in srgb,var(--t-recovery) 14%,transparent)}
@@ -288,15 +301,20 @@
 
   /* ---------- Card ---------- */
   .card{
-    background:var(--panel);border:1px solid var(--line2);border-left:2px solid var(--c);
-    border-radius:8px;padding:9px 10px;cursor:grab;position:relative;transition:border-color .12s,box-shadow .12s;
+    background:var(--panel);border:1px solid var(--line2);border-left:4px solid var(--zc,var(--c));
+    border-radius:10px;padding:10px 26px 10px 11px;cursor:grab;position:relative;transition:border-color .12s,box-shadow .12s,transform .18s ease,opacity .18s ease;
+    touch-action:pan-y;
   }
+  .card .cstat{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14.5px;font-weight:700;letter-spacing:-.01em;margin-top:5px;font-variant-numeric:tabular-nums}
+  .card .cgrip{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:18px;height:26px;color:var(--faint);opacity:.45}
+  .card .cgrip svg{width:100%;height:100%}
+  .card.swiping{transition:none}
   .card:hover{box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--c) 40%,var(--line2))}
   .card.dragging{opacity:.4}
   .card .ctype{display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--c)}
   .card .ctype .csurf{color:var(--faint);font-weight:600}
   .card .ctype .icons{margin-left:auto;display:flex;gap:3px;font-size:11px;opacity:.7;filter:grayscale(.2)}
-  .card .cname{font-size:12.5px;font-weight:600;margin:5px 0 6px;line-height:1.3}
+  .card .cname{font-size:12px;font-weight:500;color:var(--muted);margin:3px 0 6px;line-height:1.35}
   .card .cmeta{display:flex;flex-wrap:wrap;gap:5px}
   .pill{font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums}
   .pill.zone{color:var(--muted);border-color:var(--line)}
@@ -317,9 +335,10 @@
   .exec-read.bad .exec-pct{color:var(--bad)}
   .exec-zone{font-size:12px;color:var(--muted);margin:-4px 0 10px;padding-left:2px}
   .check{
-    position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line2);
+    position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);
     background:transparent;display:grid;place-items:center;color:transparent;font-size:11px;transition:.15s;
   }
+  .check::before{content:"";position:absolute;inset:-12px}
   .check:hover{border-color:var(--good)}
   .card.done{opacity:.5}
   .card.done .cname{text-decoration:line-through;text-decoration-color:var(--faint)}
@@ -784,6 +803,18 @@
   .menu button{text-align:left;background:transparent;border:0;color:var(--txt);padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
   .menu button:hover{background:var(--bg2)}
   .menu .sep{height:1px;background:var(--line);margin:5px 4px}
+  .menu button{min-height:44px}
+  .menu button.danger{color:var(--bad)}
+  .menu-row{display:flex;align-items:center;gap:4px}
+  .menu-row button{flex:1;text-align:left;background:transparent;border:0;color:var(--txt);padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer;min-height:44px}
+  .menu-row button:hover{background:var(--bg2)}
+  .menu-row .menu-mini{flex:0 0 auto;font-size:11.5px;color:var(--bad);opacity:.85}
+  /* Settings sheet */
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+  .set-lab{font-size:13.5px;font-weight:600}
+  .set-seg{display:inline-flex;gap:3px;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;padding:3px}
+  .set-seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12.5px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;min-height:38px}
+  .set-seg button[aria-pressed="true"]{background:var(--accent);color:#16241b}
   .dropzone{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:color-mix(in srgb,var(--bg) 76%,transparent);backdrop-filter:blur(2px)}
   .dropzone.show{display:flex}
   .dz-inner{pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:7px;padding:44px 70px;border:2px dashed var(--accent);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}
@@ -804,12 +835,7 @@
   .undobtn:disabled{border-color:var(--line2);background:transparent;color:var(--faint);opacity:.5;cursor:default;font-weight:500}
 
   /* tabs + strength view */
-  .tabs{display:inline-flex;gap:4px;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:3px;margin-bottom:20px}
-  .tab{background:transparent;border:0;color:var(--muted);padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
-  .tab[aria-pressed="true"]{background:var(--panel);color:var(--txt)}
-  .tab:hover:not([aria-pressed="true"]){color:var(--txt)}
-  .tabsrow{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-  .tabsrow .tabs{margin-bottom:0}
+    .tabsrow{display:flex;align-items:center;gap:10px;margin-bottom:20px}
   .iconbtn.back{padding:8px 12px}
   /* home / plan library */
   .home-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
@@ -891,7 +917,8 @@
   .sd-set{width:46px;flex:0 0 auto;font:inherit;font-size:12.5px;text-align:center;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 4px;font-variant-numeric:tabular-nums}
   .sd-set:focus{outline:none;border-color:var(--accent)}
   .sd-set::placeholder{color:var(--faint)}
-  .sd-prevhint{font-size:11px;color:var(--faint);margin-left:3px;white-space:nowrap}
+  .sd-prevhint{font-size:11px;color:var(--muted);margin-left:3px;white-space:nowrap;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:0 9px;min-height:34px;font:inherit;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+  .sd-prevhint:active{transform:scale(.96)}
   .sd-skipnote{margin-top:8px;width:100%;font:inherit;font-size:12px;background:var(--bg2);border:1px solid var(--line2);color:var(--txt);border-radius:8px;padding:7px 9px}
   .sd-skipnote:focus{outline:none;border-color:var(--accent)}
   .sd-addrow{display:inline-flex;margin:8px 0 2px;background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:2px 0}
@@ -1044,17 +1071,7 @@
     .stat .sub{font-size:10px;margin-top:2px}
     .bar{margin-top:9px;height:5px}
     .prow{font-size:10.5px;margin-top:7px}
-    .tabs{margin-bottom:14px;width:100%}
-    .tab{flex:1;text-align:center}
-    /* one-row toolbar: search collapses behind ⌕, Zones/Weeks live in the ⋯ menu */
     .toolbar{gap:6px;margin-bottom:14px}
-    .toolbar .iconbtn,.toolbar .undobtn{font-size:12px;padding:7px 8px}
-    .toolbar .seg button{padding:6px 9px;font-size:12px}
-    #zonesBtn,#collapseBtn{display:none}
-    #searchBtn{display:inline-flex!important;font-size:15px;line-height:1;padding:5px 9px}
-    .search{display:none}
-    .toolbar.searching .search{display:block;flex:1 1 100%;order:-1}
-    .toolbar.searching #searchBtn{border-color:var(--accent);color:var(--accent)}
     /* weekly calendar → vertical agenda (no sideways scrolling, much nicer to tap) */
     .week-head{flex-wrap:wrap;row-gap:5px;padding:11px 13px}
     .week-head .wstats{gap:12px}
@@ -1143,19 +1160,9 @@
   .card .cname{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
   /* 7 · week cards: pill row / bold title / dates / icon stat-bar with hairline dividers */
   .week{background:var(--panel);border-radius:14px;border:1px solid color-mix(in srgb,var(--line) 75%,transparent);box-shadow:0 1px 2px rgba(38,41,31,.04)}
-  .week-head{display:block;padding:14px 16px 0}
-  .wh-top{display:flex;align-items:center;gap:9px}
-  .wh-sp{flex:1}
-  .wh-title{font-family:var(--sans);font-weight:700;font-size:15px;letter-spacing:-.01em;margin:10px 0 2px;line-height:1.3}
-  .wh-title b{font-weight:inherit}
-  .wh-dates{font-size:12px;color:var(--muted)}
-  .wh-stats{display:flex;margin:12px -16px 0;padding:10px 6px;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-  .whs{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:1px 3px}
-  .whs+.whs{border-left:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
-  .whl{font-style:normal;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600}
-  .whs b{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+
   .week.current{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 4%,var(--panel))}
-  .week.current>.week-head{background:transparent;border-left:0}
+  .week.current>.week-head{background:color-mix(in srgb,var(--accent) 8%,var(--panel));border-left:0}
   @media (max-width:700px){
     .whs{gap:2px}
     .whs b{font-size:11px}
@@ -1348,6 +1355,13 @@
   .home-empty h2{font-size:20px;margin:0 0 6px}
   .home-empty p{color:var(--muted);margin:0 0 18px}
   .home-empty .home-actions{justify-content:center;display:flex;gap:10px}
+
+  /* ===== Polish pass: one type scale + 44px hit targets ===== */
+  :root{--fs-title:16px;--fs-body:13px;--fs-cap:11px}
+  .section-label{font-size:var(--fs-cap)}
+  .btn,.iconbtn,.fm-line,.sd-btn,.seg button,.menu button{min-height:44px}
+  .day-head .addbtn{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+  @media (pointer:coarse){ .day-head .addbtn{opacity:.55} }   /* always reachable on touch */
 </style>
 </head>
 <body>
@@ -1365,27 +1379,21 @@
     <div class="menuwrap">
       <button class="iconbtn" id="menuBtn" title="Plan / backup / data">⋯</button>
       <div class="menu" id="menu" hidden>
-        <button data-act="home">‹ All plans</button>
         <button data-act="rename">Rename this plan</button>
-        <button data-act="exportCsv">Export this plan (CSV)</button>
         <button data-act="library">Season library — next blocks…</button>
-        <button data-act="templateCsv">Blank template (CSV)</button>
         <div class="sep"></div>
         <button data-act="importCsv">Import plan (CSV…)</button>
+        <button data-act="exportCsv">Export this plan (CSV)</button>
+        <button data-act="templateCsv">Blank template (CSV)</button>
         <button data-act="exportJson">Back up everything (JSON)</button>
         <button data-act="importJson">Restore backup (JSON…)</button>
         <div class="sep"></div>
-        <button data-act="clear">Clear this plan's progress</button>
-        <button data-act="deletePlan">Delete this plan</button>
+        <div class="menu-row" id="stravaRow"></div>
         <div class="sep"></div>
-        <button data-act="strava">Connect Strava (auto-log)</button>
-        <button data-act="stravaSync">Sync activities from Strava</button>
-        <button data-act="stravaOff">Disconnect Strava</button>
-        <div class="sep m-only"></div>
-        <button data-act="unit" class="m-only">Units · km ⇄ mi</button>
-        <button data-act="theme" class="m-only">Light / dark theme</button>
-        <button data-act="zones" class="m-only">Weekly intensity zones</button>
-        <button data-act="weeks" class="m-only">Expand / collapse weeks</button>
+        <button data-act="settings">Settings…</button>
+        <div class="sep"></div>
+        <button data-act="clear" class="danger">Clear this plan's progress…</button>
+        <button data-act="deletePlan" class="danger">Delete this plan…</button>
       </div>
     </div>
   </div>
@@ -1395,12 +1403,6 @@
 
     <div id="tabsRow" class="tabsrow">
       <button class="iconbtn back" id="homeBtn" title="All plans">‹ Plans</button>
-      <div class="tabs">
-        <button class="tab" data-tab="plan" aria-pressed="true">Plan</button>
-        <button class="tab" data-tab="calendar">Calendar</button>
-        <button class="tab" data-tab="strength">Strength</button>
-        <button class="tab" data-tab="progress">Progress</button>
-      </div>
     </div>
 
     <div id="planView">
@@ -1410,27 +1412,29 @@
     <div id="raceShape"></div>
 
     <div class="toolbar">
+      <div class="seg" id="visSeg">
+        <button data-vis="all" aria-pressed="true">All</button>
+        <button data-vis="todo">To-do</button>
+        <button data-vis="done">Done</button>
+      </div>
+      <span class="tb-sp"></span>
+      <button class="iconbtn tbi" id="searchBtn" title="Search sessions" aria-label="Search"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.2" y2="16.2"/></svg></button>
       <div class="menuwrap">
-        <button class="iconbtn" id="filterBtn" title="Filter workout types"><span id="filterLabel">Filters</span></button>
+        <button class="iconbtn tbi" id="filterBtn" title="Filters"><span id="filterLabel">Filters</span></button>
         <div class="menu filtermenu" id="filterMenu" hidden>
           <div class="fm-head">Workout types</div>
           <div class="chips" id="typeChips"></div>
           <div class="sep"></div>
           <button class="fm-line" id="restBtn" aria-pressed="true">Hide rest days</button>
           <button class="fm-line" id="allTypesBtn">Show all types</button>
+          <div class="sep"></div>
+          <div class="fm-head">View</div>
+          <button class="fm-line" id="zonesBtn">Weekly intensity zones</button>
+          <button class="fm-line" id="collapseBtn">Expand / collapse all weeks</button>
         </div>
       </div>
-      <button class="undobtn" id="undoBtn" title="Undo last change (⌘Z)" disabled>↶ Undo</button>
-      <input class="search" id="search" placeholder="Search sessions, notes…" />
-      <div class="seg" id="visSeg">
-        <button data-vis="all" aria-pressed="true">All</button>
-        <button data-vis="todo">To-do</button>
-        <button data-vis="done">Done</button>
-      </div>
-      <button class="iconbtn m-only" id="searchBtn" title="Search sessions">⌕</button>
-      <button class="iconbtn" id="zonesBtn" title="Show/hide weekly intensity zones">Zones</button>
-      <button class="iconbtn" id="collapseBtn" title="Expand / collapse all">⇕ Weeks</button>
     </div>
+    <div class="searchrow" id="searchRow" hidden><input class="search" id="search" placeholder="Search sessions, notes…" /></div>
 
     <div class="section-label" id="schedLabel">Schedule</div>
     <div id="weeks"></div>
@@ -1448,7 +1452,6 @@
 
   <!-- Persistent bottom navigation (mobile) -->
   <nav class="botnav" id="botnav">
-    <button class="bn" data-nav="home" aria-label="All plans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Home</span></button>
     <button class="bn" data-nav="plan" aria-label="Training plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><line x1="3.5" y1="6" x2="4" y2="6"/><line x1="3.5" y1="12" x2="4" y2="12"/><line x1="3.5" y1="18" x2="4" y2="18"/></svg><span>Plan</span></button>
     <button class="bn" data-nav="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2.5" x2="8" y2="6"/><line x1="16" y1="2.5" x2="16" y2="6"/></svg><span>Calendar</span></button>
     <button class="bn" data-nav="strength" aria-label="Strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6.5" y1="12" x2="17.5" y2="12"/><rect x="2.5" y="8.5" width="3" height="7" rx="1"/><rect x="18.5" y="8.5" width="3" height="7" rx="1"/></svg><span>Strength</span></button>
@@ -2004,7 +2007,7 @@ function gotoTab(tab){
   state.tab=tab; save(); render(); window.scrollTo(0,0); maybeAnimateView();
 }
 function updateBotnav(home){
-  const cur = home ? "home" : (["plan","strength","calendar","progress"].includes(state.tab)?state.tab:"plan");
+  const cur = home ? "" : (["plan","strength","calendar","progress"].includes(state.tab)?state.tab:"plan");
   $$("#botnav .bn").forEach(b=>b.classList.toggle("active", b.dataset.nav===cur));
 }
 // Snap the schedule to today's week (expanding it if collapsed) with a brief flash
@@ -2019,7 +2022,6 @@ function scrollToToday(){
 }
 $("#botnav").addEventListener("click", e=>{
   const b=e.target.closest("[data-nav]"); if(!b) return; const n=b.dataset.nav;
-  if(n==="home"){ goHome(); return; }
   if(n==="engine"){ openFitnessEngine(); return; }   // overlay, not a tab — don't change the active view
   if(n==="plan" && state.activeId && state.tab==="plan" && !$("#planView").hidden){ scrollToToday(); return; }   // already on Plan → jump to today
   gotoTab(n);
@@ -2132,6 +2134,23 @@ const TILE_INFO={
   load:{t:"Training load · 7 days", d:"How much training you've banked in the last 7 days — a TRIMP-style score where harder and longer count more (your RPE × minutes when you log effort, otherwise heart-rate time-in-zone). The bars show the last 6 weeks.", action:false},
   balance:{t:"Balance — acute : chronic ratio", d:"This week's load compared with your recent average. About 0.8–1.3 is the safe 'building' zone; above ~1.5 means you're ramping up too fast (raised injury risk); below ~0.8 is easing or tapering. Smoothed so it won't false-spike when you start logging.", action:false}
 };
+/* Settings sheet — display preferences, out of the junk drawer */
+function openSettings(){
+  const old=document.querySelector("#setBack"); if(old) old.remove();
+  const b=document.createElement("div"); b.className="sd-pick-back"; b.id="setBack";
+  const seg=(k,val,opts)=>`<div class="set-seg" data-set="${k}">${opts.map(o=>`<button data-val="${o[0]}" aria-pressed="${val===o[0]}">${o[1]}</button>`).join("")}</div>`;
+  b.innerHTML=`<div class="sd-pick"><h3>Settings</h3>
+    <div class="set-row"><span class="set-lab">Units</span>${seg("unit",state.unit,[["km","Kilometres"],["mi","Miles"]])}</div>
+    <div class="set-row"><span class="set-lab">Theme</span>${seg("theme",state.theme,[["dark","Dark"],["light","Light"]])}</div>
+    <button class="btn" id="setDone" style="width:100%;margin-top:14px">Done</button></div>`;
+  b.addEventListener("click", ev=>{
+    const sb=ev.target.closest(".set-seg button");
+    if(sb){ const k=sb.closest(".set-seg").dataset.set; state[k]=sb.dataset.val; save(); render();
+      sb.closest(".set-seg").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed", x===sb)); return; }
+    if(ev.target===b || ev.target.id==="setDone"){ b.remove(); refreshScrollLock(); }
+  });
+  document.body.appendChild(b); refreshScrollLock();
+}
 function openTileInfo(key){
   const it=TILE_INFO[key]; if(!it) return;
   const back=document.querySelector("#tileInfoBack"); if(back) back.remove();
@@ -2556,8 +2575,9 @@ function renderStrength(){
     const head=`<div class="sd-erow-head"><input class="sd-f nm" data-f="name" placeholder="Exercise" value="${esc(r.name)}"><input class="sd-f ds" data-f="dose" placeholder="${prev&&prev.dose?esc(prev.dose):"sets"}" value="${esc(r.dose)}"><button class="sd-skipbtn${r.skip?" on":""}" data-act="skiprow" data-row="${i}" title="${r.skip?"Skipped — tap to restore":"Mark skipped"}">skip</button></div>`;
     if(r.skip) return `<div class="sd-erow skip" data-row="${i}">${head}<input class="sd-skipnote" data-f="skipnote" placeholder="why skipped (optional)" value="${esc(r.note)}"></div>`;
     const setsArr=rowSets(r), n=Math.min(8,Math.max(doseSets(r.dose), setsArr.length, 1));
-    const setInputs=Array.from({length:n},(_,j)=>`<input class="sd-set" data-set="${j}" inputmode="decimal" placeholder="${j+1}" value="${esc(setsArr[j]||"")}">`).join("");
-    return `<div class="sd-erow" data-row="${i}">${head}<div class="sd-sets-edit">${setInputs}${prev?`<span class="sd-prevhint" title="Last time (${esc(sdFmtDate(prev.date))})">↻ ${esc(prev.log)}</span>`:""}</div></div>`;
+    const prevVals = prev ? (String(prev.log).match(/[\d.]+/g)||[]) : [];
+    const setInputs=Array.from({length:n},(_,j)=>`<input class="sd-set" data-set="${j}" inputmode="decimal" placeholder="${esc(prevVals[j]||prevVals[prevVals.length-1]||String(j+1))}" value="${esc(setsArr[j]||"")}">`).join("");
+    return `<div class="sd-erow" data-row="${i}">${head}<div class="sd-sets-edit">${setInputs}${prev?`<button type="button" class="sd-prevhint" data-fill="${i}" data-vals="${esc(prevVals.join(","))}" title="Last session (${esc(sdFmtDate(prev.date))}) — tap to fill, then beat it">↻ ${esc(prev.log)}</button>`:""}</div></div>`;
   };
   const cardHTML = c => {
     const d=!!c.done, rows=c.rows||[];
@@ -2658,13 +2678,18 @@ function applyTab(){
   $("#strengthView").hidden = t!=="strength";
   $("#calendarView").hidden = t!=="calendar";
   $("#progressView").hidden = t!=="progress";
-  $$(".tab").forEach(b=>b.setAttribute("aria-pressed", b.dataset.tab===t));
   if(t==="strength") renderStrength();   // re-render each show so logged weights & synced changes appear
   if(t==="calendar") renderCalendar();
   if(t==="progress") renderProgress();
 }
 // Click actions on strength cards (add / done / edit / delete / add-row)
 $("#strengthView").addEventListener("click", e=>{
+  const fb=e.target.closest("[data-fill]");
+  if(fb){ const row=fb.closest(".sd-erow"); const vals=(fb.getAttribute("data-vals")||"").split(",").filter(Boolean);
+    row.querySelectorAll(".sd-set").forEach((inp,j)=>{ if(!inp.value) inp.value=vals[j]||vals[vals.length-1]||""; });
+    const cEl=fb.closest(".sd-card"); const cc=(state.strengthDays||[]).find(x=>x.id===cEl.getAttribute("data-sd"));
+    if(cc){ readStrengthCard(cEl,cc); save(); }
+    return; }
   const btn=e.target.closest("[data-act]"); if(!btn) return;
   const act=btn.getAttribute("data-act");
   if(act==="add"){ openSdPicker(); return; }
@@ -3657,8 +3682,6 @@ function cardHTML(id){
   const w = getWO(id); if(!w) return "";
   const ty = TYPES[w.t]||TYPES.Rest;
   const meta = [];
-  if(w.d) meta.push(`<span class="pill">${fmtDur(w.d)}</span>`);
-  if(w.k!=null) meta.push(`<span class="pill"${w.kEst?' title="estimated from time + terrain"':''}>${w.kEst?"~":""}${fmtDist(w.k)}</span>`);
   if(w.v!=null) meta.push(`<span class="pill">↗ ${fmtVert(w.v)}</span>`);
   if(w.z && w.z!=="—") meta.push(`<span class="pill zone">${esc(w.z)}</span>`);
   const lg = state.log[id]||{};
@@ -3668,11 +3691,16 @@ function cardHTML(id){
   if(ld) meta.push(`<span class="pill load" title="${state.done[id]?"Training load (from your session)":"Estimated training load"}">${ICO.bolt} ${Math.round(ld/5)*5}</span>`);
   const cls = ["card", state.done[id]?"done":"", w.t==="Race"?"race":"", w.t==="Rest"?"rest":""].filter(Boolean).join(" ");
   const surf = surfaceLabel(w);
-  return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c}">
+  const zi = zoneTextToIdx(w.z);
+  const zc = zi!=null ? ZONES[zi].c : ty.c;                          // left bar = intensity zone
+  const stat = [w.k!=null?`${w.kEst?"~":""}${fmtDist(w.k)}`:null, w.d?fmtDur(w.d):null].filter(Boolean).join(" · ");
+  return `<div class="${cls}" draggable="true" data-id="${id}" style="--c:${ty.c};--zc:${zc}">
       <button class="check" data-check="${id}" title="Mark complete"></button>
       <div class="ctype">${esc(ty.label)}${surf?`<span class="csurf">· ${esc(surf)}</span>`:""}${_keyIds&&_keyIds.has(id)?`<span class="ckey" title="Key session of the week — this is the one to nail">★ key</span>`:""}</div>
+      ${stat && w.t!=="Rest" ? `<div class="cstat">${esc(stat)}</div>`:""}
       <div class="cname">${esc(w.n)}</div>
       ${meta.length?`<div class="cmeta">${meta.join("")}</div>`:""}
+      <span class="cgrip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="1.6"/><circle cx="15" cy="7" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="17" r="1.6"/><circle cx="15" cy="17" r="1.6"/></svg></span>
     </div>`;
 }
 
@@ -3921,24 +3949,19 @@ function renderWeeks(){
         ${Z.hasAct?  `<div class="zrow"><span class="zlab">Done</span>${zoneBar(Z.act)}</div>`:""}
         <div class="zbreak">${Z.planTot?`<span><b>Plan</b> ${planTxt}</span>`:""}${Z.hasAct?`<span><b>Done</b> ${doneTxt}</span>`:""}</div>
       </div>` : "";
-    const whStats=`
-      <span class="whs"><i class="whl">Run</i><b>${fmtDist(T.runDist,false)} ${state.unit}</b></span>
-      <span class="whs"><i class="whl">Time</i><b>${fmtDur(T.runDur)}</b></span>
-      <span class="whs"><i class="whl">Bike</i><b>${T.bikeDur?fmtDur(T.bikeDur):"—"}</b></span>
-      <span class="whs"><i class="whl">Vert</i><b>${fmtVert(T.vert,false)} ${state.unit==="mi"?"ft":"m"}</b></span>
-      <span class="whs"><i class="whl">Done</i><b>${T.done}/${T.total}</b></span>`;
+    const sum = `${fmtDist(T.runDist,false)} ${state.unit} · ${fmtDur(T.runDur)}${T.vert?` · ↗ ${fmtVert(T.vert,false)}${state.unit==="mi"?"ft":"m"}`:""} · ${T.done}/${T.total} done`;
     html += `<div class="week ${collapsed?'collapsed':''} ${isCurrent?'current':''}" data-mon="${mon}">
         <div class="week-head" data-toggle="${mon}">
-          <div class="wh-top">
-            <span class="caret">▼</span>
+          <span class="caret">▼</span>
+          <div class="wh-main">
             <span class="wn ${isCurrent?'now':''}">${isCurrent?`This week`:`Week ${weekNum}`}</span>
-            ${adjBadge}<span class="wh-sp"></span>${arrows}
+            <span class="wh-sum">${sum}</span>
           </div>
-          ${titleHTML?`<div class="wh-title">${titleHTML}</div>`:""}
-          <div class="wh-dates">${mdShort(mon)} – ${mdShort(addDays(mon,6))}</div>
-          <div class="wh-stats">${whStats}</div>
+          ${adjBadge}${arrows}
         </div>
-        <div class="week-body">${zonestrip}<div class="week-grid">${cells}</div></div>
+        <div class="week-body">
+          <div class="wh-sub">${titleHTML?`${titleHTML}<span class="wh-dot">·</span>`:""}${mdShort(mon)} – ${mdShort(addDays(mon,6))}</div>
+          ${zonestrip}<div class="week-grid">${cells}</div></div>
       </div>`;
   });
   const legend = state.showZones ? `<div class="zlegend"><span class="zll">Intensity</span>${ZONES.map(z=>`<span><i style="background:${z.c}"></i>${z.k}</span>`).join("")}</div>` : "";
@@ -3972,6 +3995,17 @@ function $$(s,el=document){ return [...el.querySelectorAll(s)]; }
 let undoStack=[], redoStack=[];
 function pushUndo(){ state.touched=true; try{ undoStack.push(JSON.stringify(state)); if(undoStack.length>60) undoStack.shift(); redoStack.length=0; }catch(e){} }
 function undo(){ if(!undoStack.length) return; try{ redoStack.push(JSON.stringify(state)); state=JSON.parse(undoStack.pop()); save(); render(); }catch(e){} }
+// Transient undo toast — appears after destructive actions, self-dismisses
+let _undoToastT=null;
+function showUndoToast(msg){
+  const old=document.querySelector(".undo-toast"); if(old) old.remove();
+  if(_undoToastT) clearTimeout(_undoToastT);
+  const t=document.createElement("div"); t.className="undo-toast";
+  t.innerHTML=`<span>${esc(msg)}</span><button type="button">Undo</button>`;
+  t.querySelector("button").onclick=()=>{ undo(); t.remove(); };
+  document.body.appendChild(t);
+  _undoToastT=setTimeout(()=>t.remove(), 5000);
+}
 function redo(){ if(!redoStack.length) return; try{ undoStack.push(JSON.stringify(state)); state=JSON.parse(redoStack.pop()); save(); render(); }catch(e){} }
 function updateUndoUI(){ const b=$("#undoBtn"); if(b) b.disabled = undoStack.length===0; }
 // Never let an edit hide a session behind an inactive type filter.
@@ -3981,8 +4015,7 @@ function ensureTypeVisible(t){ if(!t) return; if(!state.seenTypes.includes(t)) s
 // Header buttons
 $("#themeBtn").onclick = ()=>{ state.theme = state.theme==="dark"?"light":"dark"; save(); render(); };
 $("#unitBtn").onclick  = ()=>{ state.unit  = state.unit==="km"?"mi":"km"; save(); render(); };
-$("#undoBtn").onclick  = undo;
-document.querySelector(".tabs").addEventListener("click", e=>{ const b=e.target.closest(".tab"); if(!b) return; if(b.dataset.tab==="plan" && state.tab==="plan"){ scrollToToday(); return; } state.tab=b.dataset.tab; save(); applyTab(); });
+
 
 /* ===== Calendar (month grid) view ===== */
 const MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -4134,13 +4167,36 @@ $("#collapseBtn").onclick = ()=>{
 $("#zonesBtn").onclick = ()=>{ state.showZones=!state.showZones; save(); renderToolbarState(); renderWeeks(); };
 // Mobile: search hides behind ⌕ — collapsing it also clears an active query (a hidden filter would confuse)
 $("#searchBtn").onclick = ()=>{
-  const t=document.querySelector(".toolbar"); if(!t) return;
-  const open=t.classList.toggle("searching");
-  const s=$("#search");
-  if(open){ s.focus(); }
+  const row=$("#searchRow"), s=$("#search");
+  row.hidden=!row.hidden;
+  if(!row.hidden){ s.focus(); }
   else if(s.value){ s.value=""; s.dispatchEvent(new Event("input",{bubbles:true})); }
 };
 
+// Swipe a card left to delete it (the undo toast brings it straight back)
+(function(){
+  let el=null,x0=0,y0=0,dx=0,axis=null;
+  weeksEl.addEventListener("touchstart", e=>{
+    const c=e.target.closest(".card"); if(!c || e.touches.length!==1){ el=null; return; }
+    el=c; x0=e.touches[0].clientX; y0=e.touches[0].clientY; dx=0; axis=null;
+  }, {passive:true});
+  weeksEl.addEventListener("touchmove", e=>{
+    if(!el) return;
+    const tx=e.touches[0].clientX-x0, ty=e.touches[0].clientY-y0;
+    if(axis===null && (Math.abs(tx)>8||Math.abs(ty)>8)) axis = Math.abs(tx)>Math.abs(ty) ? "x" : "y";
+    if(axis!=="x"){ if(axis==="y") el=null; return; }
+    e.stopPropagation();                                  // keep the tab-swipe pager out of it
+    dx=Math.min(0,tx);                                    // left only
+    el.classList.add("swiping");
+    el.style.transform=`translateX(${dx}px)`; el.style.opacity=String(Math.max(.25,1+dx/240));
+  }, {passive:true});
+  weeksEl.addEventListener("touchend", ()=>{
+    if(!el) return;
+    const c=el; el=null; c.classList.remove("swiping");
+    if(dx<-96){ const id=c.dataset.id; c.style.transform="translateX(-110%)"; c.style.opacity="0"; setTimeout(()=>deleteSession(id),150); }
+    else { c.style.transform=""; c.style.opacity=""; }
+  });
+})();
 // Week collapse + card click + checkbox + add
 weeksEl.addEventListener("click", e=>{
   const wstep = e.target.closest("[data-wstep]");   // intensity arrows in the week header (check before toggle so they don't collapse the week)
@@ -4534,14 +4590,17 @@ $("#mBody").addEventListener("click", e=>{
   const w=getWO(editingId); if(w){ $("#mBody").innerHTML=modalViewHTML(w); }
   render();
 });
-$("#mDelete").onclick = ()=>{
-  if(!confirm("Delete this session? Undo (⌘Z) brings it straight back, or re-import / reset the plan.")) return;
+function deleteSession(id){
   pushUndo();
-  const id=editingId;
   if((state.custom||[]).some(c=>c.id===id)) state.custom=state.custom.filter(c=>c.id!==id);
   else state.deleted[id]=true;                 // plan sessions are soft-deleted
   removeFromBoard(id); delete state.done[id]; delete state.log[id]; delete state.edits[id];
-  closeModal(); save(); render();
+  save(); render();
+  showUndoToast("Session deleted");
+}
+$("#mDelete").onclick = ()=>{
+  if(!confirm("Delete this session? Undo brings it straight back.")) return;
+  const id=editingId; closeModal(); deleteSession(id);
 };
 function closeModal(){ backdrop.classList.remove("open"); editingId=null; modalMode="view"; refreshScrollLock(); }
 $("#mClose").onclick=closeModal; $("#mCancel").onclick=closeModal;
@@ -4683,16 +4742,19 @@ function openLibrarySheet(){
 const menu=$("#menu");
 function toggleMenu(show){ menu.hidden = (show===undefined)? !menu.hidden : !show; }
 $("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true;
+  // one state-aware Strava row: Connect when logged out; Sync + a small Disconnect when logged in
   const c=(typeof stravaConnected==="function") && stravaConnected();
-  const sc=menu.querySelector('[data-act="strava"]'), ss=menu.querySelector('[data-act="stravaSync"]'), so=menu.querySelector('[data-act="stravaOff"]');
-  if(sc) sc.style.display=c?"none":""; if(ss) ss.style.display=c?"":"none"; if(so) so.style.display=c?"":"none";
+  const row=$("#stravaRow");
+  if(row) row.innerHTML = c
+    ? `<button data-act="stravaSync">Sync from Strava</button><button class="menu-mini" data-act="stravaOff">Disconnect</button>`
+    : `<button data-act="strava">Connect Strava (auto-log)</button>`;
   toggleMenu(); };
 document.addEventListener("click", e=>{ if(!menu.hidden && !e.target.closest(".menuwrap")) toggleMenu(false); });
 menu.addEventListener("click", e=>{
   const b=e.target.closest("button[data-act]"); if(!b) return;
   toggleMenu(false);
   switch(b.dataset.act){
-    case "home":       goHome(); break;
+    case "settings":   openSettings(); break;
     case "rename":     if(state.activeId) renamePlan(state.activeId); break;
     case "exportCsv":  if(state.activeId) exportPlanCSV(state.activeId); break;
     case "templateCsv": download("plan-template.csv", csvTemplate(), "text/csv"); break;
@@ -4700,7 +4762,7 @@ menu.addEventListener("click", e=>{
     case "importCsv":  $("#importCsvFile").click(); break;
     case "exportJson": download("tracker-backup.json", JSON.stringify(state,null,2), "application/json"); break;
     case "importJson": $("#importJsonFile").click(); break;
-    case "clear":      if(state.activeId && confirm("Clear all completions and logs for this plan (keep the plan & layout)?")){ pushUndo(); state.done={}; state.log={}; save(); render(); } break;
+    case "clear":      if(state.activeId && confirm("Clear all completions and logs for this plan (keep the plan & layout)?")){ pushUndo(); state.done={}; state.log={}; save(); render(); showUndoToast("Progress cleared"); } break;
     case "deletePlan": if(state.activeId) deletePlan(state.activeId); break;
     case "strava":     stravaConnect(); break;
     case "stravaSync": stravaSync(); break;
@@ -5057,6 +5119,8 @@ function matchActivities(acts){
 }
 
 /* ============================ GO ============================ */
+function setTopbarH(){ const tb=document.querySelector(".topbar"); document.documentElement.style.setProperty("--topbarH",((tb&&tb.offsetHeight)||60)+"px"); }
+window.addEventListener("resize", setTopbarH); setTimeout(setTopbarH,0); setTimeout(setTopbarH,600);
 let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); maybeAnimateView(); }
 hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); renderCloud(); if(cloudOn()) cloudConnect(cloud.token,{silent:true}); }).catch(firstRender);
