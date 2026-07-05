@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#14162b" />
-<meta name="app-build" content="2026-06-08zw" />
+<meta name="app-build" content="2026-06-08zx" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1503,6 +1503,31 @@
   ::-webkit-scrollbar-thumb{background:#3a3d5e;border:2px solid #14162b}
   ::-webkit-scrollbar-track{background:#14162b}
   .hzline,.hzspark,.hr-svg,.pg-chart svg,.sb-bars{shape-rendering:crispEdges}
+
+  /* --- home "how far through the plan" panel (the climb) --- */
+  .plan-prog{background:var(--panel);border:3px solid var(--ink);box-shadow:4px 4px 0 rgba(0,0,0,.4);padding:15px 16px 16px;margin-bottom:14px}
+  .pp-head{font-family:var(--px);font-size:8px;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:8px}
+  .pp-mark{color:var(--accent);font-size:11px}
+  .pp-big{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;margin:13px 0 2px}
+  .pp-big b{font-family:var(--vt);font-size:42px;line-height:.85;color:var(--ink)}
+  .pp-big span{font-family:var(--vt);font-size:24px;color:var(--muted)}
+  .pp-big i{font-family:var(--vt);font-style:normal;font-size:17px;color:var(--muted);margin-left:4px}
+  .pp-track{position:relative;height:18px;border:2px solid var(--ink);background:#e8dcc2;margin-top:13px;overflow:hidden}
+  .pp-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent)}
+  .pp-fill.done{background:var(--good)}
+  .pp-flag{position:absolute;right:3px;top:50%;transform:translateY(-50%);font-size:12px;line-height:1;color:var(--accent2);z-index:2;text-shadow:1px 1px 0 rgba(0,0,0,.35)}
+  .pp-track2{height:11px}
+  .pp-stats{display:flex;gap:8px;margin-top:14px}
+  .pp-stat{flex:1;background:var(--bg2);border:2px solid var(--ink);padding:8px 6px 6px;text-align:center;min-width:0}
+  .pp-stat b{font-family:var(--vt);font-size:21px;color:var(--ink);display:block;line-height:1}
+  .pp-stat b i{font-style:normal;font-size:14px;color:var(--muted)}
+  .pp-stat span{font-family:var(--px);font-size:6px;letter-spacing:.3px;color:var(--muted);text-transform:uppercase;display:block;margin-top:6px;line-height:1.4}
+  .pp-done{margin-top:15px}
+  .pp-donelab{display:block;font-family:var(--vt);font-size:15px;color:var(--muted);text-align:center;margin-top:7px}
+  .home-plans-head .btn{font-size:8px !important;white-space:nowrap;padding:0 11px !important}
+  /* zones editor inside Settings sheet */
+  .set-zones{margin-top:16px;border-top:2px solid var(--line);padding-top:12px}
+  .set-zones .zc-note{margin-top:10px}
 </style>
 </head>
 <body>
@@ -1588,15 +1613,15 @@
 
     <div id="strengthView" hidden></div>
     <div id="calendarView" hidden></div>
-    <div id="progressView" hidden></div>
+    <div id="progressView" hidden></div>   <!-- Progress removed from nav; div kept hidden so its top-level listeners don't null-crash -->
   </div>
 
   <!-- Persistent bottom navigation (mobile) -->
   <nav class="botnav" id="botnav">
+    <button class="bn" data-nav="home" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>Home</span></button>
     <button class="bn" data-nav="plan" aria-label="Training plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><line x1="3.5" y1="6" x2="4" y2="6"/><line x1="3.5" y1="12" x2="4" y2="12"/><line x1="3.5" y1="18" x2="4" y2="18"/></svg><span>Plan</span></button>
     <button class="bn" data-nav="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2.5" x2="8" y2="6"/><line x1="16" y1="2.5" x2="16" y2="6"/></svg><span>Calendar</span></button>
     <button class="bn" data-nav="strength" aria-label="Strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6.5" y1="12" x2="17.5" y2="12"/><rect x="2.5" y="8.5" width="3" height="7" rx="1"/><rect x="18.5" y="8.5" width="3" height="7" rx="1"/></svg><span>Strength</span></button>
-    <button class="bn" data-nav="progress" aria-label="Progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 16l5-6 4 3.5L20 6"/><path d="M16.5 6H20v3.5"/></svg><span>Progress</span></button>
     <button class="bn" data-nav="engine" aria-label="The Fitness Engine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="5" x2="14" y2="5"/><line x1="10" y1="5" x2="3" y2="5"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="19" x2="16" y2="19"/><line x1="12" y1="19" x2="3" y2="19"/><line x1="14" y1="3" x2="14" y2="7"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="17" x2="16" y2="21"/></svg><span>Engine</span></button>
   </nav>
 
@@ -2065,7 +2090,7 @@ function render(){
   $("#homeView").hidden = !home;
   $("#tabsRow").hidden = home;
   if(home){
-    $("#planView").hidden=true; $("#strengthView").hidden=true; $("#calendarView").hidden=true; $("#progressView").hidden=true;
+    $("#planView").hidden=true; $("#strengthView").hidden=true; $("#calendarView").hidden=true;
     const n=(state.plans||[]).length, t=todayISO();
     if(n){
       document.body.classList.add("athlete");
@@ -2112,7 +2137,7 @@ function goHome(){ syncActiveToLibrary(); state.activeId=null; _lastDataSer=plan
 /* ===== Living UI — gentle entrance motion on real navigation (not on in-tab re-renders,
    suppressed during finger-swipes, and fully off under prefers-reduced-motion). ===== */
 let _navAnimSkip=false;
-const _VIEWSEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView",progress:"#progressView"};
+const _VIEWSEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView"};
 function currentViewEl(){ return !state.activeId ? $("#homeView") : ($(_VIEWSEL[state.tab]||"#planView")); }
 function reduceMotion(){ return matchMedia("(prefers-reduced-motion: reduce)").matches; }
 function maybeAnimateView(){ if(_navAnimSkip || reduceMotion()) return; requestAnimationFrame(()=>animateViewIn(currentViewEl())); }
@@ -2148,7 +2173,7 @@ function gotoTab(tab){
   state.tab=tab; save(); render(); window.scrollTo(0,0); maybeAnimateView();
 }
 function updateBotnav(home){
-  const cur = home ? "" : (["plan","strength","calendar","progress"].includes(state.tab)?state.tab:"plan");
+  const cur = home ? "home" : (["plan","strength","calendar"].includes(state.tab)?state.tab:"plan");
   $$("#botnav .bn").forEach(b=>b.classList.toggle("active", b.dataset.nav===cur));
 }
 // Snap the schedule to today's week (expanding it if collapsed) with a brief flash
@@ -2164,14 +2189,15 @@ function scrollToToday(){
 $("#botnav").addEventListener("click", e=>{
   const b=e.target.closest("[data-nav]"); if(!b) return; const n=b.dataset.nav;
   if(n==="engine"){ openFitnessEngine(); return; }   // overlay, not a tab — don't change the active view
+  if(n==="home"){ goHome(); return; }
   if(n==="plan" && state.activeId && state.tab==="plan" && !$("#planView").hidden){ scrollToToday(); return; }   // already on Plan → jump to today
   gotoTab(n);
 });
 // Swipe between tabs (mobile) — the screen tracks your finger, then slides to the next /
 // springs back, like a native pager. Order mirrors the bottom nav.
 (function(){
-  const ORDER=["home","plan","calendar","strength","progress"];
-  const SEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView",progress:"#progressView"};
+  const ORDER=["home","plan","calendar","strength"];
+  const SEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView"};
   const W=()=>window.innerWidth;
   const EASE="cubic-bezier(.22,.61,.36,1)";
   const curTab=()=> !state.activeId ? "home" : (ORDER.includes(state.tab)?state.tab:"plan");
@@ -2283,7 +2309,9 @@ function openSettings(){
   b.innerHTML=`<div class="sd-pick"><h3>Settings</h3>
     <div class="set-row"><span class="set-lab">Units</span>${seg("unit",state.unit,[["km","Kilometres"],["mi","Miles"]])}</div>
     <div class="set-row"><span class="set-lab">Theme</span>${seg("theme",state.theme,[["dark","Dark"],["light","Light"]])}</div>
+    <div class="set-zones"><div class="set-lab" style="margin:4px 0 2px">Training zones</div>${zonesEditorHTML()}</div>
     <button class="btn" id="setDone" style="width:100%;margin-top:14px">Done</button></div>`;
+  b.addEventListener("change", ev=>{ const zi=ev.target.closest(".zc-in"); if(zi) applyZoneInput(zi); });
   b.addEventListener("click", ev=>{
     const sb=ev.target.closest(".set-seg button");
     if(sb){ const k=sb.closest(".set-seg").dataset.set; state[k]=sb.dataset.val; save(); render();
@@ -2499,6 +2527,51 @@ function hzDoneHTML(rec){
   if(!items) return "";
   return `<div class="hz-sec"><span>Recent</span><button class="hz-fulllog" data-hzfulllog>Full log</button></div><div class="hz-donelist">${items}</div>`;
 }
+function planProgressHTML(rec){
+  const t=todayISO();
+  const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
+  const goal=races.filter(r=>daysBetween(t,r.date)>=0).pop();
+  const startMon=recStartMon(rec);
+  const endDate = goal? goal.date : ((rec.plan||[]).concat(rec.custom||[]).map(w=>w.date).filter(Boolean).sort().pop()||t);
+  const totalDays=Math.max(1,daysBetween(startMon,endDate));
+  const preStart=daysBetween(startMon,t)<0;
+  const elapsed=Math.min(totalDays,Math.max(0,daysBetween(startMon,t)));
+  const timePct=Math.round(elapsed/totalDays*100);
+  const totWk=Math.max(1,Math.round(totalDays/7)), curWk=Math.min(totWk,Math.max(1,Math.floor(elapsed/7)+1));
+  const dd = goal? daysBetween(t,goal.date):null;
+  const st=planStats(rec);
+  const raceName= goal? (goal.n||"the finish").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim() : "the finish";
+  const ddCell=`<div class="pp-stat"><b>${dd!=null?dd:"—"}<i>${dd!=null?"d":""}</i></b><span>to race day</span></div>`;
+  if(preStart){
+    const inDays=daysBetween(t,startMon);
+    return `<div class="plan-prog vw-fade"><div class="pp-head"><span class="pp-mark">▲</span> How far through</div>
+      <div class="pp-big"><b>${inDays}</b><i>day${inDays===1?"":"s"} until the plan starts</i></div>
+      <div class="pp-stats"><div class="pp-stat"><b>${totWk}</b><span>weeks total</span></div><div class="pp-stat"><b>${st.total}</b><span>sessions</span></div>${ddCell}</div></div>`;
+  }
+  return `<div class="plan-prog vw-fade">
+    <div class="pp-head"><span class="pp-mark">▲</span> How far through</div>
+    <div class="pp-big"><b>${timePct}</b><span>%</span><i>of the way to ${esc(raceName)}</i></div>
+    <div class="pp-track"><div class="pp-fill" style="width:${Math.min(100,timePct)}%"></div><span class="pp-flag">⚑</span></div>
+    <div class="pp-stats"><div class="pp-stat"><b>${curWk}<i>/${totWk}</i></b><span>week</span></div><div class="pp-stat"><b>${st.done}<i>/${st.total}</i></b><span>sessions done</span></div>${ddCell}</div>
+    <div class="pp-done"><div class="pp-track pp-track2"><div class="pp-fill done" style="width:${st.pct}%"></div></div><span class="pp-donelab">${st.pct}% of sessions completed</span></div>
+  </div>`;
+}
+function zonesEditorHTML(){
+  const hz=state.hrZones||defaultHrZones(), pz=state.paceZones||defaultPaceZones();
+  const hrRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
+      <input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.0" value="${hz[i][0]??""}"><span class="zc-dash">–</span><input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.1" value="${hz[i][1]??""}"><span class="zc-unit">bpm</span></div>`;
+  const paceRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
+      <input class="zc-in" data-pz="${i}.0" placeholder="—" value="${esc(pz[i][0]||"")}"><span class="zc-dash">–</span><input class="zc-in" data-pz="${i}.1" placeholder="—" value="${esc(pz[i][1]||"")}"><span class="zc-unit">/km</span></div>`;
+  return `<div class="zc-sec">Heart rate (bpm)</div>${ZONES.map((z,i)=>hrRow(i)).join("")}
+    <div class="zc-sec">Pace (min/km)</div>${ZONES.map((z,i)=>paceRow(i)).join("")}
+    <div class="zc-note">Used to bucket your runs into zones. For Strava "Done" bars to match exactly, set the same HR zones in your Strava settings too.</div>`;
+}
+function applyZoneInput(el){
+  const hz=el.getAttribute("data-hz"), pz=el.getAttribute("data-pz");
+  if(hz){ const [i,j]=hz.split(".").map(Number); state.hrZones=(state.hrZones||defaultHrZones()).map(a=>a.slice()); const v=parseInt(el.value,10); state.hrZones[i][j]=isNaN(v)?null:v; }
+  else if(pz){ const [i,j]=pz.split(".").map(Number); state.paceZones=(state.paceZones||defaultPaceZones()).map(a=>a.slice()); state.paceZones[i][j]=el.value.trim(); }
+  save();
+}
 function renderHome(){
   const rec=primaryPlanRec();
   if(!(state.plans||[]).length){
@@ -2517,30 +2590,12 @@ function renderHome(){
         <div class="pc-actions"><button data-rename="${rec.id}">Rename</button><button data-exp="${rec.id}">Export CSV</button></div>
       </div>`;
   }).join("");
-  const hz=state.hrZones||defaultHrZones(), pz=state.paceZones||defaultPaceZones();
-  const hrRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
-      <input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.0" value="${hz[i][0]??""}"><span class="zc-dash">–</span><input class="zc-in" type="number" inputmode="numeric" data-hz="${i}.1" value="${hz[i][1]??""}"><span class="zc-unit">bpm</span></div>`;
-  const paceRow=(i)=>`<div class="zc-row"><span class="zc-dot" style="background:${ZONES[i].c}"></span><span class="zc-zl">${ZONES[i].k}</span>
-      <input class="zc-in" data-pz="${i}.0" placeholder="—" value="${esc(pz[i][0]||"")}"><span class="zc-dash">–</span><input class="zc-in" data-pz="${i}.1" placeholder="—" value="${esc(pz[i][1]||"")}"><span class="zc-unit">/km</span></div>`;
-  const zonesCard=`<div class="zones-card ${state.zonesOpen?'open':''}">
-      <div class="zc-head" data-zonestoggle><div><b>Your zones</b><span class="zc-sum">HR ${hz[0][0]}–${hz[4][1]} bpm · tap to edit pace &amp; HR</span></div><span class="caret">▾</span></div>
-      <div class="zc-body">
-        <div class="zc-sec">Heart rate (bpm)</div>${ZONES.map((z,i)=>hrRow(i)).join("")}
-        <div class="zc-sec">Pace (min/km)</div>${ZONES.map((z,i)=>paceRow(i)).join("")}
-        <div class="zc-note">Used to bucket your runs into zones. For Strava "Done" bars to match exactly, set the same HR zones in your Strava settings too.</div>
-      </div>
-    </div>`;
   $("#homeView").innerHTML = `
     ${rec? hzMissionHTML(rec):""}
-    ${rec? hzHeroHTML(rec):""}
-    ${homeTilesHTML()}
-    ${coachPropHTML()}
-    ${rec? hzDoneHTML(rec):""}
-    ${typeof predictorHTML==="function"? predictorHTML():""}
+    ${rec? planProgressHTML(rec):""}
     <div class="home-plans-head"><span>Your plans · ${(state.plans||[]).length}</span>
       <div class="home-actions"><button class="btn" id="homeImport">Import CSV</button><button class="btn" id="homeNew">New plan</button></div></div>
-    <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>
-    ${zonesCard}`;
+    <div class="plan-grid">${cards || `<p style="color:var(--faint);grid-column:1/-1">No plans yet — Import a CSV to get started.</p>`}</div>`;
 }
 $("#homeBtn").onclick = goHome;
 $("#homeView").addEventListener("click", e=>{
@@ -2548,7 +2603,7 @@ $("#homeView").addEventListener("click", e=>{
   if(zt){ const card=zt.closest(".zones-card"); card.classList.toggle("open"); state.zonesOpen=card.classList.contains("open"); save(); return; }
   if(e.target.closest("#homeImport")){ $("#importCsvFile").click(); return; }
   if(e.target.closest("#homeNew")){ newBlankPlan(); return; }
-  if(e.target.closest("[data-hzsettings]")){ const zc=$(".zones-card"); if(zc){ zc.classList.add("open"); state.zonesOpen=true; save(); zc.scrollIntoView({behavior:"smooth",block:"center"}); } return; }
+  if(e.target.closest("[data-hzsettings]")){ openSettings(); return; }
   if(e.target.closest("[data-hzfulllog]")){ const r=primaryPlanRec(); if(r) loadPlan(r.id); return; }
   const tile=e.target.closest("[data-tile]"); if(tile){ openTileInfo(tile.dataset.tile); return; }
   const hd=e.target.closest("[data-homedone]"); if(hd){ e.stopPropagation(); const r=primaryPlanRec(); if(r){ pushUndo(); r.done=r.done||{}; r.done[hd.dataset.homedone]=!r.done[hd.dataset.homedone]; save(); render(); } return; }
@@ -2814,14 +2869,12 @@ function openSdPicker(){
 }
 function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); refreshScrollLock(); }
 function applyTab(){
-  const t = ["plan","strength","calendar","progress"].includes(state.tab) ? state.tab : "plan";
+  const t = ["plan","strength","calendar"].includes(state.tab) ? state.tab : "plan";
   $("#planView").hidden = t!=="plan";
   $("#strengthView").hidden = t!=="strength";
   $("#calendarView").hidden = t!=="calendar";
-  $("#progressView").hidden = t!=="progress";
   if(t==="strength") renderStrength();   // re-render each show so logged weights & synced changes appear
   if(t==="calendar") renderCalendar();
-  if(t==="progress") renderProgress();
 }
 // Click actions on strength cards (add / done / edit / delete / add-row)
 $("#strengthView").addEventListener("click", e=>{
@@ -3296,9 +3349,6 @@ function pgHideTip(wrap){
   wrap.querySelectorAll(".pg-tip").forEach(t=>t.hidden=true);
   wrap.querySelectorAll(".pg-bars i.tipped").forEach(b=>b.classList.remove("tipped"));
 }
-$("#progressView").addEventListener("pointerover", e=>{ const b=e.target.closest(".pg-bars i"); if(b && b.dataset.tip) pgShowTip(b); });
-$("#progressView").addEventListener("pointerdown", e=>{ const b=e.target.closest(".pg-bars i"); if(b && b.dataset.tip) pgShowTip(b); else pgHideTip($("#progressView")); });
-$("#progressView").addEventListener("pointerleave", ()=>pgHideTip($("#progressView")));
 function pgHours(min){ return (Math.round(min/6)/10); }
 /* ===== RACE SHAPE — fitness/freshness projection to race day =====
    Models a CTL/ATL fitness-fatigue curve from real daily load: past = your completed
