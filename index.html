@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#131417" />
-<meta name="app-build" content="2026-06-08zv" />
+<meta name="theme-color" content="#14162b" />
+<meta name="app-build" content="2026-06-08zw" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -13,45 +13,50 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" />
 <title>Grisedale Horseshoe · 13-Week Plan</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxZDIwMWIiLz48L3N2Zz4=" />
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMWQyMDFiIi8+PC9zdmc+" />
 <style>
   :root{
     color-scheme:light;
-    /* PAPER & INK — warm paper, near-black ink, one cobalt accent (light-first, editorial) */
-    --bg:#f5f4f0; --bg2:#eceae4; --panel:#ffffff; --panel2:#f4f3ee;
-    --line:#e4e2da; --line2:#cfccc2;
-    --txt:#1b1b19; --muted:#605f58; --faint:#8e8c82;
-    --accent:#2f54d1; --accent2:#4568dd;
-    --good:#3e7a4c; --warn:#a3762b; --bad:#b0392e; --shadow:0 1px 2px rgba(35,32,26,.05),0 10px 26px rgba(35,32,26,.08);
-    --radius:8px;
-    --t-easy:#8aa379; --t-recovery:#92aebd; --t-threshold:#c79a4b;
-    --t-hills:#c25a48; --t-descent:#74a4ad; --t-simulation:#b083a0;
-    --t-long:#8d94c0; --t-race:#bda14a; --t-rest:#8f8a78; --t-bike:#7e9ab4; --t-strength:#968dc1; --t-sauna:#d18a6c;
+    /* ASCENT — 8-bit: night-sky chrome, warm-paper content, dawn-amber accent */
+    --ink:#2b2118; --ink2:#3a2f24;
+    --bg:#f3e9d6; --bg2:#e8dcc2; --panel:#fffdf6; --panel2:#f3e9d6;
+    --line:#d8c7a4; --line2:#2b2118;
+    --txt:#2b2118; --muted:#7a6a54; --faint:#a08a6a;
+    --accent:#e0a23c; --accent2:#d4a017;
+    --good:#5e8c3f; --warn:#c98a2e; --bad:#c0533a; --shadow:4px 4px 0 rgba(0,0,0,.4);
+    --radius:0px;
+    --t-easy:#5e8c3f; --t-recovery:#79a05c; --t-threshold:#c0533a;
+    --t-hills:#7d5ba6; --t-descent:#d98032; --t-simulation:#b04a78;
+    --t-long:#3f6d8c; --t-race:#d4a017; --t-rest:#8a8578; --t-bike:#3f8c7a; --t-strength:#7d5ba6; --t-sauna:#d98032;
   }
   [data-theme="dark"]{
-    color-scheme:dark;
-    /* Ink night — same paper logic, inverted */
-    --bg:#131417; --bg2:#1b1c21; --panel:#191a1f; --panel2:#22242a;
-    --line:#2a2c33; --line2:#3d4049;
-    --txt:#ebeae6; --muted:#a3a29a; --faint:#75746c;
-    --accent:#7d97f2; --accent2:#93a9f5;
-    --good:#84b48c; --warn:#d0a75c; --bad:#d97b6e; --shadow:0 12px 34px rgba(0,0,0,.5);
-    --t-easy:#8aa379; --t-recovery:#92aebd; --t-threshold:#c79a4b;
-    --t-hills:#c25a48; --t-descent:#74a4ad; --t-simulation:#b083a0;
-    --t-long:#8d94c0; --t-race:#bda14a; --t-rest:#8f8a78; --t-bike:#7e9ab4; --t-strength:#968dc1; --t-sauna:#d18a6c;
+    color-scheme:light;   /* ASCENT is one warm-paper look; theme toggle is a no-op */
+    --ink:#2b2118; --ink2:#3a2f24;
+    --bg:#f3e9d6; --bg2:#e8dcc2; --panel:#fffdf6; --panel2:#f3e9d6;
+    --line:#d8c7a4; --line2:#2b2118;
+    --txt:#2b2118; --muted:#7a6a54; --faint:#a08a6a;
+    --accent:#e0a23c; --accent2:#d4a017;
+    --good:#5e8c3f; --warn:#c98a2e; --bad:#c0533a; --shadow:4px 4px 0 rgba(0,0,0,.4);
+    --radius:0px;
+    --t-easy:#5e8c3f; --t-recovery:#79a05c; --t-threshold:#c0533a;
+    --t-hills:#7d5ba6; --t-descent:#d98032; --t-simulation:#b04a78;
+    --t-long:#3f6d8c; --t-race:#d4a017; --t-rest:#8a8578; --t-bike:#3f8c7a; --t-strength:#7d5ba6; --t-sauna:#d98032;
   }
   [data-theme="light"]{
     color-scheme:light;
-    --bg:#f5f4f0; --bg2:#eceae4; --panel:#ffffff; --panel2:#f4f3ee;
-    --line:#e4e2da; --line2:#cfccc2;
-    --txt:#1b1b19; --muted:#605f58; --faint:#8e8c82;
-    --accent:#2f54d1; --accent2:#4568dd;
-    --good:#3e7a4c; --warn:#a3762b; --bad:#b0392e; --shadow:0 1px 2px rgba(35,32,26,.05),0 10px 26px rgba(35,32,26,.08);
-    --t-easy:#5d7350; --t-recovery:#7d98a8; --t-threshold:#a8762a;
-    --t-hills:#9c3c2e; --t-descent:#4f7e87; --t-simulation:#8c5a74;
-    --t-long:#5f6691; --t-race:#8f7723; --t-rest:#8a8472; --t-bike:#54718e; --t-strength:#6f679e; --t-sauna:#b86a4e;
+    --ink:#2b2118; --ink2:#3a2f24;
+    --bg:#f3e9d6; --bg2:#e8dcc2; --panel:#fffdf6; --panel2:#f3e9d6;
+    --line:#d8c7a4; --line2:#2b2118;
+    --txt:#2b2118; --muted:#7a6a54; --faint:#a08a6a;
+    --accent:#e0a23c; --accent2:#d4a017;
+    --good:#5e8c3f; --warn:#c98a2e; --bad:#c0533a; --shadow:4px 4px 0 rgba(0,0,0,.4);
+    --radius:0px;
+    --t-easy:#5e8c3f; --t-recovery:#79a05c; --t-threshold:#c0533a;
+    --t-hills:#7d5ba6; --t-descent:#d98032; --t-simulation:#b04a78;
+    --t-long:#3f6d8c; --t-race:#d4a017; --t-rest:#8a8578; --t-bike:#3f8c7a; --t-strength:#7d5ba6; --t-sauna:#d98032;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -1362,6 +1367,142 @@
   .btn,.iconbtn,.fm-line,.sd-btn,.seg button,.menu button{min-height:44px}
   .day-head .addbtn{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
   @media (pointer:coarse){ .day-head .addbtn{opacity:.55} }   /* always reachable on touch */
+
+  /* ==================================================================
+     ASCENT SKIN — 8-bit re-skin layer (loads last; wins the cascade).
+     Night-sky chrome · warm-paper content · chunky ink borders ·
+     hard (never-blurred) shadows · Press Start 2P display + VT323 body.
+     ================================================================== */
+  :root{ --px:'Press Start 2P',monospace; --vt:'VT323',monospace; }
+
+  /* --- night desk behind a warm-paper content sheet --- */
+  html,body{background:#14162b}
+  body{
+    font-family:var(--vt); font-size:16px; line-height:1.28; color:var(--ink);
+    background:
+      radial-gradient(ellipse 60% 40% at 72% -4%, rgba(125,91,166,.20), transparent 60%),
+      #14162b;
+  }
+  .wrap{background:var(--bg)}                       /* the paper sheet all content sits on */
+
+  /* --- kill every rounded corner; retro chunk over slickness --- */
+  *{border-radius:0 !important}
+
+  /* --- typography: Press Start 2P (self-sized) for display, VT323 for the rest --- */
+  h1,h2,h3,.tc-title,.hero-title,.hz-hero-title,.hz-title2,.modal-head h3,.cp-head-line,.home-empty h2{
+    font-family:var(--px) !important; font-weight:400 !important; letter-spacing:.3px; line-height:1.55;}
+  .tc-title,.hero-title,.hz-hero-title{font-size:12.5px !important}
+  .hz-title2{font-size:12px !important}
+  .modal-head h3,h3{font-size:11px !important}
+  .brand h1,#planTitle{font-family:var(--px) !important;font-weight:400 !important;font-size:12px !important;line-height:1.5;letter-spacing:1px}
+  body.athlete #planTitle{font-size:12px !important}
+  .btn,.iconbtn,.seg button,.bn,.tab,.hero-cta,.tc-do,.act-btn,.wk-btn,.ghost-btn,.home-plans-head .btn,.menu-mini{
+    font-family:var(--px) !important; font-weight:400 !important; letter-spacing:.4px;}
+  .btn,.iconbtn,.hero-cta,.tc-do,.home-plans-head .btn{font-size:9px !important}
+  .seg button{font-size:8px !important;padding:0 10px !important;white-space:nowrap}
+  .bn{font-size:7px !important;letter-spacing:0 !important;white-space:nowrap}
+  .botnav{gap:1px !important;padding:6px 4px !important}
+  .botnav .bn{padding-left:0 !important;padding-right:0 !important}
+  .section-label,.section-toggle,.hz-vol-lab,.hz-hstat .l,.dt-l,.stat .lab,.mv-sect,.sectlabel,.ses-lab,.hz-sec span,.cal-sel-label,.home-plans-head>span,.field>label{
+    font-family:var(--px) !important; font-weight:400 !important; font-size:7px !important; letter-spacing:.5px; line-height:1.7;}
+  .wn,.hz-wk,.hz-up,.phasebadge,.chip,.pill.type,.pill.exec,.mvh-pill,.wk-adj-badge{
+    font-family:var(--px) !important; font-weight:400 !important; font-size:7px !important; letter-spacing:.3px;}
+  .undo-toast{font-family:var(--px) !important; font-size:10px !important}
+  /* numbers stay in VT323 — legible retro, no overflow */
+  .cstat,.dt-v,.hz-vol-num,.hz-hstat .v,.rb-dd b,.ws-num,.wh-sum,.hero-stats .hs b,.mc-z,.mc-load,
+  .stat .val,.pg-stat .v,.cc-big,.pred .pv,.mvh-stat b,.mv-stat b,.cal-dnum,.day-head .dnum,.hz-done-meta,.rb-date{
+    font-family:var(--vt) !important; font-weight:400 !important;}
+
+  /* --- chunky ink borders on the paper surfaces --- */
+  .card,.today-card,.stat,.dt,.mcard,.cal-grid .cal-cell,.hz-done,.racebanner,.weekstrip,.coach-card,
+  .plan-card,.pg-card,.pg-stat,.zones-card,.pred,.sd-card,.mv-stat,.pseg,.coach,.donerow,.hr-box,.mv-note,
+  .field input,.field select,.field textarea,.search,.ss-in,.mv-why,.pg-goal,.day-it,.exec-read{
+    border:2px solid var(--ink) !important;}
+  .modal,.week{border:3px solid var(--ink) !important}
+  .chip,.pill.type,.pill.exec,.wn,.wk-arrow,.check,.phasebadge,.cal-navb,.ss-chip{border:2px solid var(--ink) !important}
+  .week-head{border-bottom:2px solid var(--ink) !important}
+  .week.collapsed .week-head{border-bottom:0 !important}
+
+  /* --- hard offset shadows, never blurred --- */
+  .card,.today-card,.stat,.dt,.mcard,.hz-done,.racebanner,.weekstrip,.coach-card,.plan-card,.pg-card,.sd-card,.pred,.hero,.cal-sel .mcard{
+    box-shadow:3px 3px 0 rgba(0,0,0,.30) !important}
+  .modal{box-shadow:6px 6px 0 rgba(0,0,0,.42) !important}
+  .btn,.iconbtn,.seg,.wk-arrow,.cal-navb,.ss-chip,.menu{box-shadow:2px 2px 0 rgba(0,0,0,.28) !important}
+
+  /* --- the one accent: primary actions + today marker in dawn amber --- */
+  .btn{background:var(--panel);color:var(--ink)}
+  .btn.primary,.tc-do,.hero-cta:not(.ghost):not(.done),.sd-btn.primary,.s-add-btn{
+    background:var(--accent) !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.30)}
+  .btn.danger{background:#d6564c !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .seg button[aria-pressed="true"]{background:var(--accent) !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .bar>i,.rb-bar i,.mini-bar i{background:var(--accent) !important}
+  .day-head.today .dnum{background:var(--accent) !important;color:#fff !important;padding:1px 8px;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .ws-day.today{background:var(--accent) !important;border:2px solid var(--ink) !important;transform:none !important;box-shadow:3px 3px 0 rgba(0,0,0,.3) !important}
+  .ws-day.today .ws-dn,.ws-day.today .ws-num{color:#fff !important}
+  .cal-cell.today .cal-dnum,.cal-cell.today{color:var(--bad)}
+  .cal-grid .cal-cell.sel{border-color:var(--accent) !important;box-shadow:2px 2px 0 var(--accent) !important}
+  .toggle[aria-pressed="true"]{background:var(--good) !important}
+  .week.current{border-color:var(--ink) !important;border-left:6px solid var(--accent) !important;background:#fff7e4 !important}
+  .week.current>.week-head{background:#fdeecb !important}
+  .card.race{background:linear-gradient(135deg,#fff3d0,#f6e3b0) !important}
+
+  /* --- pressed state: the whole thing nudges down-right, shadow gone --- */
+  .btn:active,.iconbtn:active,.bn:active,.seg button:active,.hero-cta:active,.tc-do:active,.act-btn:active,
+  .tab:active,.wk-arrow:active,.cal-navb:active,.ss-chip:active,.hz-complete:active,.wk-btn:active{
+    transform:translate(2px,2px) !important;box-shadow:none !important}
+
+  /* --- night chrome: top bar --- */
+  .topbar{background:#14162b !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+    border-bottom:3px solid #3a3d5e !important}
+  .brand h1,#planTitle,body.athlete #planTitle{color:#f3e9d6 !important}
+  .brand p,#countdown,.mini .m span{color:#8f93c0 !important}
+  .mini .m b{color:#f3e9d6 !important}
+  .topbar .iconbtn{color:#c9cdf0 !important;background:#22254a !important;border:2px solid #3a3d5e !important;box-shadow:2px 2px 0 rgba(0,0,0,.5) !important}
+  .mark{background:#1d2042 !important;border:2px solid #3a3d5e !important}
+
+  /* --- night chrome: bottom nav dock --- */
+  .botnav{background:#1d2042 !important;border:3px solid #3a3d5e !important;box-shadow:4px 4px 0 rgba(0,0,0,.5) !important}
+  .botnav .bn{color:#8f93c0 !important}
+  .botnav .bn.active{color:var(--accent) !important;background:rgba(224,162,60,.15) !important}
+
+  /* --- night "windows": the HORIZON home hero + mission cards stay dark, re-toned amber --- */
+  .hz-mission,.hz-hero{background:linear-gradient(158deg,#232048 0%,#14162b 100%) !important;
+    border:3px solid #3a3d5e !important;color:#f3e9d6 !important;box-shadow:4px 4px 0 rgba(0,0,0,.45) !important}
+  .hz-logo,.hz-vol-pct,.hz-fulllog{color:var(--accent) !important}
+  .hz-up{background:rgba(224,162,60,.18) !important;color:var(--accent) !important}
+  .hz-wk{background:var(--bad) !important;color:#fff !important}
+  .hz-vol-bar i,.hzspark-a{background:var(--accent) !important;fill:var(--accent) !important}
+  .hzline-s,.hzspark-s{stroke:var(--accent) !important}
+  .hzline-a{fill:var(--accent) !important}
+  .hz-gain{background:rgba(20,22,40,.6) !important;color:var(--accent) !important}
+  .hz-quote{border-left-color:var(--accent) !important}
+  .hz-complete{background:linear-gradient(180deg,#e6b24f,#d4a017) !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.3);border:2px solid var(--ink) !important;box-shadow:3px 3px 0 rgba(0,0,0,.35) !important}
+  /* remaining cobalt holdovers in the other night windows (progress ring, route chart, race stars) → amber */
+  .pg-proof-mark,.hz-routetag,.rs-rlab{color:var(--accent) !important}
+  .pg-ring-prog,.hz-chartwrap.route .rt-line{stroke:var(--accent) !important}
+  .rs-star,.hz-chartwrap.route .rt-end{fill:var(--accent) !important}
+  .rs-range{accent-color:var(--accent) !important}
+  .mvh-pill.type{background:rgba(224,162,60,.18) !important;color:var(--accent) !important}
+
+  /* --- the peach "today" hero (non-HORIZON layouts) → paper card, red corner tag --- */
+  .hero{background:linear-gradient(135deg,#fff6df,#f3e9d6) !important;color:var(--ink) !important;
+    border:3px solid var(--ink) !important;box-shadow:4px 4px 0 rgba(0,0,0,.42) !important}
+  .hero-title,.hero-stats .hs b{color:var(--ink) !important}
+  .hero-day{background:var(--bad) !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .hero-type,.hero-desc,.hero-rest,.hero-stats .hs i{color:var(--ink2) !important}
+  .hero-tiles .ht,.hero-coach{background:#fffdf6 !important;border:2px solid var(--ink);color:var(--ink) !important}
+  .ht i,.hero-coach span{color:var(--muted) !important}
+  .hero-cta{background:var(--accent) !important;color:#fff !important;text-shadow:1px 1px 0 rgba(0,0,0,.3);border:2px solid var(--ink) !important}
+
+  /* --- toasts + selection + scrollbar + crisp charts --- */
+  .undo-toast{background:var(--accent) !important;border:3px solid var(--ink) !important;color:#fff !important;
+    box-shadow:4px 4px 0 rgba(0,0,0,.4) !important;text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+  .undo-toast button{color:#2b2118 !important;text-decoration:underline}
+  ::selection{background:var(--accent);color:var(--ink)}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#3a3d5e;border:2px solid #14162b}
+  ::-webkit-scrollbar-track{background:#14162b}
+  .hzline,.hzspark,.hr-svg,.pg-chart svg,.sb-bars{shape-rendering:crispEdges}
 </style>
 </head>
 <body>
