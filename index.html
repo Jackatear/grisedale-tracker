@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-08zz" />
+<meta name="app-build" content="2026-06-09a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1543,6 +1543,51 @@
   .rh-done-tick{width:76px;height:76px;margin:0 auto;border-radius:50%;background:var(--good);color:#fff;display:flex;align-items:center;justify-content:center;font-size:38px}
   .rh-done-t{font-family:var(--px);font-size:21px;font-weight:700;letter-spacing:-.01em;color:var(--txt);margin-top:20px}
   .rh-done-s{font-family:var(--px);font-size:15px;color:var(--muted);margin-top:9px}
+
+  /* ==================================================================
+     MOTION — buttery, springy, addictive. Home · Plan · Calendar.
+     ================================================================== */
+  :root{ --spring:cubic-bezier(.34,1.56,.64,1); --ease-out:cubic-bezier(.22,.75,.3,1); }
+  /* springier entrance stagger (overrides the base .vw-in) */
+  @keyframes vwIn{from{opacity:0;transform:translateY(16px) scale(.986)}to{opacity:1;transform:none}}
+  .vw-in{animation:vwIn .58s var(--ease-out) backwards;animation-delay:calc(var(--si,0)*58ms)}
+
+  /* tactile press feedback on every tappable surface */
+  .card,.cal-cell,.plan-card,.hz-done,.day-it,.mcard{transition:transform .16s var(--spring),box-shadow .22s ease,border-color .18s ease}
+  .card:active,.cal-cell:active,.plan-card:active,.hz-done:active,.day-it:active,.mcard:active{transform:scale(.977)}
+  .check{transition:transform .16s var(--spring),background .18s ease,border-color .18s ease}
+  .check:active{transform:scale(.86)}
+  .btn,.iconbtn,.cal-navb,.seg button,.wk-arrow,.pc-actions button{transition:transform .14s var(--spring),background .16s ease,border-color .16s ease,color .16s ease}
+  .btn:active,.iconbtn:active,.cal-navb:active,.seg button:active,.wk-arrow:active{transform:scale(.93)}
+  .rh-ex{transition:transform .16s var(--spring)}   /* rehab already handled elsewhere; harmless */
+
+  /* the money moment — completing a session */
+  @keyframes checkPop{0%{transform:scale(.4);box-shadow:0 0 0 0 rgba(92,113,84,.5)}50%{transform:scale(1.3)}100%{transform:scale(1);box-shadow:0 0 0 13px rgba(92,113,84,0)}}
+  .card.just-done .check{animation:checkPop .52s var(--spring)}
+  @keyframes cardSettle{0%{transform:scale(1)}26%{transform:scale(.973)}100%{transform:scale(1)}}
+  .card.just-done{animation:cardSettle .5s ease}
+
+  /* calendar: cells cascade in, month flips slide, selection pops */
+  @keyframes cellIn{from{opacity:0;transform:translateY(9px) scale(.93)}to{opacity:1;transform:none}}
+  @keyframes calSlideNext{from{opacity:.3;transform:translateX(24px)}to{opacity:1;transform:none}}
+  @keyframes calSlidePrev{from{opacity:.3;transform:translateX(-24px)}to{opacity:1;transform:none}}
+  @keyframes cellSel{0%{transform:scale(.9)}58%{transform:scale(1.07)}100%{transform:scale(1)}}
+  .cal-cell{transition:border-color .2s ease,box-shadow .25s var(--spring),background .2s ease}
+  .cal-cell.sel{animation:cellSel .32s var(--spring)}
+  .cal-navb{transition:transform .14s var(--spring),border-color .16s ease,color .16s ease}
+
+  /* progress fills glide (JS drives width; this is the fallback + release) */
+  .pp-fill{transition:width .95s var(--ease-out)}
+  .hz-vol-bar i,.pc-bar>i,.bar>i{transition:width .9s var(--ease-out)}
+  /* the caret + week collapse feel connected */
+  .week-head .caret{transition:transform .28s var(--spring)}
+  .week{transition:box-shadow .25s ease}
+
+  @media (prefers-reduced-motion: reduce){
+    .vw-in,.card.just-done .check,.card.just-done,.cal-cell.sel{animation:none!important}
+    .card,.cal-cell,.plan-card,.hz-done,.day-it,.mcard,.check,.btn,.iconbtn,.cal-navb,.seg button,.wk-arrow{transition:none!important}
+    .pp-fill,.hz-vol-bar i,.pc-bar>i,.bar>i{transition:none!important}
+  }
 </style>
 </head>
 <body>
@@ -2155,7 +2200,7 @@ let _navAnimSkip=false;
 const _VIEWSEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView"};
 function currentViewEl(){ return !state.activeId ? $("#homeView") : ($(_VIEWSEL[state.tab]||"#planView")); }
 function reduceMotion(){ return matchMedia("(prefers-reduced-motion: reduce)").matches; }
-function maybeAnimateView(){ if(_navAnimSkip || reduceMotion()) return; requestAnimationFrame(()=>animateViewIn(currentViewEl())); }
+function maybeAnimateView(){ if(_navAnimSkip || reduceMotion()) return; setTimeout(()=>animateViewIn(currentViewEl()),0); }
 function animateViewIn(el){
   if(!el || el.hidden || reduceMotion()) return;
   const kids=[...el.children].filter(c=>c.nodeType===1 && !c.hidden && c.offsetHeight>0);
@@ -2164,6 +2209,7 @@ function animateViewIn(el){
   kids.forEach(c=>c.classList.add("vw-in"));
   setTimeout(()=>kids.forEach(c=>{ c.classList.remove("vw-in"); c.style.removeProperty("--si"); }), 1500);
   const svg=el.querySelector(".rs-svg"); if(svg) rsAnimate(svg);
+  animateCountUps(el); animateBars(el); if(el.id==="calendarView") calStaggerCells(el);
 }
 // The race-shape chart comes alive: the fitness line draws itself, bars rise, area + projection fade in.
 function rsAnimate(svg){
@@ -2175,6 +2221,39 @@ function rsAnimate(svg){
   const area=svg.querySelector(".rs-area"); if(area){ area.style.opacity="0"; area.style.transition="opacity .8s ease .25s"; requestAnimationFrame(()=>{ area.style.opacity=""; }); }
   svg.querySelectorAll(".rs-bar").forEach((b,i)=>{ b.style.transformBox="fill-box"; b.style.transformOrigin="center bottom"; b.style.transition="none"; b.style.transform="scaleY(.001)";
     void b.getBoundingClientRect(); b.style.transition=`transform .5s cubic-bezier(.22,.61,.36,1) ${30+i*22}ms`; requestAnimationFrame(()=>{ b.style.transform=""; }); });
+}
+let _calDir=0;
+// Numbers roll up from 0 on view-enter — instant "alive" feel.
+function animateCountUps(root){
+  if(reduceMotion()||!root) return;
+  root.querySelectorAll("[data-count]").forEach(el=>{
+    const target=parseFloat(el.getAttribute("data-count")); if(!isFinite(target)) return;
+    const dec=parseInt(el.getAttribute("data-count-dec")||"0",10), suf=el.getAttribute("data-count-suf")||"";
+    const dur=Math.min(900,420+Math.abs(target)*8), t0=performance.now(), finalTxt=target.toFixed(dec)+suf;
+    let raf=0; const fin=()=>{ if(raf) cancelAnimationFrame(raf); el.textContent=finalTxt; };
+    const fb=setTimeout(fin, dur+220);                          // guarantee arrival even if rAF stalls (bg/offscreen tab)
+    el.textContent=(0).toFixed(dec)+suf;
+    (function step(){ raf=requestAnimationFrame(()=>{ const p=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-p,3);
+      el.textContent=(target*e).toFixed(dec)+suf; if(p<1) step(); else { clearTimeout(fb); el.textContent=finalTxt; } }); })();
+  });
+}
+// Progress bars sweep up from empty on view-enter.
+function animateBars(root){
+  if(reduceMotion()||!root) return;
+  root.querySelectorAll(".pp-fill,.hz-vol-bar i,.pc-bar>i,.bar>i").forEach((el,i)=>{
+    const w=el.style.width; if(!w) return;
+    el.style.transition="none"; el.style.width="0%"; void el.offsetWidth;   // commit empty
+    el.style.transition="width .95s cubic-bezier(.22,.75,.3,1) "+(90+i*45)+"ms";
+    el.style.width=w;                                                        // target set synchronously → never stuck at 0
+  });
+}
+// Calendar cells cascade in when the month view opens.
+function calStaggerCells(root){
+  if(reduceMotion()||!root) return;
+  root.querySelectorAll(".cal-grid .cal-cell").forEach((c,i)=>{
+    c.style.animation="none"; void c.offsetWidth;
+    c.style.animation="cellIn .42s cubic-bezier(.34,1.4,.5,1) "+Math.min(i,24)*14+"ms backwards";
+  });
 }
 let lastActivePlanId=null;
 // Bottom-nav: jump to a tab, opening the last-used (or first) plan if we're on the home screen
@@ -2556,7 +2635,8 @@ function planProgressHTML(rec){
   const dd = goal? daysBetween(t,goal.date):null;
   const st=planStats(rec);
   const raceName= goal? (goal.n||"the finish").replace(/^\s*RACE\s*[—–:-]\s*/i,"").trim() : "the finish";
-  const ddCell=`<div class="pp-stat"><b>${dd!=null?dd:"—"}<i>${dd!=null?"d":""}</i></b><span>to race day</span></div>`;
+  const ddInner = dd!=null ? `<span data-count="${dd}">${dd}</span><i>d</i>` : "—";
+  const ddCell=`<div class="pp-stat"><b>${ddInner}</b><span>to race day</span></div>`;
   if(preStart){
     const inDays=daysBetween(t,startMon);
     return `<div class="plan-prog vw-fade"><div class="pp-head"><span class="pp-mark">▲</span> How far through</div>
@@ -2565,9 +2645,9 @@ function planProgressHTML(rec){
   }
   return `<div class="plan-prog vw-fade">
     <div class="pp-head"><span class="pp-mark">▲</span> How far through</div>
-    <div class="pp-big"><b>${timePct}</b><span>%</span><i>of the way to ${esc(raceName)}</i></div>
+    <div class="pp-big"><b data-count="${timePct}">${timePct}</b><span>%</span><i>of the way to ${esc(raceName)}</i></div>
     <div class="pp-track"><div class="pp-fill" style="width:${Math.min(100,timePct)}%"></div><span class="pp-flag">⚑</span></div>
-    <div class="pp-stats"><div class="pp-stat"><b>${curWk}<i>/${totWk}</i></b><span>week</span></div><div class="pp-stat"><b>${st.done}<i>/${st.total}</i></b><span>sessions done</span></div>${ddCell}</div>
+    <div class="pp-stats"><div class="pp-stat"><b><span data-count="${curWk}">${curWk}</span><i>/${totWk}</i></b><span>week</span></div><div class="pp-stat"><b><span data-count="${st.done}">${st.done}</span><i>/${st.total}</i></b><span>sessions done</span></div>${ddCell}</div>
     <div class="pp-done"><div class="pp-track pp-track2"><div class="pp-fill done" style="width:${st.pct}%"></div></div><span class="pp-donelab">${st.pct}% of sessions completed</span></div>
   </div>`;
 }
@@ -2601,7 +2681,7 @@ function renderHome(){
         <div class="pc-top"><h3>${esc(rec.planName||"Untitled plan")}</h3><button class="pc-x" data-del="${rec.id}" title="Delete plan">✕</button></div>
         <div class="pc-meta">${esc(range)} · ${st.total} sessions</div>
         <div class="pc-bar"><i style="width:${st.pct}%"></i></div>
-        <div class="pc-foot"><span>${st.done}/${st.total} done</span><span>${st.pct}%</span></div>
+        <div class="pc-foot"><span>${st.done}/${st.total} done</span><span data-count="${st.pct}" data-count-suf="%">${st.pct}%</span></div>
         <div class="pc-actions"><button data-rename="${rec.id}">Rename</button><button data-exp="${rec.id}">Export CSV</button></div>
       </div>`;
   }).join("");
@@ -4490,12 +4570,14 @@ function renderCalendar(){
     <div class="cal-grid">${wd.map(x=>`<div class="cal-wd">${x}</div>`).join("")}${cells}</div>
     <div class="cal-sel-label">${esc(selLabel)}</div>
     <div class="cal-sel">${selBody}</div>`;
+  if(_calDir && !reduceMotion()){ const g=host.querySelector(".cal-grid"); if(g){ g.style.animation=(_calDir>0?"calSlideNext":"calSlidePrev")+" .34s cubic-bezier(.22,.61,.36,1)"; g.addEventListener("animationend",()=>{g.style.animation="";},{once:true}); } } _calDir=0;
 }
 $("#calendarView").addEventListener("click", e=>{
   const nav=e.target.closest("[data-cal]");
   if(nav){ const a=nav.dataset.cal;
     state.calMonth = a==="today" ? todayISO().slice(0,7) : shiftMonth(state.calMonth||todayISO().slice(0,7), a==="next"?1:-1);
     if(a==="today") state.calSel=todayISO();
+    _calDir = a==="next"?1:(a==="prev"?-1:0);
     save(); renderCalendar(); return; }
   const chk=e.target.closest("[data-check]"); if(chk){ e.stopPropagation(); pushUndo(); state.done[chk.dataset.check]=!state.done[chk.dataset.check]; save(); render(); return; }
   const op=e.target.closest("[data-open]"); if(op){ openModal(op.dataset.open); return; }
@@ -4603,7 +4685,9 @@ weeksEl.addEventListener("click", e=>{
   const tog = e.target.closest("[data-toggle]");
   if(tog){ const m=tog.dataset.toggle; state.collapsed[m]=!state.collapsed[m]; save(); renderWeeks(); return; }
   const chk = e.target.closest("[data-check]");
-  if(chk){ pushUndo(); const id=chk.dataset.check; state.done[id]=!state.done[id]; save(); render(); return; }
+  if(chk){ pushUndo(); const id=chk.dataset.check; const nd=!state.done[id]; state.done[id]=nd; save(); render();
+    if(nd && !reduceMotion()) setTimeout(()=>{ const c=document.querySelector('#weeks .card[data-id="'+id+'"]'); if(c){ c.classList.add("just-done"); if(navigator.vibrate)navigator.vibrate(14); setTimeout(()=>{ if(c) c.classList.remove("just-done"); },720); } },0);
+    return; }
   const add = e.target.closest("[data-add]");
   if(add){ openNew(add.dataset.add); return; }
   const wact = e.target.closest("[data-act]");
