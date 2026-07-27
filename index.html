@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09a" />
+<meta name="app-build" content="2026-06-09b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1545,43 +1545,46 @@
   .rh-done-s{font-family:var(--px);font-size:15px;color:var(--muted);margin-top:9px}
 
   /* ==================================================================
-     MOTION — buttery, springy, addictive. Home · Plan · Calendar.
+     MOTION — smooth, fluid, confident. Home · Plan · Calendar.
+     Calm easing, minimal overshoot — nothing snappy or bouncy.
      ================================================================== */
-  :root{ --spring:cubic-bezier(.34,1.56,.64,1); --ease-out:cubic-bezier(.22,.75,.3,1); }
-  /* springier entrance stagger (overrides the base .vw-in) */
-  @keyframes vwIn{from{opacity:0;transform:translateY(16px) scale(.986)}to{opacity:1;transform:none}}
-  .vw-in{animation:vwIn .58s var(--ease-out) backwards;animation-delay:calc(var(--si,0)*58ms)}
+  :root{ --ease-out:cubic-bezier(.16,.84,.44,1); --spring:cubic-bezier(.34,1.22,.5,1); }
 
-  /* tactile press feedback on every tappable surface */
-  .card,.cal-cell,.plan-card,.hz-done,.day-it,.mcard{transition:transform .16s var(--spring),box-shadow .22s ease,border-color .18s ease}
-  .card:active,.cal-cell:active,.plan-card:active,.hz-done:active,.day-it:active,.mcard:active{transform:scale(.977)}
-  .check{transition:transform .16s var(--spring),background .18s ease,border-color .18s ease}
-  .check:active{transform:scale(.86)}
-  .btn,.iconbtn,.cal-navb,.seg button,.wk-arrow,.pc-actions button{transition:transform .14s var(--spring),background .16s ease,border-color .16s ease,color .16s ease}
-  .btn:active,.iconbtn:active,.cal-navb:active,.seg button:active,.wk-arrow:active{transform:scale(.93)}
-  .rh-ex{transition:transform .16s var(--spring)}   /* rehab already handled elsewhere; harmless */
+  /* no text selection anywhere in the app (kills highlight-on-drag); inputs stay selectable */
+  body{ -webkit-user-select:none; -moz-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  input,textarea,select,[contenteditable]{ -webkit-user-select:text; -moz-user-select:text; user-select:text; }
 
-  /* the money moment — completing a session */
-  @keyframes checkPop{0%{transform:scale(.4);box-shadow:0 0 0 0 rgba(92,113,84,.5)}50%{transform:scale(1.3)}100%{transform:scale(1);box-shadow:0 0 0 13px rgba(92,113,84,0)}}
-  .card.just-done .check{animation:checkPop .52s var(--spring)}
-  @keyframes cardSettle{0%{transform:scale(1)}26%{transform:scale(.973)}100%{transform:scale(1)}}
-  .card.just-done{animation:cardSettle .5s ease}
+  /* entrance: a calm rise + fade, gentle cadence (no scale) */
+  @keyframes vwIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .vw-in{animation:vwIn .62s var(--ease-out) backwards;animation-delay:calc(var(--si,0)*66ms)}
 
-  /* calendar: cells cascade in, month flips slide, selection pops */
-  @keyframes cellIn{from{opacity:0;transform:translateY(9px) scale(.93)}to{opacity:1;transform:none}}
-  @keyframes calSlideNext{from{opacity:.3;transform:translateX(24px)}to{opacity:1;transform:none}}
-  @keyframes calSlidePrev{from{opacity:.3;transform:translateX(-24px)}to{opacity:1;transform:none}}
-  @keyframes cellSel{0%{transform:scale(.9)}58%{transform:scale(1.07)}100%{transform:scale(1)}}
-  .cal-cell{transition:border-color .2s ease,box-shadow .25s var(--spring),background .2s ease}
-  .cal-cell.sel{animation:cellSel .32s var(--spring)}
-  .cal-navb{transition:transform .14s var(--spring),border-color .16s ease,color .16s ease}
+  /* press feedback: subtle, crisp press-in, smooth settle — no wobble */
+  .card,.cal-cell,.plan-card,.hz-done,.day-it,.mcard{transition:transform .24s var(--ease-out),box-shadow .25s ease,border-color .2s ease}
+  .card:active,.cal-cell:active,.plan-card:active,.hz-done:active,.day-it:active,.mcard:active{transform:scale(.986);transition-duration:.05s}
+  .check{transition:transform .22s var(--ease-out),background .2s ease,border-color .2s ease}
+  .check:active{transform:scale(.9);transition-duration:.05s}
+  .btn,.iconbtn,.cal-navb,.seg button,.wk-arrow{transition:transform .2s var(--ease-out),background .18s ease,border-color .18s ease,color .18s ease}
+  .btn:active,.iconbtn:active,.cal-navb:active,.seg button:active,.wk-arrow:active{transform:scale(.965);transition-duration:.05s}
 
-  /* progress fills glide (JS drives width; this is the fallback + release) */
-  .pp-fill{transition:width .95s var(--ease-out)}
-  .hz-vol-bar i,.pc-bar>i,.bar>i{transition:width .9s var(--ease-out)}
-  /* the caret + week collapse feel connected */
-  .week-head .caret{transition:transform .28s var(--spring)}
-  .week{transition:box-shadow .25s ease}
+  /* completing a session: one calm, satisfying confirm (gentle, not springy) */
+  @keyframes checkPop{0%{transform:scale(.72);box-shadow:0 0 0 0 rgba(92,113,84,.35)}45%{transform:scale(1.1)}100%{transform:scale(1);box-shadow:0 0 0 11px rgba(92,113,84,0)}}
+  .card.just-done .check{animation:checkPop .62s var(--ease-out)}
+  @keyframes cardSettle{0%{transform:scale(1)}32%{transform:scale(.987)}100%{transform:scale(1)}}
+  .card.just-done{animation:cardSettle .55s var(--ease-out)}
+
+  /* calendar: gentle cascade, soft month slide, soft select */
+  @keyframes cellIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+  @keyframes calSlideNext{from{opacity:.4;transform:translateX(15px)}to{opacity:1;transform:none}}
+  @keyframes calSlidePrev{from{opacity:.4;transform:translateX(-15px)}to{opacity:1;transform:none}}
+  @keyframes cellSel{from{transform:scale(.94)}to{transform:scale(1)}}
+  .cal-cell{transition:border-color .2s ease,box-shadow .25s var(--ease-out),background .2s ease}
+  .cal-cell.sel{animation:cellSel .3s var(--ease-out)}
+  .cal-navb{transition:transform .2s var(--ease-out),border-color .18s ease,color .18s ease}
+
+  /* progress fills glide, slow and smooth */
+  .pp-fill{transition:width 1.15s var(--ease-out)}
+  .hz-vol-bar i,.pc-bar>i,.bar>i{transition:width 1.05s var(--ease-out)}
+  .week-head .caret{transition:transform .3s var(--ease-out)}
 
   @media (prefers-reduced-motion: reduce){
     .vw-in,.card.just-done .check,.card.just-done,.cal-cell.sel{animation:none!important}
@@ -2229,11 +2232,11 @@ function animateCountUps(root){
   root.querySelectorAll("[data-count]").forEach(el=>{
     const target=parseFloat(el.getAttribute("data-count")); if(!isFinite(target)) return;
     const dec=parseInt(el.getAttribute("data-count-dec")||"0",10), suf=el.getAttribute("data-count-suf")||"";
-    const dur=Math.min(900,420+Math.abs(target)*8), t0=performance.now(), finalTxt=target.toFixed(dec)+suf;
+    const dur=Math.min(1200,650+Math.abs(target)*11), t0=performance.now(), finalTxt=target.toFixed(dec)+suf;
     let raf=0; const fin=()=>{ if(raf) cancelAnimationFrame(raf); el.textContent=finalTxt; };
     const fb=setTimeout(fin, dur+220);                          // guarantee arrival even if rAF stalls (bg/offscreen tab)
     el.textContent=(0).toFixed(dec)+suf;
-    (function step(){ raf=requestAnimationFrame(()=>{ const p=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-p,3);
+    (function step(){ raf=requestAnimationFrame(()=>{ const p=Math.min(1,(performance.now()-t0)/dur), e=1-Math.pow(1-p,4);
       el.textContent=(target*e).toFixed(dec)+suf; if(p<1) step(); else { clearTimeout(fb); el.textContent=finalTxt; } }); })();
   });
 }
