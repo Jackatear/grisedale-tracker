@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "tracker-site",
+  "name": "grisedale-tracker",
   "compatibility_date": "2026-06-15",
   "observability": {
     "enabled": true
