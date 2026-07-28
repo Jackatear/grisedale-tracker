@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09b" />
+<meta name="app-build" content="2026-06-09c" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -19,39 +19,39 @@
   :root{
     color-scheme:light;
     /* TOPOGRAPHIC — warm stone paper, ink text, monochrome accent, one dark contour "climb" panel */
-    --ink:#22201b; --ink2:#3a372f;
-    --bg:#eae7df; --bg2:#e0ddd3; --panel:#f8f6f0; --panel2:#efece4;
-    --line:#d6d2c7; --line2:#c2beb2;
-    --txt:#22201b; --muted:#6f6b61; --faint:#9a968b;
-    --accent:#26251f; --accent2:#3a372f;
-    --good:#5c7154; --warn:#957a3d; --bad:#a1553f; --shadow:0 1px 2px rgba(34,32,27,.05),0 8px 22px rgba(34,32,27,.07);
-    --radius:10px;
+    --ink:#1a1916; --ink2:#35322b;
+    --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
+    --line:#d3cec2; --line2:#bdb8aa;
+    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --accent:#1c1b17; --accent2:#333029;
+    --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
+    --radius:12px;
     --t-easy:#5d7350; --t-recovery:#6f8a95; --t-threshold:#a1553f;
     --t-hills:#6d6a86; --t-descent:#a9743f; --t-simulation:#8a5f77;
     --t-long:#4d6b82; --t-race:#8a7a3d; --t-rest:#8a8578; --t-bike:#4e8378; --t-strength:#6d6a86; --t-sauna:#a9743f;
   }
   [data-theme="dark"]{
     color-scheme:light;   /* ASCENT is one warm-paper look; theme toggle is a no-op */
-    --ink:#22201b; --ink2:#3a372f;
-    --bg:#eae7df; --bg2:#e0ddd3; --panel:#f8f6f0; --panel2:#efece4;
-    --line:#d6d2c7; --line2:#c2beb2;
-    --txt:#22201b; --muted:#6f6b61; --faint:#9a968b;
-    --accent:#26251f; --accent2:#3a372f;
-    --good:#5c7154; --warn:#957a3d; --bad:#a1553f; --shadow:0 1px 2px rgba(34,32,27,.05),0 8px 22px rgba(34,32,27,.07);
-    --radius:10px;
+    --ink:#1a1916; --ink2:#35322b;
+    --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
+    --line:#d3cec2; --line2:#bdb8aa;
+    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --accent:#1c1b17; --accent2:#333029;
+    --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
+    --radius:12px;
     --t-easy:#5d7350; --t-recovery:#6f8a95; --t-threshold:#a1553f;
     --t-hills:#6d6a86; --t-descent:#a9743f; --t-simulation:#8a5f77;
     --t-long:#4d6b82; --t-race:#8a7a3d; --t-rest:#8a8578; --t-bike:#4e8378; --t-strength:#6d6a86; --t-sauna:#a9743f;
   }
   [data-theme="light"]{
     color-scheme:light;
-    --ink:#22201b; --ink2:#3a372f;
-    --bg:#eae7df; --bg2:#e0ddd3; --panel:#f8f6f0; --panel2:#efece4;
-    --line:#d6d2c7; --line2:#c2beb2;
-    --txt:#22201b; --muted:#6f6b61; --faint:#9a968b;
-    --accent:#26251f; --accent2:#3a372f;
-    --good:#5c7154; --warn:#957a3d; --bad:#a1553f; --shadow:0 1px 2px rgba(34,32,27,.05),0 8px 22px rgba(34,32,27,.07);
-    --radius:10px;
+    --ink:#1a1916; --ink2:#35322b;
+    --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
+    --line:#d3cec2; --line2:#bdb8aa;
+    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --accent:#1c1b17; --accent2:#333029;
+    --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
+    --radius:12px;
     --t-easy:#5d7350; --t-recovery:#6f8a95; --t-threshold:#a1553f;
     --t-hills:#6d6a86; --t-descent:#a9743f; --t-simulation:#8a5f77;
     --t-long:#4d6b82; --t-race:#8a7a3d; --t-rest:#8a8578; --t-bike:#4e8378; --t-strength:#6d6a86; --t-sauna:#a9743f;
@@ -1375,7 +1375,7 @@
   :root{
     --px:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
     --vt:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-    --slate:#23241f; --slate-tx:#ebe8e0;
+    --slate:#1e1e1a; --slate-tx:#efece4;
     --contour:repeating-radial-gradient(circle at 18% 138%, transparent 0 21px, rgba(235,232,224,.05) 21px 22px);
   }
 
@@ -1435,24 +1435,25 @@
   .plan-prog{position:relative;overflow:hidden;background:var(--slate);color:var(--slate-tx);border:0;
     border-radius:14px;box-shadow:var(--shadow);padding:16px 17px 17px;margin-bottom:14px;background-image:var(--contour)}
   .pp-head{font-family:var(--px);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-    color:rgba(235,232,224,.55);display:flex;align-items:center;gap:8px}
+    color:rgba(239,236,228,.72);display:flex;align-items:center;gap:8px}
   .pp-mark{color:rgba(235,232,224,.8);font-size:12px}
   .pp-big{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;margin:15px 0 2px}
   .pp-big b{font-family:var(--vt);font-size:46px;font-weight:600;line-height:.85;color:#fbf9f4;letter-spacing:-.02em}
-  .pp-big span{font-family:var(--vt);font-size:24px;color:rgba(235,232,224,.6)}
-  .pp-big i{font-family:var(--px);font-style:normal;font-size:14px;color:rgba(235,232,224,.6);margin-left:5px}
-  .pp-track{position:relative;height:8px;border:0;border-radius:99px;background:rgba(235,232,224,.16);margin-top:15px;overflow:hidden}
+  .pp-big span{font-family:var(--vt);font-size:24px;color:rgba(239,236,228,.72)}
+  .pp-big i{font-family:var(--px);font-style:normal;font-size:14px;color:rgba(239,236,228,.78);margin-left:5px}
+  .pp-track{position:relative;height:8px;border:0;border-radius:99px;background:rgba(239,236,228,.2);margin-top:15px;overflow:hidden}
   .pp-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:#fbf9f4}
   .pp-fill.done{background:var(--good)}
   .pp-flag{position:absolute;right:5px;top:50%;transform:translateY(-50%);font-size:10px;line-height:1;color:rgba(235,232,224,.85);z-index:2}
   .pp-track2{height:6px}
   .pp-stats{display:flex;gap:9px;margin-top:16px}
-  .pp-stat{flex:1;background:rgba(235,232,224,.055);border:1px solid rgba(235,232,224,.1);border-radius:10px;padding:10px 8px 9px;text-align:center;min-width:0}
+  .pp-stat{flex:1;background:rgba(239,236,228,.07);border:1px solid rgba(239,236,228,.13);border-radius:10px;padding:10px 8px 9px;text-align:center;min-width:0}
   .pp-stat b{font-family:var(--vt);font-size:22px;font-weight:600;color:#fbf9f4;display:block;line-height:1;letter-spacing:-.01em}
-  .pp-stat b i{font-style:normal;font-size:13px;color:rgba(235,232,224,.5)}
-  .pp-stat span{font-family:var(--px);font-size:9.5px;letter-spacing:.04em;color:rgba(235,232,224,.5);text-transform:uppercase;display:block;margin-top:7px;line-height:1.3}
+  .pp-stat b i{font-style:normal;font-size:13px;color:rgba(239,236,228,.62)}
+  .pp-stat>span{font-family:var(--px);font-size:9.5px;letter-spacing:.04em;color:rgba(239,236,228,.78);text-transform:uppercase;display:block;margin-top:7px;line-height:1.3}
+  .pp-stat b span,.pp-big b span{display:inline;font:inherit;color:inherit;margin:0;letter-spacing:inherit;text-transform:none}
   .pp-done{margin-top:16px}
-  .pp-donelab{display:block;font-family:var(--px);font-size:12px;color:rgba(235,232,224,.55);text-align:center;margin-top:8px}
+  .pp-donelab{display:block;font-family:var(--px);font-size:12px;color:rgba(239,236,228,.7);text-align:center;margin-top:8px}
 
   /* zones editor inside Settings sheet */
   .set-zones{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
@@ -1591,6 +1592,48 @@
     .card,.cal-cell,.plan-card,.hz-done,.day-it,.mcard,.check,.btn,.iconbtn,.cal-navb,.seg button,.wk-arrow{transition:none!important}
     .pp-fill,.hz-vol-bar i,.pc-bar>i,.bar>i{transition:none!important}
   }
+
+  /* ==================================================================
+     POLISH — depth, legibility, and fully-rounded drag & drop.
+     ================================================================== */
+  /* subtle topographic breath on the page itself — echoes the climb panel */
+  body{background-image:repeating-radial-gradient(circle at 12% 108%, transparent 0 34px, rgba(26,25,22,.022) 34px 35px);background-attachment:fixed}
+
+  /* surfaces lift properly off the paper now */
+  .card,.today-card,.plan-card,.hz-done,.hz-mission,.hz-hero,.dt,.stat,.racebanner,.weekstrip,.rh-ex,.rh-ring,.rh-streakbox{box-shadow:var(--shadow)}
+  .week{box-shadow:0 1px 2px rgba(26,25,22,.05),0 6px 18px rgba(26,25,22,.055)}
+
+  /* legibility fixes (measured: these were 2.4:1 and 3.9:1) */
+  .home-plans-head>span{color:var(--muted);font-size:11px;letter-spacing:.1em}
+  .hz-vol-lab,.hz-vol-pct,.hz-hstat .l,.section-label,.cal-sel-label,.ses-lab,.mv-sect,.sectlabel{color:var(--muted) !important}
+  .cal-wd{color:var(--muted)}
+  .card .cname{color:var(--ink2)}          /* session names were washed out */
+  .pc-meta,.pc-foot span{color:var(--muted)}
+
+  /* ---- unified radius scale — no more stray sharp/odd corners ---- */
+  .card,.today-card,.plan-card,.hz-done,.dt,.stat,.mcard,.day-it,.pg-card,.sd-card,.mv-stat,.pseg,
+  .hr-box,.mv-note,.coach,.donerow,.zones-card,.pred,.exec-read,.hero-tiles .ht,.hero-coach,
+  .rh-ex,.rh-ring,.rh-streakbox,.pp-stat,.hz-vol,.hz-hstat{border-radius:var(--radius)}
+  .cal-grid .cal-cell{border-radius:10px}
+  .week,.modal,.hz-mission,.hz-hero,.plan-prog,.racebanner,.weekstrip{border-radius:16px}
+  .btn,.iconbtn,.search,.seg,.field input,.field select,.field textarea,.ss-in,.zc-in,.cal-navb{border-radius:10px}
+  .seg button{border-radius:8px}
+
+  /* ---- drag & drop: everything rounded, nothing sharp ---- */
+  .day-cell{border-radius:12px}                             /* the hover target itself */
+  .day-cell.drag-over{background:color-mix(in srgb,var(--accent) 6%,transparent);
+    box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--accent) 26%,transparent);border-radius:12px}
+  .card.dragging{opacity:.55;transform:scale(1.02) rotate(.6deg);
+    box-shadow:0 14px 34px rgba(26,25,22,.22),0 3px 8px rgba(26,25,22,.14);border-radius:var(--radius)}
+  .drop-ph{border:2px dashed color-mix(in srgb,var(--accent) 34%,transparent) !important;
+    border-radius:var(--radius) !important;color:var(--muted) !important;
+    background:color-mix(in srgb,var(--accent) 4%,transparent);
+    font-size:12px;font-weight:600;letter-spacing:.02em;padding:14px 0 !important;
+    animation:phIn .22s var(--ease-out)}
+  @keyframes phIn{from{opacity:0;transform:scaleY(.86)}to{opacity:1;transform:none}}
+  .day-cell.is-today{border-radius:12px}
+  @media (prefers-reduced-motion: reduce){ .drop-ph{animation:none} .card.dragging{transform:none} }
+
 </style>
 </head>
 <body>
@@ -4703,7 +4746,7 @@ weeksEl.addEventListener("click", e=>{
 
 /* -------- Drag & drop -------- */
 let dragId=null, lastDragEnd=0, ph=null;
-function getPlaceholder(){ if(!ph){ ph=document.createElement("div"); ph.className="empty"; ph.style.borderColor="var(--accent)"; ph.style.color="var(--accent2)"; ph.textContent="drop here"; } return ph; }
+function getPlaceholder(){ if(!ph){ ph=document.createElement("div"); ph.className="empty drop-ph"; ph.textContent="Drop here"; } return ph; }
 function clearPH(){ if(ph&&ph.parentNode) ph.parentNode.removeChild(ph); }
 function afterEl(container,y){
   const cards=[...container.querySelectorAll('.card:not(.dragging)')];
