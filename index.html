@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09c" />
+<meta name="app-build" content="2026-06-09d" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1633,6 +1633,157 @@
   @keyframes phIn{from{opacity:0;transform:scaleY(.86)}to{opacity:1;transform:none}}
   .day-cell.is-today{border-radius:12px}
   @media (prefers-reduced-motion: reduce){ .drop-ph{animation:none} .card.dragging{transform:none} }
+
+
+  /* ==================================================================
+     THE CARD — one variable (--zc, the intensity zone) drives the whole
+     identity: tinted surface, gradient spine, hover sheen, done wash.
+     No extra DOM: spine = ::before, completion wash = ::after, and the
+     sheen is a moving background layer. Usability first — contrast,
+     44px targets, swipe + drag all preserved.
+     ================================================================== */
+  @property --sheen{ syntax:"<percentage>"; inherits:false; initial-value:180%; }
+
+  .card{
+    position:relative; isolation:isolate;
+    border:1px solid var(--line);
+    border-left:0;                                   /* replaced by the spine */
+    border-radius:14px;
+    padding:13px 34px 13px 17px;
+    cursor:grab; touch-action:pan-y;                 /* keep swipe-to-delete */
+    /* layer 1 = hover sheen (moves), layer 2 = zone tint wash (static) */
+    background-image:
+      linear-gradient(105deg, transparent 40%, color-mix(in srgb,#fff 62%, transparent) 48%, transparent 57%),
+      linear-gradient(168deg, color-mix(in srgb,var(--zc,var(--c)) 7%, var(--panel)) 0%, var(--panel) 62%);
+    background-size:260% 100%, 100% 100%;
+    background-position:var(--sheen) 0, 0 0;
+    background-repeat:no-repeat;
+    box-shadow:0 1px 2px rgba(26,25,22,.05), 0 3px 10px rgba(26,25,22,.055);
+    transition:transform .3s var(--ease-out), box-shadow .3s var(--ease-out),
+               border-color .25s ease, --sheen .85s var(--ease-out), background-position .85s var(--ease-out);
+  }
+  /* the intensity spine */
+  .card::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+    background:linear-gradient(180deg, var(--zc,var(--c)), color-mix(in srgb,var(--zc,var(--c)) 45%, transparent));
+    border-radius:14px 0 0 14px;
+    transition:width .28s var(--ease-out), box-shadow .3s ease, background .3s ease;
+  }
+  /* hover: lift, brighten the spine, sweep the sheen across */
+  @media (hover:hover){
+    .card:hover{ --sheen:-90%; background-position:-90% 0, 0 0;
+      transform:translateY(-2px);
+      box-shadow:0 2px 4px rgba(26,25,22,.06), 0 12px 26px rgba(26,25,22,.11);
+      border-color:color-mix(in srgb,var(--zc,var(--c)) 32%, var(--line)); }
+    .card:hover::before{ width:6px; box-shadow:0 0 16px -2px color-mix(in srgb,var(--zc,var(--c)) 75%, transparent); }
+    .card:hover .cgrip{ opacity:.75 }
+  }
+  .card:active{ transform:scale(.988); transition-duration:.06s }
+
+  /* ---- type / lead stat / name / meta ---- */
+  .card .ctype{ font-size:9.5px; font-weight:700; letter-spacing:.09em; color:var(--c); gap:7px }
+  .card .ctype .csurf{ color:var(--faint); font-weight:600; letter-spacing:.05em }
+  .card .ckey{ margin-left:auto; font-size:9px; font-weight:800; letter-spacing:.06em; color:var(--warn);
+    background:color-mix(in srgb,var(--warn) 13%, transparent); padding:2px 7px; border-radius:99px }
+  .card .cstat{ font-size:17px; font-weight:700; letter-spacing:-.025em; margin-top:6px; color:var(--txt) }
+  .card .cname{ font-size:13px; font-weight:500; color:var(--ink2); margin:4px 0 9px; line-height:1.4 }
+  .card .cmeta{ gap:6px; row-gap:5px }
+  .card .pill{ background:color-mix(in srgb,var(--zc,var(--c)) 8%, var(--bg2)); border:0;
+    color:var(--muted); font-weight:600; font-size:10.5px; padding:3px 8px; border-radius:99px }
+  .card .pill.exec{ color:#fff; font-weight:800 }
+  .card .cgrip{ opacity:0; transition:opacity .25s ease; right:6px }
+  @media (pointer:coarse){ .card .cgrip{ opacity:.4 } }   /* always discoverable on touch */
+
+  /* ---- DONE: clearly complete, still perfectly readable (was opacity:.5) ---- */
+  .card.done{
+    opacity:1;
+    background-image:
+      linear-gradient(105deg, transparent 40%, color-mix(in srgb,#fff 62%, transparent) 48%, transparent 57%),
+      linear-gradient(168deg, color-mix(in srgb,var(--good) 9%, var(--panel)) 0%, var(--panel) 62%);
+    border-color:color-mix(in srgb,var(--good) 26%, var(--line));
+  }
+  .card.done::before{ background:linear-gradient(180deg, var(--good), color-mix(in srgb,var(--good) 45%, transparent)) }
+  .card.done .ctype{ color:color-mix(in srgb,var(--good) 70%, var(--txt)) }
+  .card.done .cstat{ color:var(--muted) }
+  .card.done .cname{ color:var(--faint); text-decoration:line-through;
+    text-decoration-color:color-mix(in srgb,var(--faint) 55%, transparent); text-decoration-thickness:1px }
+  .card.done .pill{ background:var(--bg2) }
+
+  /* ---- the completion wash: a pulse of success sweeps across ---- */
+  .card.just-done::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:2;
+    background:linear-gradient(100deg,
+      color-mix(in srgb,var(--good) 30%, transparent) 0%,
+      color-mix(in srgb,var(--good) 12%, transparent) 45%,
+      transparent 72%);
+    transform-origin:left center;
+    animation:doneWash .78s var(--ease-out) forwards;
+  }
+  @keyframes doneWash{ 0%{transform:scaleX(0);opacity:1} 70%{opacity:.85} 100%{transform:scaleX(1);opacity:0} }
+  .card.just-done::before{ animation:spineFlare .78s var(--ease-out) }
+  @keyframes spineFlare{ 0%{box-shadow:none} 35%{box-shadow:0 0 20px 1px color-mix(in srgb,var(--good) 85%, transparent)} 100%{box-shadow:none} }
+
+  /* ---- RACE: the goal. warm gold, gently alive ---- */
+  .card.race{
+    border-color:color-mix(in srgb,var(--t-race) 40%, var(--line));
+    background-image:
+      linear-gradient(105deg, transparent 40%, color-mix(in srgb,#fff 70%, transparent) 48%, transparent 57%),
+      linear-gradient(168deg, color-mix(in srgb,var(--t-race) 15%, var(--panel)) 0%, color-mix(in srgb,var(--t-race) 4%, var(--panel)) 70%);
+    box-shadow:0 1px 2px rgba(26,25,22,.05), 0 4px 16px color-mix(in srgb,var(--t-race) 18%, transparent);
+  }
+  .card.race::before{ background:linear-gradient(180deg, var(--t-race), color-mix(in srgb,var(--t-race) 40%, transparent)) }
+  .card.race .cstat, .card.race .cname{ color:var(--txt); font-weight:700 }
+
+  /* ---- REST: recedes, but readable ---- */
+  .card.rest{ opacity:1; background-image:none; background:var(--panel2); border-style:dashed;
+    border-color:var(--line); box-shadow:none }
+  .card.rest::before{ opacity:.5 }
+  .card.rest .cstat{ display:none }
+
+  /* ---- the check: bigger, springier, unmistakable ---- */
+  .check{
+    top:10px; right:10px; width:24px; height:24px; border-radius:8px;
+    border:1.5px solid var(--line2); background:color-mix(in srgb,var(--panel) 70%, transparent);
+    transition:transform .22s var(--ease-out), background .2s ease, border-color .2s ease;
+  }
+  .check::before{ content:""; position:absolute; inset:-11px }   /* 46px tap target */
+  @media (hover:hover){ .check:hover{ border-color:var(--good); background:color-mix(in srgb,var(--good) 12%, var(--panel)) } }
+  .card.done .check{ background:var(--good); border-color:var(--good) }
+  .card.done .check::after{ width:5px; height:9px; border-width:0 2.5px 2.5px 0 }
+
+  /* ---- dragging: the card lifts off the page ---- */
+  .card.dragging{ opacity:.5; transform:scale(1.025) rotate(.7deg);
+    box-shadow:0 18px 40px rgba(26,25,22,.24), 0 4px 10px rgba(26,25,22,.16); cursor:grabbing }
+  .card.swiping{ transition:none }
+
+  /* ---- mobile: same card, tuned spacing (replaces the old dot row style) ---- */
+  @media (max-width:700px){
+    .week .card{
+      background-image:
+        linear-gradient(105deg, transparent 40%, color-mix(in srgb,#fff 62%, transparent) 48%, transparent 57%),
+        linear-gradient(168deg, color-mix(in srgb,var(--zc,var(--c)) 7%, var(--panel)) 0%, var(--panel) 62%);
+      border:1px solid var(--line); border-left:0; border-bottom:1px solid var(--line);
+      border-radius:14px; padding:13px 34px 13px 17px; margin-bottom:9px;
+      box-shadow:0 1px 2px rgba(26,25,22,.05), 0 3px 10px rgba(26,25,22,.055);
+    }
+    .week .card::before{ content:""; left:0; top:0; bottom:0; width:4px; height:auto;
+      border-radius:14px 0 0 14px; background:linear-gradient(180deg, var(--zc,var(--c)), color-mix(in srgb,var(--zc,var(--c)) 45%, transparent)) }
+    .week .card.done{ background-image:
+        linear-gradient(105deg, transparent 40%, color-mix(in srgb,#fff 62%, transparent) 48%, transparent 57%),
+        linear-gradient(168deg, color-mix(in srgb,var(--good) 9%, var(--panel)) 0%, var(--panel) 62%) }
+    .week .card.done{ border-color:color-mix(in srgb,var(--good) 26%, var(--line)) }
+    .week .card.done::before{ background:linear-gradient(180deg, var(--good), color-mix(in srgb,var(--good) 45%, transparent)); opacity:1 }
+    .week .card.race{ border-color:color-mix(in srgb,var(--t-race) 40%, var(--line)) }
+    .week .card.rest{ background:var(--panel2); background-image:none }
+    .card .cname{ font-size:14px; margin:4px 0 9px }
+    .card .cstat{ font-size:18px }
+    .check{ top:11px; right:11px }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card,.card::before,.card.just-done::after,.card.just-done::before{ animation:none!important; transition:none!important }
+    .card:hover{ transform:none }
+  }
 
 </style>
 </head>
