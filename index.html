@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09e" />
+<meta name="app-build" content="2026-06-09f" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -22,7 +22,7 @@
     --ink:#1a1916; --ink2:#35322b;
     --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
     --line:#d3cec2; --line2:#bdb8aa;
-    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --txt:#1a1916; --muted:#585449; --faint:#6e6a5f;
     --accent:#1c1b17; --accent2:#333029;
     --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
     --radius:12px;
@@ -35,7 +35,7 @@
     --ink:#1a1916; --ink2:#35322b;
     --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
     --line:#d3cec2; --line2:#bdb8aa;
-    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --txt:#1a1916; --muted:#585449; --faint:#6e6a5f;
     --accent:#1c1b17; --accent2:#333029;
     --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
     --radius:12px;
@@ -48,7 +48,7 @@
     --ink:#1a1916; --ink2:#35322b;
     --bg:#e6e2d9; --bg2:#dcd8cd; --panel:#fdfcf8; --panel2:#f2efe8;
     --line:#d3cec2; --line2:#bdb8aa;
-    --txt:#1a1916; --muted:#5c584f; --faint:#837f74;
+    --txt:#1a1916; --muted:#585449; --faint:#6e6a5f;
     --accent:#1c1b17; --accent2:#333029;
     --good:#556b4d; --warn:#8a7135; --bad:#9a4e39; --shadow:0 1px 2px rgba(26,25,22,.06),0 2px 6px rgba(26,25,22,.05),0 12px 28px rgba(26,25,22,.08);
     --radius:12px;
@@ -1957,6 +1957,40 @@
     .modal-foot{ position:absolute; left:0; right:0; bottom:0; flex:none }
   }
   @media (min-width:701px){ .modal-body{ max-height:70vh } }
+
+
+  /* ==================================================================
+     LEGIBILITY — every text style audited for WCAG AA (4.5:1 small,
+     3:1 large). Type/zone hues stay recognisable but are mixed toward
+     ink whenever they carry TEXT rather than just marking a swatch.
+     ================================================================== */
+  /* type/zone colours used as text */
+  .card .ctype{ color:color-mix(in srgb, var(--c) 62%, var(--txt)) }
+  .card .ctype .csurf{ color:var(--muted) }
+  .card .ckey{ color:color-mix(in srgb, var(--warn) 58%, var(--txt));
+    background:color-mix(in srgb,var(--warn) 16%, transparent) }
+  .sp-block.key .sp-zone{ color:color-mix(in srgb, var(--zc,var(--sc)) 62%, var(--txt)) }
+  .sp-zone{ color:var(--muted) }
+  .sc-tag.accent{ color:color-mix(in srgb, var(--sc) 62%, var(--txt)) }
+  .mc-eye,.cal-chip b,.cal-chip span{ color:color-mix(in srgb, var(--c) 62%, var(--txt)) }
+  .pseg-z,.day-it-type{ color:color-mix(in srgb, var(--c, var(--txt)) 62%, var(--txt)) }
+
+  /* micro-labels + pills */
+  .pill,.pill.zone,.pill.load,.card .pill{ color:var(--muted) }
+  .sp-hint,.sc-metric .l,.sc-metric b i,.wh-dot,.caret,.ws-title,.legend-foot,
+  .day-head .dnum,.day-head .addbtn,.ws-dn,.ws-rest,.ws-none,.cal-wd,.cal-dnum{ color:var(--muted) }
+  .botnav .bn{ color:color-mix(in srgb, var(--txt) 62%, transparent) }
+  .botnav .bn.active{ color:var(--txt) }
+
+  /* the elevation overlay sits ON the chart — give it ink + a soft plate so it
+     stays readable over the line, the fill, or bare paper */
+  .hz-gain,.sc-hero .hz-gain{ color:var(--txt) !important; font-weight:600 !important;
+    background:color-mix(in srgb, var(--panel) 82%, transparent) !important;
+    -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+    padding:3px 8px !important; border-radius:99px !important; letter-spacing:.06em }
+  .sc-hero .hz-routetag{ color:var(--txt) !important; font-weight:600 }
+  .mc-z{ color:color-mix(in srgb, var(--c) 58%, var(--txt)) }
+  .week-head .caret,.section-toggle .caret{ color:var(--txt) }
 
 </style>
 </head>
