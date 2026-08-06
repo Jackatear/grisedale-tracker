@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09d" />
+<meta name="app-build" content="2026-06-09e" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1784,6 +1784,179 @@
     .card,.card::before,.card.just-done::after,.card.just-done::before{ animation:none!important; transition:none!important }
     .card:hover{ transform:none }
   }
+
+
+  /* ==================================================================
+     SESSION CARD — rebuilt from the design handoff. The accent (--sc) is
+     the session's own type colour, so it stays inside the app's existing
+     zone/type colour language instead of hardcoding one hue.
+     ================================================================== */
+  .sc{ --rule:color-mix(in srgb,var(--txt) 7%, transparent); }
+  @keyframes scRise{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes scFade{from{opacity:0}to{opacity:1}}
+  @keyframes scDraw{from{stroke-dashoffset:620}to{stroke-dashoffset:0}}
+  @keyframes scGrowX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @keyframes scSweep{from{transform:translateX(-100%)}to{transform:translateX(220%)}}
+  @keyframes scDot{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.55);opacity:.35}}
+
+  .sc>*{ animation:scRise .6s cubic-bezier(.2,.9,.2,1) both }
+  .sc>*:nth-child(2){animation-delay:.12s} .sc>*:nth-child(3){animation-delay:.2s} .sc>*:nth-child(4){animation-delay:.28s}
+
+  /* ---- hero: raised light card ---- */
+  .sc-hero{ position:relative; overflow:hidden; border-radius:22px;
+    background:linear-gradient(var(--panel), color-mix(in srgb,var(--panel) 82%, var(--bg)));
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset, 0 8px 26px -18px rgba(26,25,22,.5); }
+  .sc-hero::after{ content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(100deg, transparent 35%, rgba(255,255,255,.75) 50%, transparent 65%);
+    animation:scSweep 1.5s .35s cubic-bezier(.4,0,.2,1) both; }
+  .sc-tags{ display:flex; flex-wrap:wrap; gap:6px; padding:16px 18px 4px }
+  .sc-tag{ font-size:11px; font-weight:500; letter-spacing:.04em; padding:5px 10px; border-radius:99px;
+    background:color-mix(in srgb,var(--txt) 5%, transparent); color:var(--muted) }
+  .sc-tag.accent{ font-weight:600; background:color-mix(in srgb,var(--sc) 13%, transparent);
+    color:color-mix(in srgb,var(--sc) 82%, var(--txt)) }
+  .sc-tag.done{ background:color-mix(in srgb,var(--good) 14%, transparent); color:var(--good); font-weight:600 }
+  /* the intensity/route chart sits in the hero, on paper now (not the dark hero) */
+  .sc-hero .hz-chartwrap{ margin:6px 0 0; background:transparent; border-radius:0; overflow:visible; height:118px }
+  .sc-hero .hzline{ height:118px }
+  .sc-hero .hzline-s{ stroke:var(--txt); stroke-width:1.8; stroke-dasharray:620; animation:scDraw 1.5s .2s cubic-bezier(.4,0,.2,1) both }
+  .sc-hero .hzline-a{ fill:var(--sc); opacity:.2; animation:scFade .9s .5s ease both }
+  .sc-hero .hz-gain{ top:6px; right:18px; background:transparent; backdrop-filter:none; padding:0;
+    font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--faint); font-weight:500;
+    animation:scFade .6s .9s ease both }
+  .sc-hero .rt-line{ stroke:var(--txt) } .sc-hero .hz-routetag{ color:var(--sc) }
+  .sc-note{ display:flex; gap:10px; padding:10px 18px 14px; border-top:1px solid var(--rule) }
+  .sc-rule{ width:2px; flex:none; border-radius:2px; background:var(--sc); animation:scFade .5s .5s ease both }
+  .sc-note p{ margin:0; font-family:Georgia,"Times New Roman",serif; font-style:italic; font-size:16px;
+    line-height:1.42; color:var(--ink2); animation:scRise .6s .45s cubic-bezier(.2,.9,.2,1) both }
+  .sc-metrics{ display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--rule) }
+  .sc-metric{ padding:12px 8px 14px; display:flex; flex-direction:column; gap:4px;
+    animation:scRise .5s cubic-bezier(.2,.9,.2,1) both }
+  .sc-metric:first-child{ padding-left:18px }
+  .sc-metric .l{ font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint) }
+  .sc-metric b{ font-size:19px; font-weight:600; letter-spacing:-.02em; font-variant-numeric:tabular-nums; color:var(--txt) }
+
+  /* ---- grouped sections ---- */
+  .mv-plancard,.why-card,.log-card{ background:color-mix(in srgb,var(--txt) 3.5%, transparent);
+    border-radius:22px; padding:16px 14px 14px }
+  .why-card{ padding:16px 18px 8px } .log-card{ padding:14px }
+  .ses-lab,.mv-sect{ font-size:10.5px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--muted) }
+  .sp-head{ display:flex; align-items:baseline; justify-content:space-between; padding:0 4px; margin-bottom:12px }
+  .sp-hint{ font-size:10.5px; letter-spacing:.04em; color:var(--faint) }
+
+  /* ---- intensity bar ---- */
+  .sp-bar{ display:flex; gap:3px; height:8px; padding:0 4px; margin-bottom:12px }
+  .sp-bar i{ border-radius:99px; transform-origin:left; animation:scGrowX .7s cubic-bezier(.2,.9,.2,1) both }
+
+  /* ---- accordion blocks ---- */
+  .sp-list{ display:flex; flex-direction:column; gap:8px }
+  .sp-block{ display:block; width:100%; text-align:left; font:inherit; color:var(--txt); cursor:pointer;
+    border:0; border-radius:16px; padding:13px 14px; background:var(--panel);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 5%, transparent);
+    transition:background .3s ease, box-shadow .35s cubic-bezier(.2,.9,.2,1), transform .35s cubic-bezier(.2,.9,.2,1) }
+  .sp-block.open{ background:color-mix(in srgb,var(--panel) 60%, #fff); transform:translateY(-1px);
+    box-shadow:0 10px 26px -18px rgba(26,25,22,.8), 0 0 0 1px color-mix(in srgb,var(--txt) 6%, transparent) }
+  .sp-row{ display:flex; align-items:center; gap:8px }
+  .sp-dot{ width:6px; height:6px; border-radius:99px; background:var(--line2); flex:none }
+  .sp-block.key .sp-dot{ background:var(--zc,var(--sc)) }
+  .sp-dot.pulse{ animation:scDot 2.4s ease-in-out infinite }
+  .sp-title{ font-size:15px; font-weight:600; letter-spacing:-.01em }
+  .sp-zone{ font-size:11.5px; font-weight:500; color:var(--muted) }
+  .sp-block.key .sp-zone{ color:var(--zc,var(--sc)) }
+  .sp-sp{ flex:1 }
+  .sp-chev{ width:20px; height:20px; border-radius:99px; display:flex; align-items:center; justify-content:center;
+    color:var(--muted); flex:none; transition:transform .35s cubic-bezier(.2,.9,.2,1), background .3s ease }
+  .sp-block.open .sp-chev{ transform:rotate(180deg); background:color-mix(in srgb,var(--txt) 6%, transparent) }
+  .sp-detail{ display:block; overflow:hidden; max-height:0; opacity:0;
+    transition:max-height .42s cubic-bezier(.2,.9,.2,1), opacity .3s ease }
+  .sp-block.open .sp-detail{ max-height:220px; opacity:1 }
+  .sp-detail-in{ display:block; padding-top:11px }
+  .sp-chips{ display:flex; flex-wrap:wrap; gap:6px }
+  .sp-chips .pill{ font-size:12px; font-variant-numeric:tabular-nums; padding:5px 9px; border-radius:8px;
+    background:color-mix(in srgb,var(--txt) 4.5%, transparent); color:var(--ink2); border:0 }
+  .sp-cue{ display:block; margin-top:9px; font-size:12.5px; line-height:1.45; color:var(--muted) }
+  .sp-foot{ margin-top:10px; font-size:12px; color:var(--faint); font-style:italic }
+
+  /* ---- why it matters: spring checkboxes ---- */
+  .why-card .why-row{ display:flex; gap:11px; align-items:flex-start; width:100%; text-align:left;
+    background:none; border:0; border-top:1px solid var(--rule); padding:11px 0; font:inherit; cursor:pointer }
+  .why-box{ width:20px; height:20px; flex:none; border-radius:7px; border:1.5px solid color-mix(in srgb,var(--txt) 22%, transparent);
+    background:transparent; color:var(--panel); display:flex; align-items:center; justify-content:center; margin-top:1px;
+    transition:background .3s ease, border-color .3s ease, transform .28s cubic-bezier(.2,1.4,.4,1) }
+  .why-box svg{ opacity:0; transform:scale(.5); transition:opacity .28s ease 50ms, transform .3s cubic-bezier(.2,1.5,.4,1) 50ms }
+  .why-row.on .why-box{ background:var(--sc); border-color:var(--sc); transform:scale(1.06) }
+  .why-row.on .why-box svg{ opacity:1; transform:scale(1) }
+  .why-txt{ font-size:13.5px; line-height:1.5; color:var(--ink2); text-wrap:pretty }
+  .why-txt b{ color:var(--txt); font-weight:700 }
+
+  /* ---- log it ---- */
+  .log-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px }
+  .log-chip{ display:inline-flex; align-items:center; gap:7px; padding:5px 11px 5px 9px; border-radius:99px;
+    font-size:11.5px; font-weight:500; background:var(--panel); color:var(--muted);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 6%, transparent) }
+  .log-chip i{ width:7px; height:7px; border-radius:99px; background:var(--line2) }
+  .log-chip.done{ background:color-mix(in srgb,var(--sc) 12%, transparent); color:var(--sc); box-shadow:none }
+  .log-chip.done i{ background:var(--sc) }
+  .log-btn{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; height:58px;
+    border:0; border-radius:18px; font:inherit; font-size:16px; font-weight:600; cursor:pointer;
+    background:var(--panel); color:var(--txt);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--txt) 7%, transparent), 0 8px 20px -18px rgba(26,25,22,.8);
+    transition:background .3s ease, color .3s ease, box-shadow .35s ease }
+  .log-btn.done{ background:var(--sc); color:var(--panel);
+    box-shadow:0 14px 30px -16px color-mix(in srgb,var(--sc) 95%, transparent) }
+  .log-ring{ width:24px; height:24px; flex:none; border-radius:99px; display:flex; align-items:center; justify-content:center;
+    border:1.5px solid color-mix(in srgb,var(--txt) 20%, transparent); background:transparent; color:var(--panel);
+    transform:scale(.94); transition:border-color .3s ease, background .3s ease, transform .32s cubic-bezier(.2,1.4,.4,1) }
+  .log-ring svg{ opacity:0; transform:scale(.6); transition:opacity .3s ease 80ms, transform .32s cubic-bezier(.2,1.5,.4,1) 80ms }
+  .log-btn.done .log-ring{ border-color:color-mix(in srgb,var(--panel) 90%, transparent);
+    background:color-mix(in srgb,var(--panel) 16%, transparent); transform:scale(1) }
+  .log-btn.done .log-ring svg{ opacity:1; transform:scale(1) }
+
+  /* ---- modal shell: sheet header + pinned action bar ---- */
+  .modal-head .mdate{ font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted) }
+  .modal-head h3{ font-size:25px; line-height:1.1; font-weight:600; letter-spacing:-.02em; margin-top:3px }
+  .modal-head .x{ width:34px; height:34px; border-radius:99px; background:color-mix(in srgb,var(--txt) 5%, transparent);
+    color:var(--muted); font-size:15px; display:flex; align-items:center; justify-content:center;
+    transition:background .25s ease, transform .25s cubic-bezier(.2,.9,.2,1) }
+  .modal-head .x:hover{ background:color-mix(in srgb,var(--txt) 12%, transparent); transform:rotate(90deg); color:var(--txt) }
+  .modal-foot{ background:linear-gradient(color-mix(in srgb,var(--bg) 0%, transparent), var(--bg) 42%);
+    border-top:0; padding:14px 16px calc(18px + env(safe-area-inset-bottom)) }
+  .modal-foot .btn{ height:50px; border-radius:16px; font-size:15px; font-weight:600 }
+  .modal-foot .btn.primary{ flex:1; background:var(--txt); color:var(--panel); border:0;
+    box-shadow:0 10px 22px -14px rgba(26,25,22,.9) }
+  .modal-foot .btn.primary:hover{ transform:translateY(-1px); box-shadow:0 16px 28px -14px rgba(26,25,22,.9) }
+  .modal-foot .btn.danger{ width:92px; background:transparent; border:1px solid color-mix(in srgb,var(--bad) 35%, transparent); color:var(--bad); font-weight:500 }
+  .modal-foot .btn.danger:hover{ background:color-mix(in srgb,var(--bad) 8%, transparent) }
+  .modal-foot .btn:active{ transform:scale(.975) }
+
+  @media (prefers-reduced-motion: reduce){
+    .sc>*,.sc-hero::after,.sc-metric,.sc-note p,.sc-rule,.sp-bar i,.sc-hero .hzline-s,.sc-hero .hzline-a,.sc-hero .hz-gain,.sp-dot.pulse{ animation:none!important }
+    .sp-block,.sp-detail,.sp-chev,.why-box,.why-box svg,.log-btn,.log-ring,.log-ring svg{ transition-duration:.12s!important }
+  }
+
+
+  /* session-card chart overrides (topo skin sets these !important) */
+  .sc-hero .hzline-s{ stroke:var(--txt) !important; stroke-width:1.8 !important; fill:none !important }
+  .sc-hero .hzline-a{ fill:var(--sc) !important; opacity:.18 !important }
+  .sc-hero .hz-gain{ color:var(--faint) !important }
+  /* metric cells: never wrap; unit suffix reads as a suffix */
+  .sc-metric b{ white-space:nowrap }
+  .sc-metric b i{ font-style:normal; font-size:12px; font-weight:500; color:var(--faint); margin-left:2px }
+  /* keep content clear of the pinned action bar */
+  #mBody{ padding-bottom:96px }
+
+
+  /* ---- proper bottom sheet (mobile): tall, grabber, pinned foot ---- */
+  @media (max-width:700px){
+    .backdrop{ padding:0; align-items:flex-end }
+    .modal{ width:100%; max-width:none; max-height:94vh; border-radius:22px 22px 0 0; border:0;
+      display:flex; flex-direction:column; box-shadow:0 -12px 40px rgba(26,25,22,.28) }
+    .modal-head{ position:relative; padding:20px 20px 12px; flex:none; border-bottom:1px solid var(--rule,rgba(26,25,22,.07)) }
+    .modal-head::before{ content:""; position:absolute; top:7px; left:50%; transform:translateX(-50%);
+      width:38px; height:4px; border-radius:99px; background:color-mix(in srgb,var(--txt) 14%, transparent) }
+    .modal-body{ flex:1; max-height:none; padding:16px 16px 104px }
+    .modal-foot{ position:absolute; left:0; right:0; bottom:0; flex:none }
+  }
+  @media (min-width:701px){ .modal-body{ max-height:70vh } }
 
 </style>
 </head>
@@ -4509,24 +4682,57 @@ function segMetrics(idx, noPace){
   const p=paceRangeLabel(idx);
   return (p?`<span class="pill">${ICO.clock} ${esc(p)}</span>`:"")+(h?`<span class="pill">${ICO.heart} ${esc(h)}</span>`:"");
 }
+const BLOCK_CUE={
+  wu:"Ease in and build gradually — the last few minutes should feel ready, not tired.",
+  cd:"Fully aerobic. Let the heart rate settle and finish relaxed.",
+  work:"Comfortably hard and even — the last rep should feel like the first. Hold the effort flat rather than chasing pace."
+};
 function sessionPlanHTML(w){
   const plan=sessionPlan(w); if(!plan) return "";
   const fell=isFellSurface(w);
-  const body=plan.segs.map(seg=>{
+  // intensity bar weights (minutes), mirroring the block list
+  const segw=[];
+  plan.segs.forEach(seg=>{
     if(seg.kind==="work"){
-      const each = seg.unit==="s" ? seg.each+"s" : seg.each+" min";
-      const title = seg.reps>1 ? `${seg.reps} × ${each}` : `${each} continuous`;
-      return `<div class="pseg work" style="border-left-color:${ZONES[seg.idx].c}">
-        <div class="pseg-h">${esc(title)}<span class="pseg-z" style="color:${ZONES[seg.idx].c}">${ZONES[seg.idx].k} · ${ZONE_DESC[seg.idx]}</span></div>
-        <div class="pseg-metrics">${segMetrics(seg.idx, fell)}</div>
-        ${seg.rec?`<div class="pseg-sub">${esc(seg.rec)} recovery between reps</div>`:""}
-      </div>`;
-    }
-    const pr = fell ? "" : paceRangeLabel(1);
-    return `<div class="pseg"><div class="pseg-h">${seg.kind==="wu"?"Warm-up":"Cool-down"} · ${seg.dur} min<span class="pseg-z" style="color:${ZONES[1].c}">${ZONES[1].k} easy</span></div>${pr?`<div class="pseg-metrics"><span class="pill">⏱ ${esc(pr)}</span></div>`:""}</div>`;
+      const mins=(seg.unit==="s"? seg.each/60 : seg.each);
+      for(let r=0;r<seg.reps;r++){
+        segw.push({f:Math.max(2,mins), c:ZONES[seg.idx].c});
+        if(r<seg.reps-1) segw.push({f:1.5, c:"var(--line2)"});   // recovery gap
+      }
+    } else segw.push({f:Math.max(2,seg.dur||5), c:"var(--line2)"});
+  });
+  const bar=`<div class="sp-bar">${segw.map((b,i)=>`<i style="flex:${b.f.toFixed(1)};background:${b.c};animation-delay:${(250+i*90)}ms"></i>`).join("")}</div>`;
+  let bi=-1, keyDone=false;
+  const body=plan.segs.map(seg=>{
+    bi++;
+    const isWork=seg.kind==="work";
+    const key=isWork&&!keyDone; if(key) keyDone=true;
+    const zIdx=isWork?seg.idx:1;
+    const zc=ZONES[zIdx].c;
+    const each = seg.unit==="s" ? seg.each+"s" : seg.each+" min";
+    const title = isWork ? (seg.reps>1 ? `${seg.reps} × ${each}` : `${each} continuous`)
+                         : `${seg.kind==="wu"?"Warm-up":"Cool-down"} · ${seg.dur} min`;
+    const zlab = isWork ? `${ZONES[zIdx].k} · ${ZONE_DESC[zIdx]}` : `${ZONES[1].k} easy`;
+    const chips = isWork ? segMetrics(zIdx,fell)
+                         : (fell?"":(paceRangeLabel(1)?`<span class="pill">${ICO.clock} ${esc(paceRangeLabel(1))}</span>`:""));
+    const rec = isWork&&seg.rec ? `<span class="pill">${esc(seg.rec)} between</span>` : "";
+    const cue = BLOCK_CUE[isWork?"work":seg.kind]||"";
+    return `<button type="button" class="sp-block${key?" open key":""}" data-pblock="${bi}" style="--zc:${zc}" aria-expanded="${key?"true":"false"}">
+      <span class="sp-row">
+        <span class="sp-dot${key?" pulse":""}"></span>
+        <span class="sp-title">${esc(title)}</span>
+        <span class="sp-zone">${esc(zlab)}</span>
+        <span class="sp-sp"></span>
+        <span class="sp-chev"><svg viewBox="0 0 12 12" width="11" height="11"><path d="M2.5 4.5 L6 8 L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+      </span>
+      <span class="sp-detail"><span class="sp-detail-in">
+        ${(chips||rec)?`<span class="sp-chips">${chips}${rec}</span>`:""}
+        <span class="sp-cue">${esc(cue)}</span>
+      </span></span></button>`;
   }).join("");
-  const note = fell ? `<div class="pseg-note">Fell / off-road — judge these by effort and heart rate, not km pace.</div>` : "";
-  return `<div><div class="mv-sect" style="margin-bottom:8px">Session plan</div><div class="mv-plan">${body}</div>${note}</div>`;
+  const note = fell ? `<div class="sp-foot">Fell / off-road — judge these by effort and heart rate, not km pace.</div>` : "";
+  return `<div class="sp-head"><span class="ses-lab">Session plan</span><span class="sp-hint">tap a block</span></div>
+    ${bar}<div class="sp-list">${body}</div>${note}`;
 }
 function weekZones(weekIds){
   const plan=[0,0,0,0,0], act=[0,0,0,0,0]; let hasAct=false;
@@ -5021,49 +5227,50 @@ function modalViewHTML(w){
   // ── The session — dark Horizon hero with the artistic intensity line ──
   const zi=effortZoneIdx(w);
   const ld = rest?0:(done?sessionLoad(editingId):plannedLoad(w)); const loadN = ld?Math.round(ld/5)*5:null;
-  const stats=[["Time", w.d?fmtDur(w.d):"—"]];
-  if(w.k!=null) stats.push(["Dist", fmtDist(w.k)]);
+  const hm=m=>{ m=Math.round(m); return m>=60 ? Math.floor(m/60)+":"+String(m%60).padStart(2,"0") : m+"<i>min</i>"; };
+  const stats=[["Time", w.d?hm(w.d):"—"]];
+  if(w.k!=null) stats.push(["Dist", fmtDist(w.k,false)+`<i>${state.unit}</i>`]);
   else if(w.v!=null) stats.push(["Climb", fmtVert(w.v)]);
   else stats.push(["Dist","—"]);
   stats.push(["Effort", zi!=null?(EFFORT_WORD[zi]||w.z||"—"):(w.z&&w.z!=="—"?w.z:"—")]);
   if(loadN) stats.push(["Load", String(loadN)]);
-  const heroChips=`<div class="mvh-chips">
-    <span class="mvh-pill type">${esc(ty.label)}</span>
-    ${surf?`<span class="mvh-pill">${esc(surf[0].toUpperCase()+surf.slice(1))}</span>`:""}
-    ${w.z&&w.z!=="—"?`<span class="mvh-pill">${esc(w.z)}</span>`:""}
-    ${done?`<span class="mvh-pill done">✓ ${es?es.pct+"%":"Done"}</span>`:""}</div>`;
+  const heroChips=`<div class="sc-tags">
+    <span class="sc-tag accent">${esc(ty.label)}</span>
+    ${surf?`<span class="sc-tag">${esc(surf[0].toUpperCase()+surf.slice(1))}</span>`:""}
+    ${w.z&&w.z!=="—"?`<span class="sc-tag">${esc(w.z)}</span>`:""}
+    ${done?`<span class="sc-tag done">✓ ${es?es.pct+"%":"Done"}</span>`:""}</div>`;
   const vertBadge=(w.v!=null&&w.v>0)?`<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
   const hasRoute = done && lg.poly && decodePolyline(lg.poly).length>2;
   const chartHTML = rest ? "" : hasRoute
     ? `<div class="hz-chartwrap route">${routeTraceSVG(lg.poly,{h:170})}<span class="hz-routetag">▲ Route</span>${vertBadge}</div>`
     : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vertBadge}</div>`;
-  const sesCard=`<div class="hz-hero mv-hero">
+  const sesCard=`<div class="sc-hero">
     ${heroChips}
     ${chartHTML}
-    ${w.note?`<div class="hz-quote">${esc(w.note)}</div>`:""}
-    <div class="mvh-stats">${stats.map(s=>`<div class="mvh-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div></div>`;
+    ${w.note?`<div class="sc-note"><span class="sc-rule"></span><p>${esc(w.note)}</p></div>`:""}
+    <div class="sc-metrics">${stats.map((s,i)=>`<div class="sc-metric" style="animation-delay:${550+i*80}ms"><span class="l">${esc(s[0])}</span><b>${s[1]}</b></div>`).join("")}</div></div>`;
   // ── Session structure (readable interval breakdown — warm-up / work / cool-down with paces & HR) ──
   const planHTML = rest ? "" : sessionPlanHTML(w);
   const planCard = planHTML ? `<div class="mv-plancard">${planHTML}</div>` : "";
   // ── Why it matters ──
   const why=TYPE_WHY[w.t];
+  const whyRow=(i,lead,txt)=>`<button type="button" class="why-row" data-whychk="${i}" aria-pressed="false">
+    <span class="why-box"><svg viewBox="0 0 14 14" width="14" height="14"><path d="M2.5 7.4 L5.6 10.3 L11.3 4.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="why-txt"><b>${lead}</b> — ${esc(txt)}</span></button>`;
   const whyCard = why?`<div class="why-card"><div class="ses-lab">Why it matters</div>
-    <div class="why-row"><span class="why-tick"></span><div><b>Builds</b> — ${esc(why.builds)}</div></div>
-    <div class="why-row"><span class="why-tick"></span><div><b>Feel</b> — ${esc(why.feel)}</div></div></div>`:"";
+    ${whyRow(0,"Builds",why.builds)}${whyRow(1,"Feel",why.feel)}</div>`:"";
   // ── Log it ──
-  const toggle = done
-    ? `<button class="log-toggle done" data-toggledone="1">✓ Done</button>`
-    : `<button class="log-toggle" data-toggledone="1">○ To do</button>`;
+  const toggle = `<span class="log-chip${done?" done":""}"><i></i>${done?"Done":"To do"}</span>`;
   let logBody;
   if(done){
     const act=[]; if(lg.d!=null)act.push(["Time",fmtDur(lg.d)]); if(lg.k!=null)act.push(["Distance",fmtDist(lg.k)]); if(lg.v!=null)act.push(["Climb",fmtVert(lg.v)]); if(lg.hr!=null)act.push(["Avg HR",lg.hr+" bpm"]); if(lg.rpe!=null)act.push(["RPE",lg.rpe+" / 10"]);
     logBody=`${es?execReadoutHTML(es,w):""}${act.length?`<div class="ses-stats" style="margin-top:12px">${act.map(s=>`<div class="ses-stat"><span class="l">${esc(s[0])}</span><b>${esc(s[1])}</b></div>`).join("")}</div>`:""}${hrSparkHTML(lg)}${lg.c?`<div class="mv-note" style="margin-top:11px">${esc(lg.c)}</div>`:""}
-      <button class="log-btn done" data-toggledone="1">✓ Completed — tap to undo</button>`;
+      <button class="log-btn done" data-toggledone="1"><span class="log-ring"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 8.4 L6.4 11.6 L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Completed</button>`;
   } else {
-    logBody=`<button class="log-btn" data-toggledone="1"><span class="log-circ"></span> Mark as done</button>`;
+    logBody=`<button class="log-btn" data-toggledone="1"><span class="log-ring"><svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 8.4 L6.4 11.6 L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Mark as done</button>`;
   }
   const logCard = !rest?`<div class="log-card"><div class="log-head"><div class="ses-lab" style="margin:0">Log it</div>${toggle}</div>${logBody}</div>`:"";
-  return `<div class="mv2">${sesCard}${planCard}${whyCard}${logCard}</div>`;
+  return `<div class="mv2 sc" style="--sc:${ty.c}">${sesCard}${planCard}${whyCard}${logCard}</div>`;
 }
 // Heart-rate sparkline for a completed activity (from the downsampled Strava stream); empty box if no data
 function hrSparkHTML(lg){
@@ -5164,6 +5371,18 @@ function wireStructure(){
   ["f_sf","f_z","f_t"].forEach(id=>{ const el=$("#"+id); if(el) el.addEventListener("change", refresh); });
   refresh();
 }
+// Session card: single-open plan accordion + "why it matters" check-offs
+$("#mBody").addEventListener("click", e=>{
+  const blk=e.target.closest("[data-pblock]");
+  if(blk){
+    const wasOpen=blk.classList.contains("open");
+    blk.parentElement.querySelectorAll(".sp-block.open").forEach(b=>{ b.classList.remove("open"); b.setAttribute("aria-expanded","false"); });
+    if(!wasOpen){ blk.classList.add("open"); blk.setAttribute("aria-expanded","true"); }
+    return;
+  }
+  const chk=e.target.closest("[data-whychk]");
+  if(chk){ const on=chk.getAttribute("aria-pressed")==="true"; chk.setAttribute("aria-pressed", on?"false":"true"); chk.classList.toggle("on", !on); }
+});
 function openModal(id){
   const w=getWO(id); if(!w) return;
   editingId=id; isNew=false; modalMode="view";
