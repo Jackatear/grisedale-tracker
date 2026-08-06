@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09f" />
+<meta name="app-build" content="2026-06-09g" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -1991,6 +1991,24 @@
   .sc-hero .hz-routetag{ color:var(--txt) !important; font-weight:600 }
   .mc-z{ color:color-mix(in srgb, var(--c) 58%, var(--txt)) }
   .week-head .caret,.section-toggle .caret{ color:var(--txt) }
+
+
+  /* ==================================================================
+     SCROLL RELIABILITY — the sheet body is a nested scroller inside a
+     position:fixed locked page. Without these, iOS chains the gesture to
+     the locked body at the scroll boundary and the drag feels dead.
+     ================================================================== */
+  #mBody,.sd-pick,.modal-body{
+    overscroll-behavior:contain;              /* don't chain to the locked page */
+    -webkit-overflow-scrolling:touch;         /* momentum */
+    touch-action:pan-y;                       /* always claim the vertical pan */
+    min-height:0;                             /* a flex child must be allowed to shrink to scroll */
+  }
+  @media (max-width:700px){
+    .modal-body{ flex:1 1 auto; min-height:0 }
+    /* the sheet hugs short content but still scrolls when tall */
+    .modal{ height:auto }
+  }
 
 </style>
 </head>
