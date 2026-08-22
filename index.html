@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09g" />
+<meta name="app-build" content="2026-06-09h" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -2009,6 +2009,42 @@
     /* the sheet hugs short content but still scrolls when tall */
     .modal{ height:auto }
   }
+
+
+  /* ==================================================================
+     SESSION SHEET FIXES — route map overlap + edit-form breathing room
+     ================================================================== */
+  /* 1. the chart box must size to its content: the route SVG is taller than
+        the intensity line, and a fixed height + overflow:visible let the map
+        spill 56px over the coach note. */
+  .sc-hero .hz-chartwrap{ height:auto; overflow:hidden; padding:0; background:transparent }
+  .sc-hero .hzline{ display:block; height:118px }
+  .sc-hero .hz-chartwrap.route{ height:auto; margin-top:10px }
+  .sc-hero .hz-chartwrap.route .rt-svg{ height:150px; display:block }
+  .sc-hero .hz-routetag{ top:8px; left:14px; background:color-mix(in srgb,var(--panel) 82%, transparent);
+    -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px) }
+  /* route trace on palette (old cobalt rules are more specific — match them) */
+  .sc-hero .hz-chartwrap.route .rt-line{ stroke:var(--sc); stroke-width:2.6 }
+  .sc-hero .hz-chartwrap.route .rt-start{ fill:var(--good) }
+  .sc-hero .hz-chartwrap.route .rt-end{ fill:var(--sc) }
+
+  /* 2. edit form: room to breathe, no clipped labels */
+  #mBody .field>label{ white-space:normal; line-height:1.35 }
+  #mBody .ss-hint{ display:inline-block; white-space:normal }
+  #mBody .sectlabel{ margin:8px 0 0; padding-top:4px }
+  #mBody.editing{ gap:18px }
+  #mBody .grid3,#mBody .grid2{ gap:14px }
+  /* inputs: light and crisp, matching the card language (were heavy filled boxes) */
+  #mBody .field input,#mBody .field select,#mBody .field textarea,#mBody .ss-in{
+    background:var(--panel); border:1px solid var(--line2); border-radius:12px; padding:12px 13px; font-size:15px }
+  #mBody .field input:focus,#mBody .field select:focus,#mBody .field textarea:focus,#mBody .ss-in:focus{
+    outline:none; border-color:var(--txt); box-shadow:0 0 0 3px color-mix(in srgb,var(--txt) 9%, transparent) }
+  #mBody .ss-chips{ gap:8px; margin-top:10px }
+  #mBody .ss-chip{ min-height:38px; border-radius:99px; padding:0 14px; background:var(--panel) }
+  #mBody .ss-empty{ margin-top:4px }
+
+  /* 3. the pinned bar gets a solid base so nothing shows through beneath it */
+  .modal-foot{ background:linear-gradient(color-mix(in srgb,var(--bg) 0%, transparent), var(--bg) 38%, var(--bg)) }
 
 </style>
 </head>
@@ -5210,6 +5246,12 @@ function refreshScrollLock(){
 }
 
 let modalMode="view";   // "view" | "edit" | "new"
+function syncModalPad(){
+  const b=$("#mBody"), f=document.querySelector(".modal-foot");
+  if(!b||!f) return;
+  b.style.paddingBottom = (f.offsetHeight + 24) + "px";
+}
+window.addEventListener("resize", ()=>{ if(backdrop.classList.contains("open")) syncModalPad(); });
 function setModalFooter(){
   const del=$("#mDelete"), save=$("#mSave"), edit=$("#mEdit"), cancel=$("#mCancel"), sp=$("#mFootSpacer");
   const view = modalMode==="view";
@@ -5222,6 +5264,8 @@ function setModalFooter(){
   if(sp) sp.style.display = view ? "none" : "block";
   edit.style.flex = view ? "1" : "";
   edit.style.order = view ? "1" : ""; del.style.order = view ? "2" : "";
+  $("#mBody").classList.toggle("editing", !view);
+  requestAnimationFrame(syncModalPad); setTimeout(syncModalPad,0);
 }
 // Read-only summary shown when you tap a session (you choose Edit to change anything).
 // Effort zone index for a session (explicit zone first, else inferred from type)
