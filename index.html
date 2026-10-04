@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-10a" />
+<meta name="app-build" content="2026-06-10b" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -2537,6 +2537,8 @@ const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MO=["Jan","Feb","Mar","Apr
 const WD_FULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const EFFORT_WORD=["Recovery","Easy","Steady","Hard","Max"];
 function paceStr(min,km){ if(!min||!km) return null; const s=Math.round(min/km*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+// Sync + Strava were removed — clear their now-unused credentials from this browser.
+try{ ["gh.token","gh.gistId","gh.login","strava.refresh"].forEach(k=>localStorage.removeItem(k)); }catch(_){}
 function athleteName(){ try{ return (localStorage.getItem("strava.name")||"").trim().split(/\s+/)[0]||""; }catch(_){ return ""; } }
 function greetWord(){ const h=new Date().getHours(); return h<12?"Good morning":h<18?"Good afternoon":"Good evening"; }
 function dayShort(iso){ const x=d(iso); return WD[x.getDay()]+" "+x.getDate(); }
