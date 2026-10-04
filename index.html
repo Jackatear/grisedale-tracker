@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-11a" />
+<meta name="app-build" content="2026-10-04a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -2159,6 +2159,80 @@
   .wf-gate{margin-top:7px;font-size:11px;color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);border-radius:8px;padding:6px 9px}
   .wf-gate.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
 
+  /* ===== Strength (sg-) ===== */
+  #strengthView{max-width:620px;margin:0 auto;padding:4px 0 24px;display:flex;flex-direction:column;gap:12px}
+  .sg-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:2px 2px 0}
+  .sg-head h1{margin:0;font-size:24px;font-weight:700;letter-spacing:-.02em}
+  .sg-head span{font-family:var(--vt);font-size:12.5px;color:var(--muted)}
+  .sg-sect{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:650;margin:8px 2px -4px}
+  .sg-tpls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sg-tpl{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;color:var(--txt);box-shadow:var(--shadow);min-height:44px;font:inherit}
+  .sg-tpl-n{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .sg-tpl-w{font-size:12px;color:var(--muted);line-height:1.35}
+  .sg-tpl-l{font-family:var(--vt);font-size:11.5px;color:var(--faint);margin-top:4px}
+  .sg-tpl-go{margin-top:10px;align-self:stretch;text-align:center;background:var(--accent);color:#fff;border-radius:10px;padding:10px 0;font-size:13.5px;font-weight:650}
+  .sg-recent{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .sg-recent li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;padding:11px 14px;border-top:1px solid var(--line)}
+  .sg-recent li:first-child{border-top:0}
+  .sg-recent span{font-family:var(--vt);font-size:12px;color:var(--muted)}
+  .sg-recent b{font-size:14px;font-weight:650}
+  .sg-recent em{font-style:normal;font-size:12px;color:var(--muted)}
+  .sg-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:color-mix(in srgb,var(--warn) 13%,var(--panel));border:1px solid color-mix(in srgb,var(--warn) 45%,var(--line));color:var(--ink);border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:550;line-height:1.4}
+  .sg-banner.sg-info{background:var(--panel2);border-color:var(--line2)}
+  .sg-banner.sg-quiet{background:var(--panel);border-color:var(--line);color:var(--muted);font-weight:500}
+  .sg-link{background:none;border:0;color:var(--ink);font:inherit;font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 4px;flex:none}
+  .sg-sess-h{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+  .sg-sess-h h2{margin:0;font-size:21px;font-weight:700;letter-spacing:-.015em}
+  .sg-eyebrow{font-family:var(--vt);font-size:11.5px;color:var(--muted)}
+  .sg-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+  .sg-card.sg-skipped{opacity:.7;box-shadow:none}
+  .sg-ex-h{display:flex;align-items:center;gap:8px}
+  .sg-ex-h h3{margin:0;flex:1;font-size:16px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+  .sg-tag{font-size:10.5px;font-weight:650;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:1px 7px;vertical-align:2px}
+  .sg-more{flex:none;width:44px;height:44px;margin:-8px -8px -8px 0;border:0;background:none;color:var(--muted);border-radius:12px;display:grid;place-items:center}
+  .sg-more svg{width:20px;height:20px}
+  .sg-more[aria-expanded="true"]{background:var(--bg2);color:var(--ink)}
+  .sg-opts{display:flex;flex-wrap:wrap;gap:8px;padding:10px;background:var(--panel2);border-radius:12px}
+  .sg-chip{min-height:44px;padding:0 14px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:999px;font:inherit;font-size:13.5px;font-weight:600}
+  .sg-swap,.sg-lvl{display:flex;flex-direction:column;gap:4px;flex:1 1 100%;font-size:11.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .sg-swap select,.sg-lvl select{min-height:44px;font:inherit;font-size:16px;text-transform:none;letter-spacing:0;color:var(--ink);background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:0 10px}
+  .sg-last{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .sg-next{background:var(--slate,#1e1e1a);color:#fbfaf6;border-radius:12px;padding:11px 13px}
+  .sg-next-l{font-size:14px;color:rgba(251,250,246,.78)}
+  .sg-next-l b{font-family:var(--vt);font-size:17px;font-weight:600;color:#fff;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .sg-next-r{font-size:12.5px;color:rgba(251,250,246,.72);margin-top:2px}
+  .sg-grid-h,.sg-row{display:grid;grid-template-columns:30px 1fr 1fr 1fr 48px;gap:7px;align-items:center}
+  .sg-grid-h{font-size:11px;font-weight:650;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding-top:2px}
+  .sg-grid-h span:first-child{text-align:center}
+  .sg-n{text-align:center;font-family:var(--vt);font-size:14px;font-weight:600;color:var(--muted)}
+  .sg-in{width:100%;min-width:0;height:46px;font-family:var(--vt);font-size:16px;font-weight:500;text-align:center;color:var(--ink);background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:0 4px;font-variant-numeric:tabular-nums;-webkit-appearance:none;appearance:none}
+  .sg-in::placeholder{color:var(--faint);opacity:.75;font-size:13px}
+  .sg-in:focus{outline:none;border-color:var(--ink);background:var(--panel)}
+  .sg-in.sg-txt{font-family:var(--px);text-align:left;padding:0 11px}
+  textarea.sg-in.sg-txt{height:auto;min-height:64px;padding:10px 11px;resize:vertical;line-height:1.4}
+  .sg-tick{width:48px;height:46px;border-radius:10px;border:1.5px solid var(--line2);background:var(--panel);color:transparent;display:grid;place-items:center;padding:0}
+  .sg-tick svg{width:22px;height:22px}
+  .sg-row.done .sg-tick{background:var(--good);border-color:var(--good);color:#fff}
+  .sg-row.done .sg-in{background:color-mix(in srgb,var(--good) 9%,var(--panel));border-color:color-mix(in srgb,var(--good) 35%,var(--line2))}
+  .sg-setbtns,.sg-addrow{display:flex;flex-wrap:wrap;gap:8px}
+  .sg-btn{min-height:44px;padding:0 16px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:12px;font:inherit;font-size:14px;font-weight:650}
+  .sg-btn.sg-ghost{background:transparent;color:var(--muted);border-color:transparent}
+  .sg-btn.sg-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .sg-finish{min-height:52px;font-size:15.5px;margin-top:4px}
+  .sg-grow{flex:1 1 100%}
+  .sg-field{display:flex;flex-direction:column;gap:5px;font-size:11.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .sg-sum{gap:0}
+  .sg-sum-h{font-size:18px;font-weight:700;margin-bottom:6px}
+  .sg-sum-r{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+  .sg-sum-r div{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .sg-sum-r b{font-size:14.5px}
+  .sg-sum-r span{font-family:var(--vt);font-size:12.5px;color:var(--muted)}
+  .sg-sum .sg-btn{margin-top:12px}
+  .sg-badge{flex:none;font-style:normal;font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 10px;border:1px solid var(--line2);color:var(--ink2)}
+  .sg-badge.sg-progress{background:var(--good);border-color:var(--good);color:#fff}
+  .sg-badge.sg-drop{background:var(--bad);border-color:var(--bad);color:#fff}
+  .sg-badge.sg-hold,.sg-badge.sg-deload{background:var(--warn);border-color:var(--warn);color:#fff}
+  @media (max-width:360px){ .sg-tpls{grid-template-columns:1fr} .sg-grid-h,.sg-row{grid-template-columns:24px 1fr 1fr 1fr 46px;gap:5px} }
 </style>
 </head>
 <body>
@@ -2239,6 +2313,7 @@
     </p>
     </div><!-- /planView -->
     <div id="calendarView" hidden></div>
+    <div id="strengthView" hidden></div>
   </div>
 
   <!-- Persistent bottom navigation (mobile) -->
@@ -2246,6 +2321,7 @@
     <button class="bn" data-nav="home" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span>Home</span></button>
     <button class="bn" data-nav="plan" aria-label="Training plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="8" y1="18" x2="20" y2="18"/><line x1="3.5" y1="6" x2="4" y2="6"/><line x1="3.5" y1="12" x2="4" y2="12"/><line x1="3.5" y1="18" x2="4" y2="18"/></svg><span>Plan</span></button>
     <button class="bn" data-nav="calendar" aria-label="Calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2.5" x2="8" y2="6"/><line x1="16" y1="2.5" x2="16" y2="6"/></svg><span>Calendar</span></button>
+    <button class="bn" data-nav="strength" aria-label="Strength"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6.5" y1="12" x2="17.5" y2="12"/><rect x="3.5" y="7.5" width="3" height="9" rx="1"/><rect x="17.5" y="7.5" width="3" height="9" rx="1"/><line x1="2" y1="10" x2="2" y2="14"/><line x1="22" y1="10" x2="22" y2="14"/></svg><span>Strength</span></button>
   </nav>
 
   <!-- Modal -->
@@ -2473,6 +2549,7 @@ function migrate(raw){
     strengthLog: (raw.strengthLog && typeof raw.strengthLog==="object")? raw.strengthLog : {},
     strengthDays: Array.isArray(raw.strengthDays) ? raw.strengthDays.map(normStrengthDay) : synthStrengthDays(raw.strengthLog),
     wstrength: (raw.wstrength && typeof raw.wstrength==="object") ? { ticks: raw.wstrength.ticks||{}, tests: raw.wstrength.tests||{} } : { ticks:{}, tests:{} },
+    sx: sgMigrate(raw.sx),
     readiness: (raw.readiness && typeof raw.readiness==="object") ? raw.readiness : {},
     races: Array.isArray(raw.races) ? raw.races : [],
     benchmarks: Array.isArray(raw.benchmarks) ? raw.benchmarks : [],
@@ -2509,7 +2586,7 @@ function paceZonesOrDefault(pz){   // keep the user's paces if they've entered a
   if(Array.isArray(pz)&&pz.length===5 && pz.some(p=>Array.isArray(p)&&((p[0]&&String(p[0]).trim())||(p[1]&&String(p[1]).trim())))) return pz;
   return defaultPaceZones();
 }
-function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays, r:state.readiness, ra:state.races, b:state.benchmarks, w:state.wstrength}); }
+function planSig(){ return JSON.stringify({p:state.plans||[], h:state.hrZones, z:state.paceZones, s:state.strengthLog, d:state.strengthDays, r:state.readiness, ra:state.races, b:state.benchmarks, w:state.wstrength, x:state.sx}); }
 function dataSig(){ syncActiveToLibrary(); return planSig(); }
 function save(){ if(_saveTimer) clearTimeout(_saveTimer); _saveTimer=setTimeout(persist,120); }
 function writeLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(_){ } idbSet(STATE_KEY, state).catch(()=>{}); }
@@ -2699,7 +2776,7 @@ function render(){
   $("#homeView").hidden = !home;
   $("#tabsRow").hidden = home;
   if(home){
-    $("#planView").hidden=true; $("#calendarView").hidden=true;
+    $("#planView").hidden=true; $("#calendarView").hidden=true; $("#strengthView").hidden=true;
     const n=(state.plans||[]).length, t=todayISO();
     if(n){
       document.body.classList.add("athlete");
@@ -2744,7 +2821,7 @@ function goHome(){ syncActiveToLibrary(); state.activeId=null; _lastDataSer=plan
 /* ===== Living UI — gentle entrance motion on real navigation (not on in-tab re-renders,
    suppressed during finger-swipes, and fully off under prefers-reduced-motion). ===== */
 let _navAnimSkip=false;
-const _VIEWSEL={plan:"#planView",calendar:"#calendarView"};
+const _VIEWSEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView"};
 function currentViewEl(){ return !state.activeId ? $("#homeView") : ($(_VIEWSEL[state.tab]||"#planView")); }
 function reduceMotion(){ return matchMedia("(prefers-reduced-motion: reduce)").matches; }
 function maybeAnimateView(){ if(_navAnimSkip || reduceMotion()) return; setTimeout(()=>animateViewIn(currentViewEl()),0); }
@@ -2814,7 +2891,7 @@ function gotoTab(tab){
   state.tab=tab; save(); render(); window.scrollTo(0,0); maybeAnimateView();
 }
 function updateBotnav(home){
-  const cur = home ? "home" : (["plan","calendar"].includes(state.tab)?state.tab:"plan");
+  const cur = home ? "home" : (["plan","calendar","strength"].includes(state.tab)?state.tab:"plan");
   $$("#botnav .bn").forEach(b=>b.classList.toggle("active", b.dataset.nav===cur));
 }
 // Snap the schedule to today's week (expanding it if collapsed) with a brief flash
@@ -2836,8 +2913,8 @@ $("#botnav").addEventListener("click", e=>{
 // Swipe between tabs (mobile) — the screen tracks your finger, then slides to the next /
 // springs back, like a native pager. Order mirrors the bottom nav.
 (function(){
-  const ORDER=["home","plan","calendar"];
-  const SEL={plan:"#planView",calendar:"#calendarView"};
+  const ORDER=["home","plan","calendar","strength"];
+  const SEL={plan:"#planView",calendar:"#calendarView",strength:"#strengthView"};
   const W=()=>window.innerWidth;
   const EASE="cubic-bezier(.22,.61,.36,1)";
   const curTab=()=> !state.activeId ? "home" : (ORDER.includes(state.tab)?state.tab:"plan");
@@ -3251,10 +3328,12 @@ let _sdStackOpen={};   // stack key (workout type) -> explicit open/closed overr
 // Pull a card's editable DOM inputs back into its model (so edits aren't lost on done/add-row/save).
 function closeSdPicker(){ const b=$("#sdPickBack"); if(b) b.remove(); refreshScrollLock(); }
 function applyTab(){
-  const t = ["plan","calendar"].includes(state.tab) ? state.tab : "plan";
+  const t = ["plan","calendar","strength"].includes(state.tab) ? state.tab : "plan";
   $("#planView").hidden = t!=="plan";
   $("#calendarView").hidden = t!=="calendar";
+  $("#strengthView").hidden = t!=="strength";
   if(t==="calendar") renderCalendar();
+  if(t==="strength") renderStrength();
 }
 // Click actions on strength cards (add / done / edit / delete / add-row)
 // Persist live edits (no re-render → keeps focus); syncs via planSig
@@ -4009,7 +4088,7 @@ function $$(s,el=document){ return [...el.querySelectorAll(s)]; }
 /* -------- Undo / redo (in-memory, per session) -------- */
 let undoStack=[], redoStack=[];
 function pushUndo(){ state.touched=true; try{ undoStack.push(JSON.stringify(state)); if(undoStack.length>60) undoStack.shift(); redoStack.length=0; }catch(e){} }
-function undo(){ if(!undoStack.length) return; try{ redoStack.push(JSON.stringify(state)); state=JSON.parse(undoStack.pop()); save(); render(); }catch(e){} }
+function undo(){ if(!undoStack.length) return; try{ redoStack.push(JSON.stringify(state)); const _sx=state.sx; state=JSON.parse(undoStack.pop()); state.sx=_sx; save(); render(); }catch(e){} }
 // Transient undo toast — appears after destructive actions, self-dismisses
 let _undoToastT=null;
 function showUndoToast(msg){
@@ -4021,7 +4100,7 @@ function showUndoToast(msg){
   document.body.appendChild(t);
   _undoToastT=setTimeout(()=>t.remove(), 5000);
 }
-function redo(){ if(!redoStack.length) return; try{ undoStack.push(JSON.stringify(state)); state=JSON.parse(redoStack.pop()); save(); render(); }catch(e){} }
+function redo(){ if(!redoStack.length) return; try{ undoStack.push(JSON.stringify(state)); const _sx=state.sx; state=JSON.parse(redoStack.pop()); state.sx=_sx; save(); render(); }catch(e){} }
 function updateUndoUI(){ const b=$("#undoBtn"); if(b) b.disabled = undoStack.length===0; }
 // Never let an edit hide a session behind an inactive type filter.
 function ensureTypeVisible(t){ if(!t) return; if(!state.seenTypes.includes(t)) state.seenTypes.push(t); if(!state.filters.types.includes(t)) state.filters.types.push(t); }
@@ -4760,7 +4839,7 @@ menu.addEventListener("click", e=>{
   }
 });
 $("#importJsonFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>{ try{ const next=activateMirror(migrate(JSON.parse(r.result))); pushUndo(); state=next; save(); render(); alert("Backup restored."); }catch(err){ alert("Could not read that JSON file."); } };
+  const r=new FileReader(); r.onload=()=>{ try{ const next=activateMirror(migrate(JSON.parse(r.result))); if(!JSON.parse(r.result).sx) next.sx=state.sx; pushUndo(); state=next; save(); render(); alert("Backup restored."); }catch(err){ alert("Could not read that JSON file."); } };
   r.readAsText(f); e.target.value=""; });
 $("#importCsvFile").addEventListener("change", e=>{ const f=e.target.files[0]; if(!f) return;
   const r=new FileReader(); r.onload=()=>{ try{ importCSV(r.result, fileBaseName(f.name)); }catch(err){ alert("Could not read that CSV."); } };
@@ -4771,7 +4850,7 @@ const dz=$("#dropzone"); let dzDepth=0;
 function isFileDrag(e){ const ts=e.dataTransfer? Array.from(e.dataTransfer.types||[]):[]; return ts.includes("Files")||ts.some(t=>/file/i.test(t)); }
 function handleFile(f){
   const r=new FileReader(); const isJson=/\.json$/i.test(f.name);
-  r.onload=()=>{ try{ if(isJson){ const next=activateMirror(migrate(JSON.parse(r.result))); pushUndo(); state=next; save(); render(); alert("Backup restored."); }
+  r.onload=()=>{ try{ if(isJson){ const next=activateMirror(migrate(JSON.parse(r.result))); if(!JSON.parse(r.result).sx) next.sx=state.sx; pushUndo(); state=next; save(); render(); alert("Backup restored."); }
                        else importCSV(r.result, fileBaseName(f.name)); }
                  catch(err){ alert("Could not read that file."); } };
   r.readAsText(f);
@@ -4813,6 +4892,345 @@ function setTopbarH(){ const tb=document.querySelector(".topbar"); document.docu
 window.addEventListener("resize", setTopbarH); setTimeout(setTopbarH,0); setTimeout(setTopbarH,600);
 let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); maybeAnimateView(); }
+/* ---- SG-ENGINE-START: progression engine (pure — no DOM, no storage; unit-tested) ---- */
+// history: newest first, each { log:ExerciseLog, deload:bool, holdWeek:bool }
+function sgR(n){ return Math.round(n*100)/100; }
+function sgVal(ex,s){ return ex.mode==="reps" ? s.reps : s.holdSec; }
+function sgCounted(history){
+  return (history||[]).filter(h=>h && !h.deload && h.log && (h.log.sets||[]).some(s=>s.done && sgVal0(s)!=null))
+    .map(h=>Object.assign({}, h, { sets:h.log.sets.filter(s=>s.done && sgVal0(s)!=null) }));
+}
+function sgVal0(s){ return s.reps!=null ? s.reps : (s.holdSec!=null ? s.holdSec : null); }
+function sgLoad(sets){ return sets.reduce((m,s)=>Math.max(m,+s.kg||0),0); }
+function sgFit(arr,n){ const out=arr.slice(0,n); while(out.length<n) out.push(arr.length?arr[arr.length-1]:null); return out; }
+function sgSuggest(ex, history, ctx){
+  ctx=ctx||{};
+  const isReps=ex.mode==="reps", lo=isReps?ex.repMin:ex.holdMin, hi=isReps?ex.repMax:ex.holdMax;
+  const unit=isReps?"reps":"s", cap=ex.rpeCap!=null?ex.rpeCap:8, inc=+ex.loadIncrementKg||0;
+  const step=isReps?1:(ex.holdStep||5), n=Math.max(1,ex.sets||1);
+  const counted=sgCounted(history);
+  if(!counted.length){
+    return { kg:null, targets:[], sets:n, level:ex.mode==="level"?0:undefined, action:"first-time",
+      reason: isReps ? `Pick a load you could do for ${hi} reps at RPE ${cap}` : `Pick a load you could hold for ${hi} s at RPE ${cap}` };
+  }
+  const last=counted[0], L=sgLoad(last.sets), lv=last.log.level||0;
+  const got=last.sets.map(s=>sgVal(ex,s));
+  const base={ kg:L, level:ex.mode==="level"?lv:undefined };
+  const lastTargets=sgFit(got,n).map(v=>Math.min(hi,v));
+  // 6.4 overrides, first match wins
+  if(ctx.deload) return Object.assign(base,{ targets:sgFit(lastTargets,Math.max(1,Math.round(n*2/3))), sets:Math.max(1,Math.round(n*2/3)), action:"deload", reason:"Deload: sets cut by a third, same load" });
+  if(ctx.holdWeek) return Object.assign(base,{ targets:lastTargets, sets:n, action:"hold", reason:"Running volume up: loads held this week" });
+  if(last.log.pain!=null && +last.log.pain>3) return Object.assign(base,{ targets:lastTargets, sets:n, action:"hold", reason:`Pain was ${last.log.pain}/10 last time: load held` });
+  const rpeOk=last.sets.every(s=>s.rpe!=null && s.rpe!=="" && +s.rpe<=cap);
+  const rpeMissing=last.sets.some(s=>s.rpe==null || s.rpe==="");
+  const rpeOver=last.sets.some(s=>s.rpe!=null && s.rpe!=="" && +s.rpe>cap);
+  // progress
+  if(got.every(v=>v>=hi) && rpeOk){
+    const reason=`Top of range hit at RPE ≤ ${cap}`;
+    if(ex.mode==="level" && ex.levels && lv<ex.levels.length-1)
+      return { kg:0, level:lv+1, targets:Array(n).fill(lo), sets:n, action:"progress", reason:`${reason}: next level` };
+    if(!inc) return Object.assign(base,{ targets:Array(n).fill(hi), sets:n, action:"repeat", reason:"Top of range at bodyweight: set a load increment to progress" });
+    return { kg:sgR(L+inc), level:base.level, targets:Array(n).fill(lo), sets:n, action:"progress", reason };
+  }
+  // drop: a set below the floor in each of the last two counted sessions at the same load (and level)
+  const prev=counted[1];
+  if(prev && got.some(v=>v<lo) && sgLoad(prev.sets)===L && (prev.log.level||0)===lv && prev.sets.some(s=>sgVal(ex,s)<lo)){
+    const reason=`Below ${lo} ${unit} two sessions running`;
+    if(ex.mode==="level" && L===0 && lv>0) return { kg:0, level:lv-1, targets:Array(n).fill(lo), sets:n, action:"drop", reason:`${reason}: back a level` };
+    return { kg:sgR(Math.max(0,L-inc)), level:base.level, targets:Array(n).fill(lo), sets:n, action:"drop", reason };
+  }
+  // repeat
+  const targets = rpeOver ? lastTargets : sgFit(got,n).map(v=>Math.min(hi,v+step));
+  const reason = rpeMissing ? "Log RPE to unlock progression" : rpeOver ? `RPE went over ${cap}: same targets` : `Same load, building toward ${hi} ${unit}`;
+  return Object.assign(base,{ targets, sets:n, action:"repeat", reason });
+}
+/* ---- SG-ENGINE-END ---- */
+
+/* ============================ STRENGTH (Log · double-progression) ============================
+   Data lives in state.sx = { schemaVersion, exercises, templates, sessions, settings, draft, dismissHold }.
+   It rides the normal save() → IndexedDB + localStorage path and the JSON backup. Run data is read-only. */
+function sgId(){ return "x"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function sgDefaultSettings(){ return { deloadEveryNWeeks:4, autoHoldOnVolumeJump:true, volumeJumpThreshold:0.10,
+  loadedRunRules:{ minDurationMin:90, minAvgHr:155, minElevM:500 }, manualHoldWeek:false, manualDeload:false }; }
+function sgSeed(){
+  const E=(id,name,category,mode,sets,lo,hi,inc,uni,extra)=>Object.assign({ id,name,category,mode,sets,loadIncrementKg:inc,rpeCap:8,unilateral:uni },
+    mode==="reps"?{repMin:lo,repMax:hi}:{holdMin:lo,holdMax:hi,holdStep:5}, extra||{});
+  const exercises=[
+    E("bss","Bulgarian split squat","legs","reps",3,5,8,2.5,true),
+    E("rdl","Romanian deadlift","legs","reps",3,5,8,2.5,false),
+    E("hipthrust","Hip thrust","legs","reps",3,5,8,5,false),
+    E("calf","Straight-knee single-leg calf raise","legs","reps",3,6,10,2.5,true),
+    E("ssiso","Split squat iso hold","legs","hold",4,30,45,2.5,true),
+    E("soleus","Bent-knee soleus iso hold","legs","hold",4,30,45,2.5,true),
+    E("wallsit","Wall sit / Spanish squat hold","legs","hold",4,30,45,2.5,false),
+    E("dbrow","One-arm dumbbell row","back","reps",3,8,12,2.5,true),
+    E("pulldown","Lat pulldown or pull-up","back","reps",3,8,12,2.5,false),
+    E("backext","Back extension","back","reps",3,8,12,2.5,false),
+    E("plank","Plank","core","level",3,30,60,2.5,false,{levels:["Plank","Long-lever plank","Weighted plank"]}),
+    E("sideplank","Side plank","core","level",3,30,60,2.5,true,{levels:["Knees","Full","Weighted"]}),
+    E("pallof","Pallof press","core","reps",3,8,12,2.5,true),
+    E("deadbug","Dead bug","core","reps",3,8,12,0,false),
+  ];
+  const templates=[
+    { id:"heavy", name:"Heavy legs", when:"Long-run day, after the run", exerciseIds:["bss","rdl","hipthrust","calf"] },
+    { id:"iso",   name:"Iso legs",   when:"Session days", exerciseIds:["ssiso","soleus","wallsit"] },
+    { id:"back",  name:"Back",       when:"Once a week", exerciseIds:["dbrow","pulldown","backext"] },
+    { id:"core",  name:"Core",       when:"Own session, or add to any", exerciseIds:["plank","sideplank","pallof","deadbug"] },
+  ];
+  return { schemaVersion:1, exercises, templates, sessions:[], settings:sgDefaultSettings(), draft:null, dismissHold:{} };
+}
+function sgMigrate(raw){
+  if(!raw || typeof raw!=="object" || !Array.isArray(raw.exercises)) return sgSeed();
+  return { schemaVersion:1, exercises:raw.exercises, templates:Array.isArray(raw.templates)?raw.templates:[],
+    sessions:Array.isArray(raw.sessions)?raw.sessions:[], settings:Object.assign(sgDefaultSettings(), raw.settings||{}),
+    draft:raw.draft||null, dismissHold:raw.dismissHold||{} };
+}
+function SX(){ if(!state.sx) state.sx=sgSeed(); return state.sx; }
+function sgEx(id){ return SX().exercises.find(e=>e.id===id); }
+function sgTpl(id){ return SX().templates.find(t=>t.id===id); }
+
+/* ---- history + context ---- */
+function sgHistory(exId){   // newest first, finished sessions only
+  return SX().sessions.slice().sort((a,b)=>b.date<a.date?-1:1)
+    .map(s=>{ const log=(s.exercises||[]).find(x=>x.exerciseId===exId); return log?{log,deload:!!s.deload,holdWeek:!!s.holdWeek,date:s.date}:null; })
+    .filter(Boolean);
+}
+function sgRuns(){   // read-only view of the active plan's runs (done → actuals, else planned)
+  const out=[]; const board=state.board||{};
+  try{
+    for(const date in board) for(const id of board[date]||[]){
+      const w=getWO(id); if(!w || ["Rest","Sauna","Bike"].includes(w.t)) continue;
+      const done=!!(state.done&&state.done[id]), lg=(state.log&&state.log[id])||{};
+      const pick=(a,b)=> done && a!=null && a!=="" ? +a : (b!=null&&b!==""?+b:null);
+      out.push({ date, type:w.t, name:w.n, done, dur:pick(lg.d,w.d), km:pick(lg.k,w.k), elev:pick(lg.v,w.v), hr:done&&lg.hr!=null?+lg.hr:null });
+    }
+  }catch(_){}
+  return out;
+}
+function sgIsLoaded(r){ const q=SX().settings.loadedRunRules||{};
+  return (r.dur!=null&&r.dur>=q.minDurationMin) || (r.hr!=null&&r.hr>=q.minAvgHr) || (r.elev!=null&&r.elev>=q.minElevM); }
+function sgVolumeJump(){   // {pct} when last 7 days' done km beats the prior three 7-day windows' mean by the threshold
+  const S=SX().settings, t=todayISO(), runs=sgRuns().filter(r=>r.done && r.km);
+  const win=k=>runs.filter(r=>r.date<=addDays(t,-7*k) && r.date>addDays(t,-7*(k+1))).reduce((a,r)=>a+r.km,0);
+  const now=win(0), prior=[win(1),win(2),win(3)], mean=(prior[0]+prior[1]+prior[2])/3;
+  if(!mean || !prior.some(Boolean)) return null;
+  return now > mean*(1+(+S.volumeJumpThreshold||0)) ? { pct:Math.round((now/mean-1)*100) } : null;
+}
+function sgHoldWeek(){ const S=SX().settings; if(S.manualHoldWeek) return { manual:true };
+  if(!S.autoHoldOnVolumeJump || SX().dismissHold[mondayOf(todayISO())]) return null; return sgVolumeJump(); }
+function sgDeloadWeek(){ const S=SX().settings; if(S.manualDeload) return true;
+  const N=+S.deloadEveryNWeeks||0, ss=SX().sessions; if(!N || !ss.length) return false;
+  const first=ss.map(s=>sgDay(s.date)).sort()[0];
+  const idx=Math.round((d(mondayOf(todayISO()))-d(mondayOf(first)))/(7*86400000));
+  return (idx+1)%N===0; }
+function sgIsLegs(tpl){ const ids=(tpl&&tpl.exerciseIds)||[]; return ids.length && ids.filter(id=>(sgEx(id)||{}).category==="legs").length*2>=ids.length; }
+function sgRunWarnings(){
+  const t=todayISO(), y=addDays(t,-1), tm=addDays(t,1), cap=8, out=[];
+  const runs=sgRuns();
+  const back=runs.filter(r=>r.done && (r.date===t||r.date===y) && sgIsLoaded(r)).sort((a,b)=>b.date<a.date?-1:1)[0];
+  if(back) out.push(`Loaded run ${back.date===t?"today":"yesterday"}: ${esc(back.name||back.type)}`);
+  const hard=["Threshold","Hills","Descent","Simulation","Long","Race"];
+  const ahead=runs.filter(r=>!r.done && (r.date===t||r.date===tm) && hard.includes(r.type)).sort((a,b)=>a.date<b.date?-1:1)[0];
+  if(ahead) out.push(`${esc(ahead.type)} session ${ahead.date===t?"later today":"tomorrow"}. Keep lower body at RPE ${cap-1} or below.`);
+  return out;
+}
+
+/* ---- formatting ---- */
+function sgKg(n){ return (n==null||n==="")?"":String(Math.round(+n*100)/100); }
+function sgUnit(ex){ return ex.mode==="reps"?"reps":"s"; }
+function sgLoadTxt(kg,ex){ return +kg ? `${sgKg(kg)} kg${ex.unilateral?" per side":""}` : "bodyweight"; }
+function sgSetsTxt(vals,ex){ const u=ex.mode==="reps"?"":" s";
+  return vals.every(v=>v===vals[0]) ? `${vals.length} × ${vals[0]}${u}` : vals.join(", ")+u; }
+function sgLastTxt(ex){
+  const h=sgHistory(ex.id).find(x=>!x.deload && x.log.sets.some(s=>s.done)) || sgHistory(ex.id)[0];
+  if(!h) return "";
+  const sets=h.log.sets.filter(s=>s.done); if(!sets.length) return "";
+  const vals=sets.map(s=>ex.mode==="reps"?s.reps:s.holdSec), kg=sets.reduce((m,s)=>Math.max(m,+s.kg||0),0);
+  const rp=sets.map(s=>s.rpe).filter(v=>v!=null&&v!==""), rpe=rp.length?(Math.min(...rp)===Math.max(...rp)?`RPE ${rp[0]}`:`RPE ${Math.min(...rp)}–${Math.max(...rp)}`):"no RPE";
+  const lvl=ex.mode==="level"&&ex.levels?ex.levels[h.log.level||0]+" · ":"";
+  return `${lvl}${sgSetsTxt(vals,ex)} @ ${sgLoadTxt(kg,ex)} · ${rpe}${h.deload?" (deload)":""}`;
+}
+function sgNextTxt(sg,ex){
+  if(sg.action==="first-time") return "Your pick";
+  const lvl=ex.mode==="level"&&ex.levels?ex.levels[sg.level||0]+" · ":"";
+  return `${lvl}${sgLoadTxt(sg.kg,ex)} · ${sgSetsTxt(sg.targets,ex)}`;
+}
+function sgDay(isoStr){ return iso(new Date(isoStr)); }   // local calendar day (never slice a UTC ISO string)
+function sgDateLabel(isoStr){ const x=d(sgDay(isoStr)); return `${WD[x.getDay()]} ${x.getDate()} ${MO[x.getMonth()]}`; }
+
+/* ---- draft lifecycle ---- */
+function sgCtx(dr){ return { deload:!!dr.deload, holdWeek:!!dr.holdWeek }; }
+function sgPrefill(exLog, ex, dr){
+  const sg=sgSuggest(ex, sgHistory(ex.id), sgCtx(dr));
+  exLog.sugg=sg; if(ex.mode==="level") exLog.level=sg.level||0;
+  const key=ex.mode==="reps"?"reps":"holdSec";
+  exLog.sets=Array.from({length:sg.sets},(_,i)=>({ kg:sg.kg, [key]:sg.targets[i]!=null?sg.targets[i]:null, rpe:null, done:false }));
+}
+function sgNewExLog(exId, dr, oneOff){ const ex=sgEx(exId); const l={ exerciseId:exId, sets:[], oneOff:!!oneOff }; if(ex) sgPrefill(l,ex,dr); return l; }
+function sgStart(tplId){
+  const X=SX(), tpl=sgTpl(tplId); if(!tpl) return;
+  const dr={ id:sgId(), date:new Date().toISOString(), templateId:tpl.id, deload:sgDeloadWeek(), holdWeek:!!sgHoldWeek(), notes:"", exercises:[] };
+  dr.exercises=tpl.exerciseIds.filter(sgEx).map(id=>sgNewExLog(id,dr));
+  X.draft=dr; sgUI.summary=null; sgUI.open=-1; save(); renderStrength(); window.scrollTo(0,0);
+}
+function sgReprefill(){ const dr=SX().draft; if(!dr) return;   // context changed → refresh suggestions where nothing is ticked yet
+  dr.exercises.forEach(l=>{ const ex=sgEx(l.exerciseId); if(ex && !l.sets.some(s=>s.done)) sgPrefill(l,ex,dr); else if(ex) l.sugg=sgSuggest(ex,sgHistory(ex.id),sgCtx(dr)); }); }
+function sgFinish(){
+  const X=SX(), dr=X.draft; if(!dr) return;
+  const num=v=>(v==null||v==="")?undefined:+v;
+  const exercises=dr.exercises.filter(l=>!l.skipped && l.sets.some(s=>s.done)).map(l=>{
+    const ex=sgEx(l.exerciseId)||{}; const out={ exerciseId:l.exerciseId, sets:l.sets.map(s=>{
+      const o={ kg:+s.kg||0, done:!!s.done }; const r=num(ex.mode==="reps"?s.reps:s.holdSec); if(r!=null) o[ex.mode==="reps"?"reps":"holdSec"]=r;
+      const rp=num(s.rpe); if(rp!=null) o.rpe=Math.max(1,Math.min(10,rp)); return o; }) };
+    if(ex.mode==="level") out.level=l.level||0; if(num(l.pain)!=null) out.pain=Math.max(0,Math.min(10,num(l.pain)));
+    if(l.note&&l.note.trim()) out.note=l.note.trim(); return out; });
+  if(!exercises.length){ alert("Tick at least one set before finishing."); return; }
+  const sess={ id:dr.id, date:dr.date, templateId:dr.templateId, exercises, deload:!!dr.deload, holdWeek:!!dr.holdWeek };
+  if(dr.notes&&dr.notes.trim()) sess.notes=dr.notes.trim();
+  X.sessions.push(sess); X.draft=null;
+  sgUI.summary={ sessionId:sess.id, rows:exercises.map(l=>{ const ex=sgEx(l.exerciseId); if(!ex) return null;
+    const nx=sgSuggest(ex, sgHistory(ex.id), {}); return { name:ex.name, action:nx.action, next:sgNextTxt(nx,ex), reason:nx.reason }; }).filter(Boolean) };
+  save(); renderStrength(); window.scrollTo(0,0);
+}
+
+/* ---- view ---- */
+const sgUI={ open:-1, painOpen:{}, noteOpen:{}, adding:false, summary:null };
+const SG_ICO={ tick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  more:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>' };
+function sgBanners(dr, legs){
+  const out=[];
+  const hw=sgHoldWeek();
+  if(hw) out.push(`<div class="sg-banner"><span>${hw.manual?"Hold week is on: loads held.":`Running volume up ${hw.pct}% this week: loads held.`}</span>${hw.manual?"":`<button class="sg-link" data-sg="dismissHold">Dismiss</button>`}</div>`);
+  if(dr ? dr.deload : sgDeloadWeek()) out.push(`<div class="sg-banner"><span>Deload week: sets cut by a third, same loads.</span>${dr?`<button class="sg-link" data-sg="deloadOff">Turn off</button>`:""}</div>`);
+  else if(dr && sgDeloadWeek()) out.push(`<div class="sg-banner sg-quiet"><span>Deload switched off for this session.</span><button class="sg-link" data-sg="deloadOn">Turn on</button></div>`);
+  if(legs) sgRunWarnings().forEach(w=>out.push(`<div class="sg-banner sg-info"><span>${w}</span></div>`));
+  return out.join("");
+}
+function sgPickerHTML(){
+  const X=SX(), last={};
+  X.sessions.forEach(s=>{ if(s.templateId && (!last[s.templateId]||s.date>last[s.templateId])) last[s.templateId]=s.date; });
+  const tiles=X.templates.map(t=>`<button class="sg-tpl" data-sg="start" data-id="${esc(t.id)}">
+      <span class="sg-tpl-n">${esc(t.name)}</span>
+      <span class="sg-tpl-w">${esc(t.when||"")}</span>
+      <span class="sg-tpl-l">${last[t.id]?"Last: "+sgDateLabel(last[t.id]):"Not done yet"}</span>
+      <span class="sg-tpl-go">Start</span></button>`).join("");
+  const recent=X.sessions.slice().sort((a,b)=>b.date<a.date?-1:1).slice(0,6).map(s=>{ const t=sgTpl(s.templateId);
+    return `<li><span>${sgDateLabel(s.date)}</span><b>${esc(t?t.name:"Session")}</b><em>${s.exercises.length} exercise${s.exercises.length===1?"":"s"}${s.deload?" · deload":""}</em></li>`; }).join("");
+  return `${sgBanners(null,false)}<div class="sg-tpls">${tiles}</div>
+    ${recent?`<div class="sg-sect">Recent sessions</div><ul class="sg-recent">${recent}</ul>`:""}`;
+}
+function sgSummaryHTML(){
+  const W={ progress:"Progressed", repeat:"Repeat", drop:"Dropped", hold:"Held", deload:"Deload", "first-time":"—" };
+  return `<div class="sg-card sg-sum"><div class="sg-sum-h">Session saved</div>
+    ${sgUI.summary.rows.map(r=>`<div class="sg-sum-r"><div><b>${esc(r.name)}</b><span>Next: ${esc(r.next)}</span></div><em class="sg-badge sg-${r.action}">${W[r.action]||r.action}</em></div>`).join("")}
+    <button class="sg-btn sg-primary" data-sg="closeSummary">Done</button></div>`;
+}
+function sgExCardHTML(l, i, dr){
+  const ex=sgEx(l.exerciseId); if(!ex) return "";
+  const sg=l.sugg||sgSuggest(ex,sgHistory(ex.id),sgCtx(dr)), isReps=ex.mode==="reps", key=isReps?"reps":"holdSec";
+  const last=sgLastTxt(ex), open=sgUI.open===i;
+  const opts=open?`<div class="sg-opts">
+      <label class="sg-swap"><span>Swap for</span><select data-sgsel="swap" data-e="${i}"><option value="">Choose…</option>${SX().exercises.filter(e=>e.id!==ex.id).map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join("")}</select></label>
+      <button class="sg-chip" data-sg="skip" data-e="${i}">${l.skipped?"Unskip":"Skip"}</button>
+      <button class="sg-chip" data-sg="note" data-e="${i}">Note</button>
+      <button class="sg-chip" data-sg="pain" data-e="${i}">Pain score</button>
+      ${l.oneOff?`<button class="sg-chip" data-sg="remove" data-e="${i}">Remove</button>`:""}</div>`:"";
+  if(l.skipped) return `<section class="sg-card sg-skipped"><div class="sg-ex-h"><h3>${esc(ex.name)}</h3><span class="sg-tag">Skipped</span>
+      <button class="sg-more" data-sg="opts" data-e="${i}" aria-label="Options for ${esc(ex.name)}">${SG_ICO.more}</button></div>${opts}</section>`;
+  const rows=l.sets.map((s,j)=>`<div class="sg-row${s.done?" done":""}">
+      <span class="sg-n">${j+1}</span>
+      <input class="sg-in" inputmode="decimal" data-f="kg" data-e="${i}" data-s="${j}" value="${esc(sgKg(s.kg))}" aria-label="Set ${j+1} kg" placeholder="kg">
+      <input class="sg-in" inputmode="decimal" data-f="val" data-e="${i}" data-s="${j}" value="${s[key]!=null?esc(s[key]):""}" aria-label="Set ${j+1} ${isReps?"reps":"seconds"}" placeholder="${isReps?"reps":"sec"}">
+      <input class="sg-in" inputmode="decimal" data-f="rpe" data-e="${i}" data-s="${j}" value="${s.rpe!=null?esc(s.rpe):""}" aria-label="Set ${j+1} RPE" placeholder="RPE">
+      <button class="sg-tick" data-sg="tick" data-e="${i}" data-s="${j}" aria-label="Mark set ${j+1} ${s.done?"not done":"done"}" aria-pressed="${s.done}">${SG_ICO.tick}</button></div>`).join("");
+  const lvl=ex.mode==="level"&&ex.levels?`<label class="sg-lvl"><span>Level</span><select data-sgsel="level" data-e="${i}">${ex.levels.map((n,k)=>`<option value="${k}"${(l.level||0)===k?" selected":""}>${esc(n)}</option>`).join("")}</select></label>`:"";
+  const showPain=sgUI.painOpen[i] || (l.pain!=null&&l.pain!=="");
+  const showNote=sgUI.noteOpen[i] || (l.note&&l.note.length);
+  return `<section class="sg-card">
+    <div class="sg-ex-h"><h3>${esc(ex.name)}${l.oneOff?` <span class="sg-tag">One-off</span>`:""}</h3>
+      <button class="sg-more" data-sg="opts" data-e="${i}" aria-label="Options for ${esc(ex.name)}" aria-expanded="${open}">${SG_ICO.more}</button></div>
+    ${opts}
+    ${last?`<div class="sg-last">Last time: ${esc(last)}</div>`:""}
+    <div class="sg-next sg-a-${sg.action}"><div class="sg-next-l">Next: <b>${esc(sgNextTxt(sg,ex))}</b></div><div class="sg-next-r">${esc(sg.reason)}</div></div>
+    ${lvl}
+    <div class="sg-grid-h"><span>Set</span><span>kg${ex.unilateral?"/side":""}</span><span>${isReps?"Reps":"Sec"}</span><span>RPE</span><span></span></div>
+    ${rows}
+    <div class="sg-setbtns"><button class="sg-btn" data-sg="addSet" data-e="${i}">+ Add set</button>${l.sets.length>1&&!l.sets[l.sets.length-1].done?`<button class="sg-btn sg-ghost" data-sg="delSet" data-e="${i}">Remove last set</button>`:""}</div>
+    ${showPain?`<label class="sg-field"><span>Pain (0–10)</span><input class="sg-in" inputmode="decimal" data-f="pain" data-e="${i}" value="${l.pain!=null?esc(l.pain):""}"></label>`:""}
+    ${showNote?`<label class="sg-field"><span>Note</span><input class="sg-in sg-txt" data-f="note" data-e="${i}" value="${esc(l.note||"")}"></label>`:""}
+  </section>`;
+}
+function sgSessionHTML(dr){
+  const tpl=sgTpl(dr.templateId), legs=sgIsLegs(tpl), hasCore=dr.exercises.some(l=>(sgEx(l.exerciseId)||{}).category==="core");
+  const coreTpl=SX().templates.find(t=>/core/i.test(t.name));
+  return `<div class="sg-sess-h"><div>${sgDay(dr.date)!==todayISO()?`<div class="sg-eyebrow">Started ${sgDateLabel(dr.date)}</div>`:""}<h2>${esc(tpl?tpl.name:"Session")}</h2></div>
+      <button class="sg-btn sg-ghost" data-sg="discard">Discard</button></div>
+    ${sgBanners(dr,legs)}
+    ${dr.exercises.map((l,i)=>sgExCardHTML(l,i,dr)).join("")}
+    <div class="sg-addrow">
+      ${sgUI.adding?`<label class="sg-swap sg-grow"><span>Add exercise</span><select data-sgsel="add"><option value="">Choose…</option>${SX().exercises.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join("")}</select></label>`
+        :`<button class="sg-btn" data-sg="adding">+ Add exercise</button>`}
+      ${!hasCore&&coreTpl?`<button class="sg-btn" data-sg="addCore">+ Core block</button>`:""}
+    </div>
+    <label class="sg-field"><span>Session notes</span><textarea class="sg-in sg-txt" rows="2" data-f="snotes">${esc(dr.notes||"")}</textarea></label>
+    <button class="sg-btn sg-primary sg-finish" data-sg="finish">Finish session</button>`;
+}
+function renderStrength(){
+  const el=$("#strengthView"); if(!el) return;
+  const X=SX(), dr=X.draft, t=todayISO(), x=d(t);
+  el.innerHTML = `<header class="sg-head"><h1>Strength</h1><span>${WD[x.getDay()]} ${x.getDate()} ${MO[x.getMonth()]}</span></header>
+    ${sgUI.summary ? sgSummaryHTML() : dr ? sgSessionHTML(dr) : sgPickerHTML()}`;
+}
+// input → model (no re-render, keeps focus); the draft autosaves through save()'s debounce
+document.addEventListener("input", e=>{
+  const f=e.target.dataset&&e.target.dataset.f; if(!f || !e.target.closest("#strengthView")) return;
+  const dr=SX().draft; if(!dr) return;
+  if(f==="snotes"){ dr.notes=e.target.value; save(); return; }
+  const l=dr.exercises[+e.target.dataset.e]; if(!l) return;
+  const ex=sgEx(l.exerciseId)||{mode:"reps"}, v=e.target.value.replace(",",".").trim();
+  if(f==="pain") l.pain=v===""?null:v;
+  else if(f==="note") l.note=e.target.value;
+  else { const s=l.sets[+e.target.dataset.s]; if(!s) return;
+    const k=f==="kg"?"kg":f==="rpe"?"rpe":(ex.mode==="reps"?"reps":"holdSec"); s[k]=v===""?null:(isNaN(+v)?v:+v); }
+  save();
+});
+document.addEventListener("change", e=>{
+  const sel=e.target.dataset&&e.target.dataset.sgsel; if(!sel || !e.target.closest("#strengthView")) return;
+  const dr=SX().draft; if(!dr) return; const v=e.target.value; if(!v && sel!=="level") return;
+  const i=+e.target.dataset.e;
+  if(sel==="level"){ dr.exercises[i].level=+v; }
+  else if(sel==="swap"){ const old=dr.exercises[i]; const nl=sgNewExLog(v,dr,old.oneOff); dr.exercises[i]=nl; sgUI.open=-1; }
+  else if(sel==="add"){ dr.exercises.push(sgNewExLog(v,dr,true)); sgUI.adding=false; }
+  save(); renderStrength();
+});
+document.addEventListener("click", e=>{
+  const b=e.target.closest("#strengthView [data-sg]"); if(!b) return;
+  const X=SX(), dr=X.draft, a=b.dataset.sg, i=+b.dataset.e, l=dr&&dr.exercises[i];
+  switch(a){
+    case "start":
+      if(dr && !confirm("You have a session in progress. Discard it and start a new one?")) return;
+      sgStart(b.dataset.id); return;
+    case "closeSummary": sgUI.summary=null; break;
+    case "discard": if(!confirm("Discard this session? Nothing from it will be saved.")) return; X.draft=null; sgUI.open=-1; sgUI.painOpen={}; sgUI.noteOpen={}; break;
+    case "finish": sgFinish(); return;
+    case "tick": { const s=l&&l.sets[+b.dataset.s]; if(s) s.done=!s.done; break; }
+    case "addSet": { const p=l.sets[l.sets.length-1]||{}; l.sets.push({ kg:p.kg!=null?p.kg:null, reps:p.reps, holdSec:p.holdSec, rpe:null, done:false }); break; }
+    case "delSet": if(l.sets.length>1 && !l.sets[l.sets.length-1].done) l.sets.pop(); break;
+    case "opts": sgUI.open = sgUI.open===i ? -1 : i; break;
+    case "skip": l.skipped=!l.skipped; sgUI.open=-1; break;
+    case "note": sgUI.noteOpen[i]=true; sgUI.open=-1; break;
+    case "pain": sgUI.painOpen[i]=true; sgUI.open=-1; break;
+    case "remove": dr.exercises.splice(i,1); sgUI.open=-1; sgUI.painOpen={}; sgUI.noteOpen={}; break;
+    case "adding": sgUI.adding=true; break;
+    case "addCore": { const ct=X.templates.find(t=>/core/i.test(t.name)); if(ct) ct.exerciseIds.filter(id=>sgEx(id)&&!dr.exercises.some(x=>x.exerciseId===id)).forEach(id=>dr.exercises.push(sgNewExLog(id,dr,true))); break; }
+    case "dismissHold": X.dismissHold[mondayOf(todayISO())]=true; if(dr){ dr.holdWeek=false; sgReprefill(); } break;
+    case "deloadOff": if(dr){ dr.deload=false; sgReprefill(); } break;
+    case "deloadOn": if(dr){ dr.deload=true; sgReprefill(); } break;
+    default: return;
+  }
+  save(); renderStrength();
+});
+
 hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); }).catch(firstRender);
 setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
 </script>
