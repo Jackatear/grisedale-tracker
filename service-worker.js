@@ -1,8 +1,8 @@
 /* Grisedale Tracker service worker — makes the app installable + offline.
    Strategy: network-first for the page (fresh app when online, cached when offline),
    cache-first for same-origin static assets. The app makes no other network calls. */
-const CACHE = 'grisedale-2026-06-10b';
-const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-maskable.svg', './fitness-engine.html'];
+const CACHE = 'grisedale-2026-06-11a';
+const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-maskable.svg'];
 
 self.addEventListener('install', e => {
   // cache the shell; allSettled so one missing file can't break the whole install
