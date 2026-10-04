@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#eae7df" />
-<meta name="app-build" content="2026-06-09i" />
+<meta name="app-build" content="2026-06-10a" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -115,7 +115,6 @@
   .hz-gear .ico{width:17px;height:17px;vertical-align:0}
   .rs-tg-ic .ico{width:17px;height:17px;vertical-align:0}
   .cp-eyebrow .ico,.coach-next .ico{width:13px;height:13px;vertical-align:-2px;color:var(--accent)}
-  #cloudBtn .cb-tick{font-size:10px;font-weight:700;margin-left:2px;vertical-align:1px}
   .pill .ico{width:12px;height:12px;vertical-align:-2px;opacity:.85}
   .pill.load .ico{color:var(--accent);opacity:1}
   .m-only{display:none!important}   /* mobile-only controls (revealed in the ≤700px media query) */
@@ -1045,12 +1044,6 @@
   .cloud-pip.synced{background:var(--good)}
   .cloud-pip.saving,.cloud-pip.checking{background:var(--accent)}
   .cloud-pip.error,.cloud-pip.bad-token{background:#d9685f}
-  #cloudBtn.on{border-color:color-mix(in srgb,var(--good) 50%,var(--line2));color:var(--good)}
-  #cloudBtn[data-state="error"],#cloudBtn[data-state="bad-token"]{border-color:#d9685f;color:#d9685f}
-  #syncBody code{background:var(--bg2);padding:1px 5px;border-radius:5px;font-size:12px}
-  #syncBody a{color:var(--accent)}
-  #syncBody ol{margin:0;padding-left:18px;font-size:13px;color:var(--muted);line-height:1.7}
-  #syncBody .row{display:flex;gap:10px}
 
   /* ---------- Mobile ---------- */
   @media (max-width:700px){
@@ -2177,7 +2170,6 @@
       </div>
     </div>
     <div class="mini" id="miniStats"></div>
-    <button class="iconbtn" id="cloudBtn" title="Cloud sync"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6-1.5A4 4 0 1 0 6 19h11.5Z"/></svg></button>
     <button class="iconbtn" id="unitBtn" title="Toggle distance unit">km</button>
     <button class="iconbtn" id="themeBtn" title="Toggle theme"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
     <div class="menuwrap">
@@ -2191,8 +2183,6 @@
         <button data-act="templateCsv">Blank template (CSV)</button>
         <button data-act="exportJson">Back up everything (JSON)</button>
         <button data-act="importJson">Restore backup (JSON…)</button>
-        <div class="sep"></div>
-        <div class="menu-row" id="stravaRow"></div>
         <div class="sep"></div>
         <button data-act="settings">Settings…</button>
         <div class="sep"></div>
@@ -2251,7 +2241,6 @@
 
     <div id="strengthView" hidden></div>
     <div id="calendarView" hidden></div>
-    <div id="progressView" hidden></div>   <!-- Progress removed from nav; div kept hidden so its top-level listeners don't null-crash -->
   </div>
 
   <!-- Persistent bottom navigation (mobile) -->
@@ -2281,17 +2270,6 @@
         <button class="btn primary" id="mEdit" style="display:none">Edit</button>
         <button class="btn primary" id="mSave" style="display:none">Save</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Cloud sync dialog -->
-  <div class="backdrop" id="syncBackdrop">
-    <div class="modal" style="width:min(460px,100%)" role="dialog" aria-modal="true">
-      <div class="modal-head">
-        <div><div class="mdate">Cloud sync</div><h3>Sync across devices</h3></div>
-        <button class="x" id="syncClose">×</button>
-      </div>
-      <div class="modal-body" id="syncBody"></div>
     </div>
   </div>
 
@@ -2502,7 +2480,6 @@ function migrate(raw){
     readiness: (raw.readiness && typeof raw.readiness==="object") ? raw.readiness : {},
     races: Array.isArray(raw.races) ? raw.races : [],
     benchmarks: Array.isArray(raw.benchmarks) ? raw.benchmarks : [],
-    coachProposal: (raw.coachProposal && typeof raw.coachProposal==="object") ? raw.coachProposal : null,
     touched:!!raw.touched, updatedAt:raw.updatedAt||0, plans:[], activeId:null
   });
   s.filters = Object.assign({types:[...TYPE_ORDER], rest:true, vis:"all", q:""}, raw.filters||{});
@@ -2547,7 +2524,6 @@ function persist(){
   if(changed) state.updatedAt=Date.now();
   if(_lastDataSer===null || changed) _lastDataSer=sig;
   writeLocal();                              // localStorage backup + IndexedDB (always)
-  if(changed && typeof cloudPush==="function") cloudPush();   // push real data changes to the gist
 }
 
 /* ============================ HELPERS ============================ */
@@ -2561,7 +2537,7 @@ const WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MO=["Jan","Feb","Mar","Apr
 const WD_FULL=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const EFFORT_WORD=["Recovery","Easy","Steady","Hard","Max"];
 function paceStr(min,km){ if(!min||!km) return null; const s=Math.round(min/km*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
-function athleteName(){ try{ return (strava.name||"").trim().split(/\s+/)[0]||""; }catch(_){ return ""; } }
+function athleteName(){ try{ return (localStorage.getItem("strava.name")||"").trim().split(/\s+/)[0]||""; }catch(_){ return ""; } }
 function greetWord(){ const h=new Date().getHours(); return h<12?"Good morning":h<18?"Good afternoon":"Good evening"; }
 function dayShort(iso){ const x=d(iso); return WD[x.getDay()]+" "+x.getDate(); }
 function dayLong(iso){ const x=d(iso); return WD[x.getDay()]+", "+x.getDate()+" "+MO[x.getMonth()]+" "+x.getFullYear(); }
@@ -2666,10 +2642,6 @@ function planStartMonday(){
   const ms=weekMondays(); return ms.length? ms[0] : mondayOf(todayISO());
 }
 
-function unitDist(km){
-  if(km==null) return null;
-  return state.unit==="mi" ? km*KM_TO_MI : km;
-}
 function fmtDist(km,withUnit=true){
   if(km==null) return "—";
   const v = state.unit==="mi" ? km*KM_TO_MI : km;
@@ -2742,7 +2714,6 @@ function render(){
     $("#miniStats").innerHTML = "";
     document.title = "Training Tracker";
     renderHome(); save();
-    if(typeof renderCloud==="function") renderCloud();
     return;
   }
   ensureBoard(); save();
@@ -2757,7 +2728,6 @@ function render(){
   renderFoot();
   updateUndoUI();
   applyTab();
-  if(typeof renderCloud==="function") renderCloud();
 }
 
 /* ============================ PLAN LIBRARY / HOME ============================ */
@@ -3056,32 +3026,6 @@ function openFitnessEngine(){
   requestAnimationFrame(()=>o.classList.add("open"));
 }
 function closeFitnessEngine(){ const o=document.getElementById("feOverlay"); if(o) o.remove(); if(typeof refreshScrollLock==="function") refreshScrollLock(); }
-function openProofInfo(){
-  const old=document.querySelector("#proofInfoBack"); if(old) old.remove();
-  const b=document.createElement("div"); b.className="sd-pick-back"; b.id="proofInfoBack";
-  b.innerHTML=`<div class="sd-pick"><h3>Proof of progress</h3>
-    <p style="font-size:13px;color:var(--muted);line-height:1.6;margin:-6px 0 12px">The receipts, not the plan — everything you've actually completed on the road to British Fell Champion.</p>
-    <div class="pi-row"><span class="pi-dot" style="background:#7d97f2"></span><div><b>The ring · key-session hit rate</b><p>Every week has one session that matters most — your hardest quality workout or long run. The ring is the share of weeks you've nailed that one. Miss an easy day and little is lost; miss the key session and the week's adaptation goes with it. High here is the consistency that actually builds a champion.</p></div></div>
-    <div class="pi-row"><span class="pi-dot" style="background:#8d94c0"></span><div><b>Distance run</b><p>Total distance across every run you've logged — the simplest measure of the engine you've banked.</p></div></div>
-    <div class="pi-row"><span class="pi-dot" style="background:#9cc187"></span><div><b>Vertical climbed</b><p>Total metres of ascent. On the fells this is the real currency — climbing strength decides races, and it adds up one hill at a time.</p></div></div>
-    <div class="pi-row"><span class="pi-dot" style="background:#7d97f2"></span><div><b>Time trained</b><p>Total hours on your feet. Fitness is cumulative — every hour is a deposit, and this is the balance.</p></div></div>
-    <button class="btn" id="piOk" style="width:100%;margin-top:8px">Got it</button></div>`;
-  b.addEventListener("click", ev=>{ if(ev.target===b || ev.target.id==="piOk"){ b.remove(); refreshScrollLock(); } });
-  document.body.appendChild(b); refreshScrollLock();
-}
-function homeTilesHTML(){
-  const t=todayISO(), map=dayLoadMap();
-  let load7=0; for(let i=0;i<7;i++) load7+=(map[addDays(t,-i)]||0); load7=Math.round(load7);
-  const wkL=[]; for(let i=5;i>=0;i--){ let l=0; const mon=addDays(mondayOf(t),-7*i); for(let di=0;di<7;di++) l+=(map[addDays(mon,di)]||0); wkL.push(l); }
-  const mx=Math.max(...wkL,1); const bars=wkL.map((v,i)=>`<i style="height:${Math.max(12,Math.round(v/mx*100))}%;opacity:${i===5?1:.5}"></i>`).join("");
-  const ready=acwrLoadDays()>=10, acwr=ready?currentAcwr():null, band=loadBand(acwr, ready);
-  const bandCol = band.lvl==="good"?"var(--good)": band.lvl==="warn"?"var(--warn)": band.lvl==="bad"?"var(--bad)":"var(--faint)";
-  const bandWord = band.label.split(" ·")[0];
-  return `<div class="dash-tiles two">
-    <button class="dt" data-tile="load" title="${esc(TILE_INFO.load.d)}"><div class="dt-l">Load · 7d</div><div class="dt-v">${load7||"—"}</div><div class="dt-bars">${bars}</div></button>
-    <button class="dt" data-tile="balance" title="${esc(TILE_INFO.balance.d)}"><div class="dt-l">Balance</div><div class="dt-v">${acwr!=null?acwr.toFixed(2):"—"}</div><div class="dt-s"><span class="dt-dot" style="background:${bandCol}"></span>${esc(bandWord)}</div></button>
-  </div>`;
-}
 /* ===== "HORIZON" home — expedition/mission dashboard ===== */
 function hzWeekVol(rec){
   const t=todayISO(), mon=mondayOf(t); let doneK=0, planK=0;
@@ -3162,44 +3106,6 @@ function routeTraceSVG(poly, opts){
   const s0=[X(xs[0]),Y(ys[0])], s1=[X(xs[xs.length-1]),Y(ys[ys.length-1])];
   return `<svg class="${cls}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path class="rt-line" d="${d}"/>${opts.dots!==false?`<circle class="rt-start" cx="${s0[0].toFixed(1)}" cy="${s0[1].toFixed(1)}" r="3.2"/><circle class="rt-end" cx="${s1[0].toFixed(1)}" cy="${s1[1].toFixed(1)}" r="3.2"/>`:""}</svg>`;
 }
-function hzHeroHTML(rec){
-  const t=todayISO();
-  const on=date=>((rec.board&&rec.board[date])||[]).map(id=>({id,w:recWO(rec,id)})).filter(x=>x.w);
-  let focus=null, mode="today", fdate=t; const today=on(t);
-  focus = today.find(x=>x.w.t!=="Rest" && !(rec.done&&rec.done[x.id])) || today.find(x=>x.w.t!=="Rest") || today.find(x=>x.w.t==="Rest");
-  if(!focus){ const up=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date>t&&w.t!=="Rest"&&!(rec.deleted&&rec.deleted[w.id])).sort((a,b)=>a.date<b.date?-1:1); if(up.length){ focus={id:up[0].id,w:recWO(rec,up[0].id)}; mode="next"; fdate=up[0].date; } }
-  if(!focus) return "";
-  const w=focus.w, ty=TYPES[w.t]||TYPES.Rest, done=!!(rec.done&&rec.done[focus.id]), isRest=w.t==="Rest";
-  const dd=daysBetween(t,fdate);
-  const sched = mode==="today"?"Today":(dd===1?"Tomorrow":WD_FULL[d(fdate).getDay()]+" "+d(fdate).getDate());
-  const vert = (w.v!=null&&w.v>0)? `<span class="hz-gain">↗ ${fmtVert(w.v)} gain</span>`:"";
-  const chart = isRest? "" : `<div class="hz-chartwrap">${intensityLineSVG(w)}${vert}</div>`;
-  const cta = isRest? `<div class="hz-complete rest">Rest day — recovery is where the gains land.</div>`
-    : done? `<div class="hz-complete done">✓ Completed</div>`
-    : mode==="today"? `<button class="hz-complete" data-homedone="${esc(focus.id)}">✓ Complete</button>`
-    : `<div class="hz-complete ghost">View session →</div>`;
-  const grid = isRest? "" : `<div class="hz-statgrid"><div class="hz-hstat"><div class="l">Target distance</div><div class="v">${w.k!=null?esc(fmtDist(w.k)):"—"}</div></div><div class="hz-hstat"><div class="l">Planned duration</div><div class="v">${w.d?esc(fmtDur(w.d)):"—"}</div></div></div>`;
-  return `<div class="hz-hero ${done?'done':''} vw-fade" data-homeopen="${esc(focus.id)}">
-    <div class="hz-hero-top"><span class="hz-up">Up next · ${esc(ty.label)}</span><span class="hz-sched">Scheduled<b>${esc(sched)}</b></span></div>
-    <div class="hz-hero-title">${esc(w.n)}</div>${chart}${grid}${cta}</div>`;
-}
-function hzDoneHTML(rec){
-  const startMon=recStartMon(rec);
-  const all=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date&&rec.done&&rec.done[w.id]&&!(rec.deleted&&rec.deleted[w.id]));
-  all.sort((a,b)=>a.date<b.date?1:-1);
-  const items=all.slice(0,5).map(s=>{ const w=recWO(rec,s.id), lg=(rec.log&&rec.log[s.id])||{};
-    const wk=Math.max(1,Math.floor(daysBetween(startMon,w.date)/7)+1);
-    const k=lg.k!=null&&lg.k!==""?+lg.k:w.k, vv=lg.v!=null&&lg.v!==""?+lg.v:w.v, surf=surfaceLabel(w);
-    const meta=[k!=null?fmtDist(k):null,(vv!=null&&vv>0)?"↑ "+fmtVert(vv):null,surf?surf[0].toUpperCase()+surf.slice(1):null].filter(Boolean).join(" · ");
-    const spark = (w.t==="Sauna"||w.t==="Rest")? `<span class="hz-done-rest">✓</span>` : intensityLineSVG(w,true);
-    return `<button class="hz-done" data-homeopen="${esc(s.id)}">
-      <div class="hz-done-spark">${spark}</div>
-      <div class="hz-done-main"><div class="hz-done-name">${esc(w.n)}<span class="hz-done-wk">W${wk}</span></div><div class="hz-done-meta">${esc(meta||TYPES[w.t]?.label||"")}</div></div>
-      <span class="hz-done-check">✓</span></button>`;
-  }).join("");
-  if(!items) return "";
-  return `<div class="hz-sec"><span>Recent</span><button class="hz-fulllog" data-hzfulllog>Full log</button></div><div class="hz-donelist">${items}</div>`;
-}
 function planProgressHTML(rec){
   const t=todayISO();
   const races=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.t==="Race"&&w.date&&!(rec.deleted&&rec.deleted[w.id])).map(w=>recWO(rec,w.id)).sort((a,b)=>a.date<b.date?-1:1);
@@ -3238,7 +3144,7 @@ function zonesEditorHTML(){
       <input class="zc-in" data-pz="${i}.0" placeholder="—" value="${esc(pz[i][0]||"")}"><span class="zc-dash">–</span><input class="zc-in" data-pz="${i}.1" placeholder="—" value="${esc(pz[i][1]||"")}"><span class="zc-unit">/km</span></div>`;
   return `<div class="zc-sec">Heart rate (bpm)</div>${ZONES.map((z,i)=>hrRow(i)).join("")}
     <div class="zc-sec">Pace (min/km)</div>${ZONES.map((z,i)=>paceRow(i)).join("")}
-    <div class="zc-note">Used to bucket your runs into zones. For Strava "Done" bars to match exactly, set the same HR zones in your Strava settings too.</div>`;
+    <div class="zc-note">Used to bucket your logged runs into zones and to show target paces and heart rates on each session.</div>`;
 }
 function applyZoneInput(el){
   const hz=el.getAttribute("data-hz"), pz=el.getAttribute("data-pz");
@@ -3591,7 +3497,7 @@ $("#strengthView").addEventListener("change", _sdLive);
 /* ============================ WANSFELL STRENGTH — programme tab ============================
    Ported from the Wansfell Strength artifact. Source of truth: WSP (strength-programme.json,
    embedded verbatim — never re-dose). State: state.wstrength {ticks:{monday:{sid.exid}}, tests:{}}
-   synced via the existing gist payload. Replaces the old rehab tab UI (module left dormant). */
+   saved locally with the rest of the app state. */
 const WSP = {
   "schema_version": 1,
   "generated": "2026-09-11",
@@ -4753,192 +4659,6 @@ $("#strengthView").addEventListener("click", e=>{
 });
 
 
-/* ============================ REHAB — guided rehab session runner ============================ */
-const REHAB = {
-  title: "Daily rehab",
-  blurb: "Hip + hamstring loading and desensitisation. The boring, decisive work that gets you back on the fell — little and often.",
-  ex: [
-    { id:"lat",   n:"Lateral hip loading", kind:"reps", sets:3, reps:12,
-      dose:"12 reps · 3 sets", cue:"Slow, controlled reps — drive through the outer hip and glute, keep the pelvis level, no hitching." },
-    { id:"front", n:"Frontal hip loading", kind:"hold", sets:5, reps:5, hold:5,
-      dose:"5 × 5s hold · 5 sets", cue:"Build the tension, hold for five seconds, breathe, release. Five holds to a set, five sets." },
-    { id:"ham",   n:"Hamstring bridges",   kind:"hold", sets:5, reps:5, hold:5,
-      dose:"5 × 5s hold · 5 sets", cue:"Bridge up, squeeze the hamstrings and glutes, hold five seconds. Five holds to a set, five sets." },
-    { id:"desens",n:"Desensitisation",     kind:"timer", secs:180, areas:["Quad","Calves","Glutes"],
-      dose:"3 min · quad · calves · glutes", cue:"Gentle desensitisation. Ease across the quad, calves and glutes — about a minute on each." },
-  ]
-};
-const RH_REST_HOLD=20, RH_REST_REPS=30, RH_RELEASE=2;
-
-function rehabState(){
-  let r=state.rehab;
-  if(!r||typeof r!=="object") r=state.rehab={today:null,done:{},history:{},muted:false};
-  r.done=r.done||{}; r.history=r.history||{};
-  const t=todayISO();
-  if(r.today!==t){ r.today=t; r.done={}; }   // new day → fresh checklist (completed days already banked in history)
-  return r;
-}
-function rehabAllDone(r){ return REHAB.ex.every(x=>r.done[x.id]); }
-function rehabDoneCount(r){ return REHAB.ex.filter(x=>r.done[x.id]).length; }
-function rehabMarkExDone(id){
-  const r=rehabState(); r.done[id]=true;
-  if(rehabAllDone(r)) r.history[todayISO()]=true;
-  save();
-}
-function rehabStreak(){
-  const r=rehabState(); let n=0, day=todayISO();
-  if(!r.history[day]) day=addDays(day,-1);   // an unfinished today doesn't break the streak
-  while(r.history[day]){ n++; day=addDays(day,-1); }
-  return n;
-}
-function rhRingSVG(frac,rad,sw){
-  rad=rad||34; sw=sw||9; const c=2*Math.PI*rad, off=c*(1-Math.max(0,Math.min(1,frac)));
-  const s=rad*2+sw+2;
-  return `<svg viewBox="0 0 ${s} ${s}" class="rh-ring-svg"><circle cx="${s/2}" cy="${s/2}" r="${rad}" class="rh-ring-tr"/><circle cx="${s/2}" cy="${s/2}" r="${rad}" class="rh-ring-ar" style="stroke-dasharray:${c.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"/></svg>`;
-}
-
-function renderRehab(){
-  const r=rehabState(), done=rehabDoneCount(r), all=rehabAllDone(r), streak=rehabStreak(), total=REHAB.ex.length;
-  let hist=""; for(let i=6;i>=0;i--){ const day=addDays(todayISO(),-i); hist+=`<span class="rh-hd ${r.history[day]?'on':''} ${i===0?'today':''}"></span>`; }
-  const exCards=REHAB.ex.map((x,i)=>{ const dn=r.done[x.id];
-    return `<button class="rh-ex ${dn?'done':''}" data-rh="ex" data-id="${x.id}">
-      <span class="rh-ex-num">${dn?'✓':(i+1)}</span>
-      <span class="rh-ex-main"><span class="rh-ex-name">${x.n}</span><span class="rh-ex-dose">${x.dose}</span></span>
-      <span class="rh-ex-go">${dn?'REDO':'▸'}</span></button>`;
-  }).join("");
-  const cta = all
-    ? `<div class="rh-cta done">✓ DONE FOR TODAY<span>nice work — see you tomorrow</span></div>`
-    : `<button class="rh-cta" data-rh="start">${done?'CONTINUE':'START SESSION'}<span>${done}/${total} exercises done</span></button>`;
-  $("#strengthView").innerHTML=`<div class="rh-wrap">
-    <div class="rh-head"><div class="rh-title">${REHAB.title}</div><div class="rh-sub">${esc(REHAB.blurb)}</div></div>
-    <div class="rh-topgrid">
-      <div class="rh-ring">${rhRingSVG(done/total)}<span class="rh-ring-n">${done}<i>/${total}</i></span></div>
-      <div class="rh-streakbox"><div class="rh-streak-n">${streak}</div><div class="rh-streak-l">day streak</div><div class="rh-hist">${hist}</div></div>
-    </div>
-    ${cta}
-    <div class="rh-list">${exCards}</div>
-  </div>`;
-}
-
-/* ---- runner ---- */
-let RUN=null, RH_T=null, _rhAC=null;
-function rhResumeAudio(){ try{ if(!_rhAC) _rhAC=new (window.AudioContext||window.webkitAudioContext)(); if(_rhAC.state==="suspended") _rhAC.resume(); }catch(e){} }
-function rhBeep(freq,ms){ if(state.rehab&&state.rehab.muted) return; try{ rhResumeAudio(); if(!_rhAC) return;
-  const o=_rhAC.createOscillator(), g=_rhAC.createGain(); o.type="square"; o.frequency.value=freq;
-  o.connect(g); g.connect(_rhAC.destination); const t=_rhAC.currentTime;
-  g.gain.setValueAtTime(0.06,t); g.gain.exponentialRampToValueAtTime(0.0001,t+ms/1000);
-  o.start(t); o.stop(t+ms/1000+0.02); }catch(e){} }
-function rhVibe(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
-
-function openRehabRunner(startId){
-  const r=rehabState();
-  let i = startId ? REHAB.ex.findIndex(x=>x.id===startId) : REHAB.ex.findIndex(x=>!r.done[x.id]);
-  if(i<0) i=0;
-  RUN={ i, set:0, unit:0, phase:null, remain:0, running:false };
-  let b=document.querySelector("#rhRun"); if(b) b.remove();
-  b=document.createElement("div"); b.className="rh-run-back"; b.id="rhRun";
-  b.addEventListener("click", rhClick);
-  document.body.appendChild(b); refreshScrollLock(); rhResumeAudio();
-  rhEnter(); rhRender();
-}
-function rhClose(){ rhStopTimer(); RUN=null; const b=document.querySelector("#rhRun"); if(b) b.remove(); refreshScrollLock(); renderRehab(); }
-function rhEnter(){ const ex=REHAB.ex[RUN.i]; RUN.set=0; RUN.unit=0; RUN.running=false;
-  if(ex.kind==="reps"){ RUN.phase="reps"; RUN.remain=0; }
-  else if(ex.kind==="hold"){ RUN.phase="ready"; RUN.remain=0; }
-  else { RUN.phase="area"; RUN.remain=ex.secs; }
-}
-function rhStartTimer(){ if(RH_T) return; RUN.running=true; RH_T=setInterval(rhTick,1000); }
-function rhStopTimer(){ if(RH_T){ clearInterval(RH_T); RH_T=null; } if(RUN) RUN.running=false; }
-function rhTick(){ if(!RUN||!RUN.running) return; RUN.remain--;
-  if(RUN.remain<=0){ rhPhaseEnd(); return; }
-  if(RUN.phase==="hold" && RUN.remain<=3) rhBeep(720,55);
-  rhRender();
-}
-function rhPhaseEnd(){ const ex=REHAB.ex[RUN.i];
-  if(RUN.phase==="hold"){ rhBeep(440,120); rhVibe(30); RUN.unit++;
-    if(RUN.unit>=ex.reps){ rhBeep(660,90); setTimeout(()=>rhBeep(880,110),90); rhSetComplete(ex); }
-    else { RUN.phase="release"; RUN.remain=RH_RELEASE; rhRender(); } }
-  else if(RUN.phase==="release"){ rhBeep(600,70); RUN.phase="hold"; RUN.remain=ex.hold; rhRender(); }
-  else if(RUN.phase==="rest"){ rhBeep(600,80); rhStopTimer(); RUN.phase = ex.kind==="hold" ? "ready" : "reps"; RUN.remain=0; rhRender(); }
-  else if(RUN.phase==="area"){ rhBeep(660,90); setTimeout(()=>rhBeep(880,90),100); setTimeout(()=>rhBeep(1040,130),200); rhExerciseComplete(); }
-}
-function rhSetComplete(ex){ RUN.unit=0; RUN.set++;
-  if(RUN.set>=ex.sets){ rhExerciseComplete(); }
-  else { RUN.phase="rest"; RUN.remain = ex.kind==="hold"?RH_REST_HOLD:RH_REST_REPS; rhStartTimer(); rhRender(); }
-}
-function rhExerciseComplete(){ rhStopTimer(); const ex=REHAB.ex[RUN.i]; rehabMarkExDone(ex.id);
-  rhBeep(880,130); rhVibe([20,40,20]); RUN.phase="exdone"; rhRender();
-  setTimeout(()=>{ if(RUN && RUN.phase==="exdone") rhNextExercise(); }, 1500);
-}
-function rhNextExercise(){ const r=rehabState();
-  let ni=-1; for(let k=RUN.i+1;k<REHAB.ex.length;k++){ if(!r.done[REHAB.ex[k].id]){ ni=k; break; } }
-  if(ni<0) for(let k=0;k<REHAB.ex.length;k++){ if(!r.done[REHAB.ex[k].id]){ ni=k; break; } }
-  if(ni<0){ RUN.phase="alldone"; rhStopTimer(); rhBeep(660,90); setTimeout(()=>rhBeep(880,90),110); setTimeout(()=>rhBeep(1100,90),220); setTimeout(()=>rhBeep(1320,150),330); rhVibe([30,50,30,50,60]); rhRender(); return; }
-  RUN.i=ni; rhEnter(); rhRender();
-}
-function rhSkipEx(){ rhStopTimer(); const r=rehabState();
-  let ni=RUN.i+1; if(ni>=REHAB.ex.length){ ni=REHAB.ex.findIndex(x=>!r.done[x.id]); }
-  if(ni<0||ni>=REHAB.ex.length){ RUN.phase="alldone"; rhRender(); return; }
-  RUN.i=ni; rhEnter(); rhRender();
-}
-function rhDots(n,cur,dim){ let s=""; for(let i=0;i<n;i++) s+=`<span class="rh-dot ${i<cur?'on':''} ${(i===cur&&!dim)?'cur':''}"></span>`; return `<div class="rh-dots">${s}</div>`; }
-function rhMMSS(s){ const m=Math.floor(s/60), ss=s%60; return m+":"+String(ss).padStart(2,"0"); }
-function rhRestBlock(){ return `<div class="rh-rest"><div class="rh-rest-l">REST</div><div class="rh-rest-n">${RUN.remain}</div><button class="rh-mini" data-rh="skiprest">Skip rest ▸</button></div>`; }
-
-function rhRender(){
-  const b=document.querySelector("#rhRun"); if(!b||!RUN) return;
-  const ex=REHAB.ex[RUN.i];
-  const head=`<div class="rh-run-head"><span class="rh-run-ex">Exercise ${RUN.i+1} / ${REHAB.ex.length}</span><button class="rh-x" data-rh="close" aria-label="Close">✕</button></div>`;
-  if(RUN.phase==="alldone"){
-    b.innerHTML=`<div class="rh-run-card">${head}<div class="rh-run-body"><div class="rh-done-screen"><div class="rh-done-tick">✓</div><div class="rh-done-t">SESSION COMPLETE</div><div class="rh-done-s">${rehabStreak()} day streak · well held</div><button class="rh-big" data-rh="finish">FINISH</button></div></div></div>`;
-    return;
-  }
-  const nameBlock=`<div class="rh-run-name">${ex.n}</div><div class="rh-run-cue">${esc(ex.cue)}</div>`;
-  let body="";
-  if(RUN.phase==="exdone"){
-    body=`${nameBlock}<div class="rh-exdone">✓ ${ex.n} done</div><button class="rh-big" data-rh="next">NEXT ▸</button>`;
-  } else if(ex.kind==="reps"){
-    if(RUN.phase==="rest"){ body=`${nameBlock}${rhRestBlock()}${rhDots(ex.sets,RUN.set,true)}`; }
-    else { body=`${nameBlock}<div class="rh-big-num">${ex.reps}<i>reps</i></div><div class="rh-setlab">Set ${Math.min(RUN.set+1,ex.sets)} of ${ex.sets}</div>${rhDots(ex.sets,RUN.set,false)}<button class="rh-big" data-rh="setdone">SET DONE ▸</button>`; }
-  } else if(ex.kind==="hold"){
-    if(RUN.phase==="ready"){ body=`${nameBlock}<div class="rh-setlab">Set ${RUN.set+1} of ${ex.sets}</div><div class="rh-hint">${ex.reps} × ${ex.hold}s holds</div>${rhDots(ex.sets,RUN.set,false)}<button class="rh-big" data-rh="startset">START SET ▸</button>`; }
-    else if(RUN.phase==="rest"){ body=`${nameBlock}${rhRestBlock()}${rhDots(ex.sets,RUN.set,true)}`; }
-    else { const holding=RUN.phase==="hold"; const frac=holding?RUN.remain/ex.hold:RUN.remain/RH_RELEASE;
-      body=`${nameBlock}<div class="rh-timer ${holding?'holding':'release'}">${rhRingSVG(frac,52,10)}<span class="rh-timer-n">${RUN.remain}</span></div>
-        <div class="rh-phaselab ${holding?'hold':''}">${holding?'HOLD':'RELEASE'}</div>
-        <div class="rh-setlab">Hold ${Math.min(RUN.unit+1,ex.reps)} / ${ex.reps} · Set ${RUN.set+1} / ${ex.sets}</div>
-        ${rhDots(ex.reps,RUN.unit,false)}<button class="rh-mini" data-rh="skipset">Skip set ▸</button>`; }
-  } else {
-    const per=ex.secs/ex.areas.length, elapsed=ex.secs-RUN.remain, ai=Math.min(ex.areas.length-1,Math.floor(elapsed/per));
-    const areaDots=ex.areas.map((a,i)=>`<span class="rh-area ${i===ai&&RUN.remain<ex.secs?'on':''} ${i<ai?'done':''}">${a}</span>`).join("");
-    body=`${nameBlock}<div class="rh-timer ${RUN.running?'holding':''}">${rhRingSVG(RUN.remain/ex.secs,52,10)}<span class="rh-timer-n rh-timer-mm">${rhMMSS(RUN.remain)}</span></div>
-      <div class="rh-areas">${areaDots}</div>
-      <button class="rh-big" data-rh="playpause">${RUN.running?'PAUSE':(RUN.remain<ex.secs?'RESUME ▸':'START ▸')}</button>`;
-  }
-  const foot=`<div class="rh-run-foot"><button class="rh-mini" data-rh="skipex">Skip exercise</button><button class="rh-mini" data-rh="mute">${(state.rehab&&state.rehab.muted)?'sound off':'sound on'}</button></div>`;
-  b.innerHTML=`<div class="rh-run-card">${head}<div class="rh-run-body">${body}</div>${foot}</div>`;
-}
-function rhClick(e){
-  const el=e.target.closest("[data-rh]"); if(!el) return;
-  const a=el.getAttribute("data-rh"); if(!RUN) { if(a==="close") rhClose(); return; }
-  const ex=REHAB.ex[RUN.i]; rhResumeAudio();
-  if(a==="close"||a==="finish"){ rhClose(); return; }
-  if(a==="startset"){ RUN.unit=0; RUN.phase="hold"; RUN.remain=ex.hold; rhBeep(520,90); rhVibe(20); rhStartTimer(); rhRender(); return; }
-  if(a==="setdone"){ rhBeep(660,80); rhVibe(20); RUN.set++; if(RUN.set>=ex.sets){ rhExerciseComplete(); } else { RUN.phase="rest"; RUN.remain=RH_REST_REPS; rhStartTimer(); rhRender(); } return; }
-  if(a==="skiprest"){ RUN.remain=0; rhPhaseEnd(); return; }
-  if(a==="skipset"){ rhStopTimer(); rhSetComplete(ex); return; }
-  if(a==="playpause"){ if(RUN.running){ rhStopTimer(); } else { rhBeep(520,80); rhStartTimer(); } rhRender(); return; }
-  if(a==="skipex"){ rhSkipEx(); return; }
-  if(a==="next"){ rhNextExercise(); return; }
-  if(a==="mute"){ state.rehab=state.rehab||{}; state.rehab.muted=!state.rehab.muted; save(); rhRender(); return; }
-}
-// Overview interactions (distinct data-rh selectors → the legacy strength click handler no-ops on these)
-$("#strengthView").addEventListener("click", e=>{
-  const el=e.target.closest("[data-rh]"); if(!el) return;
-  const a=el.getAttribute("data-rh");
-  if(a==="start"){ openRehabRunner(null); return; }
-  if(a==="ex"){ openRehabRunner(el.getAttribute("data-id")); return; }
-});
 
 
 function renderCountdown(){
@@ -4988,28 +4708,6 @@ function keySessionId(mon){
 }
 // Efficiency Factor (speed ÷ heart rate) on easy aerobic runs — the closest thing to a fitness dial.
 // Same HR, more metres per minute = the aerobic engine grew. Weekly medians across all plans.
-function efWeekly(n){
-  const mons=[]; const thisMon=mondayOf(todayISO());
-  for(let i=n-1;i>=0;i--) mons.push(addDays(thisMon,-7*i));
-  const byWeek={}; mons.forEach(m=>byWeek[m]=[]);
-  (state.plans||[]).forEach(rec=>{
-    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
-      if(!w||!w.date) return;
-      if(rec.deleted&&rec.deleted[w.id]) return;
-      if(!(rec.done&&rec.done[w.id])) return;
-      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
-      if(eff.t==="Bike"||eff.t==="Rest"||eff.sf==="fell"||eff.sf==="bike") return;
-      const zi=zoneTextToIdx(eff.z); if(zi!=null && zi>1) return;         // easy/aerobic only — hard runs aren't comparable
-      const lg=(rec.log&&rec.log[w.id])||{}; const km=+lg.k||0, min=+lg.d||0, hr=+lg.hr||0;
-      if(km<4||min<25||hr<95||hr>185) return;                             // too short / no HR → unreliable signal
-      if(((+lg.v||0)/km)>30) return;                                      // hilly runs wreck the comparison
-      const pace=min/km; if(pace<2.8||pace>8) return;
-      const mon=mondayOf(eff.date); if(!(mon in byWeek)) return;
-      byWeek[mon].push((km*1000/min)/hr);
-    });
-  });
-  return mons.map(m=>{ const a=byWeek[m].slice().sort((x,y)=>x-y); return {mon:m, ef:a.length? a[Math.floor(a.length/2)] : null}; });
-}
 function renderToday(){
   const host=$("#todayCard"); if(!host) return;
   const t=todayISO();
@@ -5144,239 +4842,22 @@ function sessionLoad(id){ return state.done[id] ? loadFrom(getWO(id), state.log[
 function plannedLoad(w){ return loadFrom(w, null); }                                            // planned estimate (not-yet-done cards)
 // record-scoped load so the home page can total load across ALL plans (no active mirror there)
 function recWO(rec,id){ const base=(rec.plan||[]).find(w=>w.id===id)||(rec.custom||[]).find(w=>w.id===id); return base?Object.assign({},base,(rec.edits&&rec.edits[id])||{}):null; }
-function recSessionLoad(rec,id){
-  if(rec.deleted&&rec.deleted[id]) return 0;
-  if(!(rec.done&&rec.done[id])) return 0;
-  return loadFrom(recWO(rec,id), rec.log&&rec.log[id]);
-}
-function dayLoad(date){ let s=0; (state.plans||[]).forEach(rec=>{ ((rec.board&&rec.board[date])||[]).forEach(id=>{ s+=recSessionLoad(rec,id); }); }); return s; }
-function rollingLoad(end, days){ let s=0; for(let i=0;i<days;i++) s+=dayLoad(addDays(end,-i)); return s; }
-function loadBand(acwr, ready){
-  if(!ready || acwr==null) return {lvl:"neutral", label:"Building baseline", note:"A couple of weeks of logged sessions unlock the ramp guardrail."};
-  if(acwr>1.5) return {lvl:"bad",  label:"Spike · "+acwr.toFixed(2), note:"Sharp jump in load — elevated injury risk. Add easy days or cut a hard session."};
-  if(acwr>1.3) return {lvl:"warn", label:"Ramping · "+acwr.toFixed(2), note:"Climbing fast. Fine briefly — just don't stack another big week on top."};
-  if(acwr<0.8) return {lvl:"neutral", label:"Easing · "+acwr.toFixed(2), note:"Load is dropping — ideal in a taper/recovery week, watch for detraining otherwise."};
-  return {lvl:"good", label:"On track · "+acwr.toFixed(2), note:"Load is building in the safe zone. Keep it rolling."};
-}
-// Weekly coach suggestion (written into state.coachProposal by the Worker). Read-only banner + one-click apply.
-function coachPropHTML(){
-  const p=state.coachProposal; if(!p || typeof p!=="object") return "";
-  if(p.weekOf && p.weekOf < mondayOf(todayISO())) return "";        // stale — the target week has passed
-  const m=p.metrics||{};
-  const REC={ ease:{label:"Ease next week",cls:"warn"}, hold:{label:"Hold — as planned",cls:"good"}, push:{label:"Push next week",cls:"accent"} };
-  const rc=REC[p.recommendation]||REC.hold;
-  const chips=[];
-  if(m.acwr!=null){ const band=loadBand(+m.acwr, true); chips.push(`<span class="cp-chip ${band.lvl==="neutral"?"":band.lvl}">ACWR <b>${(+m.acwr).toFixed(2)}</b></span>`); }
-  if(m.acute7!=null){ const tr=(m.prev7>0)?Math.round((m.acute7-m.prev7)/m.prev7*100):null; chips.push(`<span class="cp-chip">Load 7d <b>${m.acute7}</b>${tr!=null?` (${tr>=0?"+":""}${tr}%)`:""}</span>`); }
-  if(m.readiness7!=null) chips.push(`<span class="cp-chip">Readiness <b>${m.readiness7}%</b></span>`);
-  if(m.lastWeek && m.lastWeek.planned){ const lw=m.lastWeek; chips.push(`<span class="cp-chip">Last wk <b>${lw.done}/${lw.planned}</b>${lw.execAvg!=null?` · ${lw.execAvg}%`:""}</span>`); }
-  if(m.weeksToRace!=null) chips.push(`<span class="cp-chip">Race in <b>${m.weeksToRace}w</b></span>`);
-  const calls=(Array.isArray(p.callouts)&&p.callouts.length)?`<ul class="cp-calls">${p.callouts.map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:"";
-  const acts = p.recommendation==="hold"
-    ? `<button class="btn" data-coach-dismiss="1">Got it</button>`
-    : `<button class="btn primary" data-coach-apply="1">Apply — ${p.recommendation==="ease"?"easier":"harder"} week</button><button class="btn" data-coach-dismiss="1">Dismiss</button>`;
-  const when=p.weekOf? mdShort(p.weekOf) : "";
-  return `<div class="coach-prop">
-    <div class="cp-head"><span class="cp-eyebrow">${ICO.bolt} Coach suggestion</span>${when?`<span class="cp-plan">· week of ${esc(when)}</span>`:""}<span class="cp-rec ${rc.cls}">${esc(rc.label)}</span></div>
-    ${p.headline?`<div class="cp-head-line">${esc(p.headline)}</div>`:""}
-    ${p.reasoning?`<p class="cp-reason">${esc(p.reasoning)}</p>`:""}
-    ${chips.length?`<div class="cp-chips">${chips.join("")}</div>`:""}
-    ${calls}
-    <div class="cp-acts">${acts}</div>
-  </div>`;
-}
-function applyCoachProposal(){
-  const p=state.coachProposal; if(!p) return;
-  pushUndo();
-  const f=(typeof p.factor==="number"&&p.factor>0)?p.factor:1;
-  if(p.weekOf){
-    if(p.planId && p.planId===state.activeId){ state.weekAdj=state.weekAdj||{}; state.weekAdj[p.weekOf]=f; syncActiveToLibrary(); }
-    else { const rec=(state.plans||[]).find(r=>r.id===p.planId)||(state.plans||[])[0]; if(rec){ rec.weekAdj=rec.weekAdj||{}; rec.weekAdj[p.weekOf]=f; } }
-  }
-  state.coachProposal=null; state.updatedAt=Date.now();
-  writeLocal(); cloudPushNow(); render();
-}
-function dismissCoachProposal(){
-  if(!state.coachProposal) return;
-  state.coachProposal=null; state.updatedAt=Date.now();
-  writeLocal(); cloudPushNow(); render();
-}
-// Next automatic coach run = next Sunday 17:00 UTC (cron "0 17 * * SUN" on the Worker).
 /* ---- Race predictor (free, formula-based: Riegel T2 = T1 × (D2/D1)^1.06) ---- */
-function parseRaceTime(s){
-  if(!s) return null; const p=String(s).trim().split(":").map(Number);
-  if(!p.length||p.some(isNaN)) return null;
-  if(p.length===3) return p[0]*60+p[1]+p[2]/60;
-  if(p.length===2) return p[0]+p[1]/60;
-  return p[0];
-}
 // Best recent anchor effort: a logged non-fell race beats a training run; fell efforts are excluded
 // (their pace says nothing about flat speed).
-function predictorAnchor(){
-  const today=todayISO();
-  const races=(state.races||[])
-    .filter(r=> r && r.date && r.date<=today && r.date>=addDays(today,-270) && +r.k>=3 && parseRaceTime(r.time) && !(+r.v && (+r.v)/(+r.k)>40))
-    .sort((a,b)=> a.date<b.date?1:-1);
-  if(races.length){ const r=races[0]; return {km:+r.k, min:parseRaceTime(r.time), src:r.name, when:r.date, kind:"race"}; }
-  let best=null; const since=addDays(today,-84);
-  (state.plans||[]).forEach(rec=>{
-    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
-      if(!w||!w.date||w.date<since||w.date>today) return;
-      if(rec.deleted&&rec.deleted[w.id]) return; if(!(rec.done&&rec.done[w.id])) return;
-      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
-      if(eff.t==="Rest"||eff.t==="Bike"||eff.sf==="fell"||eff.sf==="bike") return;
-      if(typeof isFellSurface==="function" && isFellSurface(eff)) return;
-      const lg=(rec.log&&rec.log[w.id])||{};
-      const km=lg.k!=null&&lg.k!==""?+lg.k:null, min=lg.d!=null&&lg.d!==""?+lg.d:null;
-      if(!km||!min||km<3) return;
-      const pace=min/km; if(pace<2.6||pace>8) return;             // GPS junk / walks
-      if(!best||pace<best.min/best.km) best={km,min,src:eff.n,when:eff.date,kind:"run"};
-    });
-  });
-  return best;
-}
-function fmtRaceTime(min){
-  const s=Math.round(min*60), h=Math.floor(s/3600), m=Math.floor(s%3600/60), ss=s%60;
-  return h? `${h}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}` : `${m}:${String(ss).padStart(2,"0")}`;
-}
-function predPace(minPerKm){ const s=Math.round(minPerKm*60); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
-function predictorHTML(){
-  const a=predictorAnchor();
-  if(!a) return "";
-  const chips=[["5K",5],["10K",10],["HALF",21.0975]].map(([l,dk])=>{
-    const t=a.min*Math.pow(dk/a.km,1.06);
-    return `<div class="pred"><div class="pl">${l}</div><div class="pv">${fmtRaceTime(t)}</div><div class="pp">${predPace(t/dk)}/km</div></div>`;
-  }).join("");
-  const note = a.kind==="race"
-    ? `Riegel formula from your <b>${esc(a.src)}</b> result (${mdShort(a.when)}).`
-    : `Riegel formula from your best recent run — <b>${esc(a.src)}</b> (${mdShort(a.when)}), ${fmtDist(a.km)} in ${fmtRaceTime(a.min)}. Training paces undersell race fitness, so treat these as a floor.`;
-  return `<div class="coach-card" style="margin-bottom:16px"><h4>Race predictor</h4>
-    <div class="pred-row">${chips}</div>
-    <div class="cc-note">${note} Terrain, taper and race day move these — log real races on the Progress tab to sharpen them.</div></div>`;
-}
-document.addEventListener("click", e=>{
-  if(e.target.closest("[data-coach-apply]")) applyCoachProposal();
-  else if(e.target.closest("[data-coach-dismiss]")) dismissCoachProposal();
-});
 
 /* ============================ PROGRESS (athlete view) ============================ */
 /* Long-term, cross-plan layer: weekly volume + vert, intensity balance, races, benchmark tests.
    Plans come and go — this is the athlete's permanent record. */
 // date → completed-session load across ALL plans, computed once (rolling ACWR needs many lookups)
-function dayLoadMap(){
-  const m={};
-  (state.plans||[]).forEach(rec=>{
-    for(const date in (rec.board||{})) (rec.board[date]||[]).forEach(id=>{ const l=recSessionLoad(rec,id); if(l) m[date]=(m[date]||0)+l; });
-  });
-  return m;
-}
 /* EWMA ACWR (Williams 2017) — exponentially-weighted acute & chronic, seeded to the opening
    week's baseline so it starts near 1.0 instead of dividing by ~zero. Far smoother than rolling
    averages and no cold-start spike when training begins. */
-function ewmaAcwrFull(){
-  const map=dayLoadMap();
-  const ds=Object.keys(map).filter(k=>map[k]>0).sort();
-  if(ds.length<2) return [];
-  const start=ds[0], end=todayISO();
-  let seed=0; for(let i=0;i<7;i++) seed+=(map[addDays(start,i)]||0); seed/=7;   // baseline = mean daily load, first week
-  if(seed<=0) seed=map[start]||1;
-  const la=2/8, lc=2/29; let a=seed, c=seed; const out=[];           // λ: acute≈7d, chronic≈28d
-  for(let dte=start; dte<=end; dte=addDays(dte,1)){
-    const L=map[dte]||0;
-    a=L*la+a*(1-la); c=L*lc+c*(1-lc);
-    out.push({date:dte, acwr: c>0? a/c : null});
-  }
-  return out;
-}
-function acwrLoadDays(){ const m=dayLoadMap(); return Object.keys(m).filter(k=>m[k]>0).length; }
-function currentAcwr(){ const f=ewmaAcwrFull(); for(let i=f.length-1;i>=0;i--) if(f[i].acwr!=null) return Math.round(f[i].acwr*100)/100; return null; }
 // last `days` days of the EWMA series for the chart (null before training history begins)
-function acwrSeries(days){
-  const byDate={}; ewmaAcwrFull().forEach(p=>byDate[p.date]=p.acwr);
-  const today=todayISO(), out=[];
-  for(let i=days-1;i>=0;i--){ const dte=addDays(today,-i); out.push({date:dte, acwr: (dte in byDate)?byDate[dte]:null}); }
-  return out;
-}
-function pgACWRChart(series){
-  const W=320,H=104, top=8, bot=14, yMax=2;
-  const xs=i=>(i/(series.length-1))*W;
-  const ys=v=>top+(1-Math.min(v,yMax)/yMax)*(H-top-bot);
-  let d="",started=false; const spikes=[];
-  series.forEach((p,i)=>{ if(p.acwr==null){ started=false; return; }
-    const x=xs(i),y=ys(p.acwr); d+=(started?" L":" M")+x.toFixed(1)+" "+y.toFixed(1); started=true;
-    if(p.acwr>1.5) spikes.push([x,y]); });
-  if(!d) return null;
-  return `<svg viewBox="0 0 ${W} ${H}" class="pg-svg" preserveAspectRatio="none">
-    <rect x="0" y="${ys(1.3).toFixed(1)}" width="${W}" height="${(ys(0.8)-ys(1.3)).toFixed(1)}" fill="color-mix(in srgb,var(--good) 15%,transparent)"/>
-    <line x1="0" x2="${W}" y1="${ys(1.5).toFixed(1)}" y2="${ys(1.5).toFixed(1)}" stroke="var(--bad)" stroke-width="1" stroke-dasharray="4 3" opacity=".55"/>
-    <line x1="0" x2="${W}" y1="${ys(1).toFixed(1)}" y2="${ys(1).toFixed(1)}" stroke="var(--line2)" stroke-width="1" opacity=".7"/>
-    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-    ${spikes.map(s=>`<circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="2.6" fill="var(--bad)"/>`).join("")}
-  </svg>`;
-}
 // niggle dots (coloured by worst severity) over faint readiness bars, one column per day
-function athleteWeeks(n){
-  const mons=[]; const thisMon=mondayOf(todayISO());
-  for(let i=n-1;i>=0;i--) mons.push(addDays(thisMon,-7*i));
-  const sums={}; mons.forEach(m=>sums[m]={min:0,vert:0,km:0,sessions:0});
-  (state.plans||[]).forEach(rec=>{
-    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
-      if(!w||!w.date) return;
-      if(rec.deleted&&rec.deleted[w.id]) return;
-      if(!(rec.done&&rec.done[w.id])) return;
-      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
-      const mon=mondayOf(eff.date); if(!(mon in sums)) return;
-      const lg=(rec.log&&rec.log[w.id])||{};
-      sums[mon].min += (lg.d!=null&&lg.d!==""? +lg.d : (eff.d||0))||0;
-      sums[mon].vert+= (lg.v!=null&&lg.v!==""? +lg.v : (eff.v||0))||0;
-      sums[mon].km  += (lg.k!=null&&lg.k!==""? +lg.k : (eff.k||0))||0;
-      sums[mon].sessions++;
-    });
-  });
-  return mons.map(m=>Object.assign({mon:m}, sums[m]));
-}
 // Time-in-zone (seconds) over the last `days` days. Strava HR streams when synced;
 // otherwise the session's minutes go to its planned zone — flagged as estimated.
-function athleteZoneMix(days){
-  const since=addDays(todayISO(),-(days-1)), today=todayISO();
-  const sec=[0,0,0,0,0]; let precise=0, estimated=0;
-  (state.plans||[]).forEach(rec=>{
-    (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{
-      if(!w||!w.date||w.date<since||w.date>today) return;
-      if(rec.deleted&&rec.deleted[w.id]) return;
-      if(!(rec.done&&rec.done[w.id])) return;
-      const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{});
-      if(eff.t==="Rest") return;
-      const lg=(rec.log&&rec.log[w.id])||{};
-      if(Array.isArray(lg.zones)&&lg.zones.reduce((a,b)=>a+b,0)>0){ lg.zones.slice(0,5).forEach((s,i)=>sec[i]+=s); precise++; }
-      else{ const min=(lg.d!=null&&lg.d!==""? +lg.d : (eff.d||0))||0; if(min){ let zi=zoneTextToIdx(eff.z); if(zi==null) zi=1; sec[zi]+=min*60; estimated++; } }
-    });
-  });
-  return {sec, precise, estimated};
-}
-function pgChart(vals, mons, cls, fmt){
-  const max=Math.max.apply(null, vals.concat([1]));
-  const bars=vals.map((v,i)=>`<i class="${v>0?"":"zero"}" style="height:${v>0?Math.max(4,Math.round(v/max*100)):2}%" data-tip="${esc(fmt(v))} · wk of ${mdShort(mons[i])}"></i>`).join("");
-  const labs=mons.map((m,i)=> `<span>${i%4===0? mdShort(m):""}</span>`).join("");
-  return `<div class="pg-chartwrap"><div class="pg-tip" hidden></div><div class="pg-bars ${cls||""}">${bars}</div><div class="pg-xlab">${labs}</div></div>`;
-}
 // Hover (desktop) or tap (mobile) a bar → show its value above the chart.
-function pgShowTip(bar){
-  const wrap=bar.closest(".pg-chartwrap"); if(!wrap) return;
-  const tip=wrap.querySelector(".pg-tip"); if(!tip) return;
-  wrap.querySelectorAll(".pg-bars i.tipped").forEach(b=>b.classList.remove("tipped"));
-  bar.classList.add("tipped");
-  tip.textContent=bar.dataset.tip||""; tip.hidden=false;
-  const wr=wrap.getBoundingClientRect(), br=bar.getBoundingClientRect();
-  let x=br.left-wr.left+br.width/2;
-  const half=tip.offsetWidth/2+4; x=Math.max(half, Math.min(wr.width-half, x));
-  tip.style.left=x+"px";
-}
-function pgHideTip(wrap){
-  wrap.querySelectorAll(".pg-tip").forEach(t=>t.hidden=true);
-  wrap.querySelectorAll(".pg-bars i.tipped").forEach(b=>b.classList.remove("tipped"));
-}
-function pgHours(min){ return (Math.round(min/6)/10); }
 /* ===== RACE SHAPE — fitness/freshness projection to race day =====
    Models a CTL/ATL fitness-fatigue curve from real daily load: past = your completed
    sessions, future = the planned sessions. Fitness ≈ 42-day weighted load (slow base),
@@ -5521,41 +5002,8 @@ function rsScrubTo(k){
   const ro=document.getElementById("rsReadout"); if(ro) ro.innerHTML=`<b class="rs-week">Week ${k+1}</b> · ${lab} · fitness ${w.fit}%`;
 }
 // Small line sparkline for the dashboard metric tiles (skips null weeks).
-function pgSpark(vals, color){
-  const v=vals.filter(x=>x!=null); if(v.length<2) return `<div class="pg-spk-empty"></div>`;
-  const n=vals.length, W=120, H=34, mn=Math.min(...v), mx=Math.max(...v), range=Math.max(1e-6,mx-mn);
-  const xs=i=>(n>1?i/(n-1):0)*W, ys=val=>4+(1-(val-mn)/range)*(H-8);
-  let d="",started=false; vals.forEach((val,i)=>{ if(val==null)return; d+=(started?" L":"M")+xs(i).toFixed(1)+","+ys(val).toFixed(1); started=true; });
-  return `<svg class="pg-spk" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
 // Progress "key hit" ring (donut) for the Proof-of-progress hero.
-function pgRing(pct){
-  const r=40, c=2*Math.PI*r, off=c*(1-Math.max(0,Math.min(100,pct))/100);
-  // rendered "empty" (offset=c); pgAnimateProof() sweeps it to data-off and counts the % up
-  return `<svg class="pg-ring" viewBox="0 0 100 100" aria-hidden="true">
-    <circle cx="50" cy="50" r="${r}" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="9"/>
-    <circle class="pg-ring-prog" cx="50" cy="50" r="${r}" fill="none" stroke="#7d97f2" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}" data-off="${off.toFixed(1)}" transform="rotate(-90 50 50)"/>
-    <text x="50" y="49" text-anchor="middle" class="pg-ring-v${pct>=100?' three':''}"><tspan class="count" data-to="${pct}" data-dp="0">0</tspan><tspan class="pg-ring-pct">%</tspan></text>
-    <text x="50" y="64" text-anchor="middle" class="pg-ring-l">KEY HIT</text></svg>`;
-}
 // Sleek count-up (easeOutCubic, staggered) + ring sweep when the Proof hero renders.
-function fmtCount(v, dp){ const n = dp>0 ? +(+v).toFixed(dp) : Math.round(v); return n.toLocaleString('en-US', {minimumFractionDigits:dp, maximumFractionDigits:dp}); }
-function pgAnimateProof(root){
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  [...root.querySelectorAll('.count[data-to]')].forEach((el,i)=>{
-    const to=+el.getAttribute('data-to')||0, dp=+el.getAttribute('data-dp')||0;
-    if(reduce || to===0){ el.textContent=fmtCount(to,dp); return; }
-    const dur=950, t0=performance.now()+i*110;
-    const tick=now=>{ let p=(now-t0)/dur; if(p<0){ requestAnimationFrame(tick); return; }
-      if(p>1)p=1; const e=1-Math.pow(1-p,3); el.textContent=fmtCount(to*e,dp);
-      if(p<1) requestAnimationFrame(tick); else el.textContent=fmtCount(to,dp); };
-    requestAnimationFrame(tick);
-  });
-  const ring=root.querySelector('.pg-ring-prog');
-  if(ring){ const off=ring.getAttribute('data-off');
-    if(reduce) ring.style.strokeDashoffset=off;
-    else requestAnimationFrame(()=>requestAnimationFrame(()=>{ ring.style.strokeDashoffset=off; })); }
-}
 /* "How your training makes you faster" — the causal chain from each session type to race speed,
    plus how the active plan's load splits across the five engines that drive a fell runner. */
 const SPEED_ENGINES = [
@@ -5570,295 +5018,8 @@ const SPEED_ENGINES = [
   {key:"strength", name:"Strength, economy & descending", c:"var(--t-descent)", fed:"Strength · Descent · strides",
    payoff:"Free speed. Heavy strength and descent work stiffen your tendons and armour your quads — less energy per stride, fewer injuries, and the nerve to attack descents instead of braking."},
 ];
-function speedEngines(rec){
-  const idx={Easy:0,Recovery:0,Bike:0,Threshold:1,Hills:2,Long:3,Simulation:3,Descent:4};
-  const load=[0,0,0,0,0];
-  if(rec){
-    (rec.plan||[]).concat(rec.custom||[]).forEach(s=>{
-      if(!s||(rec.deleted&&rec.deleted[s.id])) return;
-      const w=recWO(rec,s.id); if(!w||w.t==="Rest"||w.t==="Race"||w.t==="Sauna") return;
-      const sys=idx[w.t]; if(sys!=null) load[sys]+=plannedLoad(w)||0;
-      if(w.s) load[4]+=30;   // strength bolted onto a run day → feeds the strength/economy engine
-    });
-  }
-  const tot=load.reduce((a,b)=>a+b,0);
-  return SPEED_ENGINES.map((e,i)=>Object.assign({}, e, {load:load[i], pct: tot? Math.round(load[i]/tot*100):0}));
-}
 // Time vs training-stress split, by session type, across the active plan. Load (LOAD_W[zone]) is
 // the stress proxy: a Z4 minute = 2× a Z2 minute, so stress ≠ time — the whole point of this view.
-function trainingStimulus(rec){
-  const byType={}, dates=[];
-  if(rec){
-    (rec.plan||[]).concat(rec.custom||[]).forEach(s=>{
-      if(!s||(rec.deleted&&rec.deleted[s.id])) return;
-      const w=recWO(rec,s.id); if(!w||w.t==="Rest"||w.t==="Race"||w.t==="Sauna") return;
-      const min=+w.d||0, load=plannedLoad(w)||0; if(!min&&!load) return;
-      const b=byType[w.t]||(byType[w.t]={t:w.t,min:0,load:0}); b.min+=min; b.load+=load;
-      if(w.date) dates.push(w.date);
-    });
-  }
-  const types=Object.values(byType).sort((a,b)=>TYPE_ORDER.indexOf(a.t)-TYPE_ORDER.indexOf(b.t));
-  const totMin=types.reduce((a,b)=>a+b.min,0), totLoad=types.reduce((a,b)=>a+b.load,0);
-  let weeks=1; if(dates.length){ dates.sort(); weeks=Math.max(1,Math.round((daysBetween(dates[0],dates[dates.length-1])+1)/7)); }
-  return {types, totMin, totLoad, weeks};
-}
-function pgSpeedEnginesHTML(){
-  const rec=(typeof primaryPlanRec==="function")? primaryPlanRec() : null;
-  const st=trainingStimulus(rec);
-  // — the time-vs-stress visual —
-  let visual="";
-  if(st.totLoad>0 && st.totMin>0){
-    const seg=key=>st.types.map(b=>{ const frac=(key==="min"? b.min/st.totMin : b.load/st.totLoad); return `<i style="width:${(frac*100).toFixed(2)}%;background:${TYPES[b.t].c}" title="${esc(TYPES[b.t].label)} · ${Math.round(frac*100)}%"></i>`; }).join("");
-    const grp=keys=>{ let mn=0,ld=0; st.types.forEach(b=>{ if(keys.includes(b.t)){mn+=b.min;ld+=b.load;} }); return {mn,ld,tp:Math.round(mn/st.totMin*100),sp:Math.round(ld/st.totLoad*100)}; };
-    const easy=grp(["Easy","Recovery","Bike"]), thr=grp(["Threshold"]);
-    const easyPM=easy.mn?easy.ld/easy.mn:2, thrPM=thr.mn?thr.ld/thr.mn:4;
-    const thWk=Math.round(thr.mn/st.weeks), equiv=Math.round(thWk*(easyPM?thrPM/easyPM:2));
-    const calls=`${easy.mn?`<div class="ts-call"><b>Your easy running</b> — ${easy.tp}% of your time, but only ${easy.sp}% of the training stress. That gap is the whole point: easy miles are cheap volume that grow the aerobic engine, and because they barely stress you, you can stack up hours without breaking down. Not wasted time — it's the base everything else stands on.</div>`:""}
-      ${thr.mn?`<div class="ts-call key"><b>Your threshold</b> — just ${thr.tp}% of your time, yet ${thr.sp}% of the stress. Those ~${thWk} min a week carry the training load of a <b>${equiv}-min easy run</b>, aimed straight at race pace. Push much past that and you'd dig a recovery hole that ruins the easy days — and the next hard one. Hard is rationed on purpose, not by accident.</div>`:""}`;
-    visual=`<div class="ts-bars">
-        <div class="ts-row"><span class="ts-lab">Your time</span><div class="ts-bar">${seg("min")}</div></div>
-        <div class="ts-row"><span class="ts-lab">Fitness stress</span><div class="ts-bar">${seg("load")}</div></div>
-      </div>
-      <div class="ts-leg">${st.types.map(b=>`<span><span class="dot" style="background:${TYPES[b.t].c}"></span>${esc(TYPES[b.t].label)}</span>`).join("")}</div>
-      <p class="ts-pot">Minute for minute, a <b>Z4 threshold</b> minute carries <b>2×</b> the training stress of an easy <b>Z2</b> minute — a <b>Z5</b> hill rep about 2½×. Same fitness from a fraction of the time, which is exactly why the hard stuff is so concentrated (and so limited).</p>
-      ${calls}`;
-  }
-  // — what each session is building (the five engines) —
-  const engs=speedEngines(rec), tot=engs.reduce((a,e)=>a+e.load,0);
-  const rows = engs.map(e=>`<div class="se-row${e.star?" key":""}">
-    <div class="se-top"><span class="se-dot" style="background:${e.c}"></span><span class="se-name">${esc(e.name)}</span>${e.star?`<span class="se-tag">what you asked</span>`:""}${tot?`<span class="se-pct">${e.pct}%</span>`:""}</div>
-    <div class="se-payoff">${e.payoff}</div>
-    <div class="se-fed">Built by <b>${esc(e.fed)}</b></div>
-  </div>`).join("");
-  return `<div class="pg-card se-card"><h4>How your training makes you faster</h4>
-    <p class="pg-sub">Fitness comes from training <b>stress</b>, not minutes on your feet — so a short hard session and a long easy one can earn the same, and you can only take so much of the hard. Here's how your plan actually splits.</p>
-    ${visual}
-    <div class="ts-sub2">What each session is building</div>
-    <div class="se-rows">${rows}</div>
-    <p class="se-foot">Stacked up over months, these turn ordinary training into a body that reaches your goal race able to hold a faster pace, climb stronger, and descend without falling apart.</p>
-  </div>`;
-}
-function renderProgress(){
-  const host=$("#progressView"); if(!host) return;
-  const wks=athleteWeeks(16);
-  // aerobic engine (Efficiency Factor) trend — the proof the training is working
-  const efw=efWeekly(16), efNN=efw.filter(x=>x.ef!=null);
-  let engineBody="";
-  if(efNN.length>=4){
-    const med=a=>{ const s=a.slice().sort((x,y)=>x-y); return s[Math.floor(s.length/2)]; };
-    const base=med(efNN.slice(0, Math.max(3, Math.floor(efNN.length/2))).map(x=>x.ef));
-    const late=med(efNN.slice(-3).map(x=>x.ef));
-    const pct=Math.round((late-base)/base*1000)/10;
-    const verdict = pct>=1 ? `<b>▲ +${pct}% — same heart rate, more speed.</b> Your aerobic engine is measurably growing. This is what getting better looks like.`
-      : pct<=-1 ? `<b>▼ ${pct}% vs your baseline.</b> Normal mid-block, in heat, or when tired — judge the month, not the week. If it keeps sliding while readiness drops, ease.`
-      : `<b>→ Holding steady.</b> The engine keeps what it's built — gains show after consistent easy-volume blocks.`;
-    engineBody = pgChart(efw.map(x=>x.ef||0), efw.map(x=>x.mon), "ef", v=>v? v.toFixed(2)+" m/min per bpm":"no easy runs")
-      + `<p class="pg-verdict">${verdict}</p>`;
-  } else {
-    engineBody = `<div class="pg-empty">Unlocks after ~4 weeks of easy runs with heart rate + distance logged (sync from Strava). Then this chart becomes your proof the training is working: the same easy heart rate buying more speed.</div>`;
-  }
-  // training load (weekly bars) + ACWR ramp line — the injury-risk view
-  const ldMap=dayLoadMap();
-  const ldWeeks=wks.map(w=>{ let s=0; for(let di=0;di<7;di++) s+=(ldMap[addDays(w.mon,di)]||0); return Math.round(s); });
-  const acwr=acwrSeries(112);
-  const acwrReady=acwrLoadDays()>=10;
-  const acwrSvg=acwrReady? pgACWRChart(acwr) : null;
-  const acwrNow=acwrReady? currentAcwr() : null;
-  const acwrNote = acwrNow==null ? "Building baseline — a couple of weeks of logged training and the ramp ratio settles in here (smoothed, so it won't false-spike when you start)."
-    : acwrNow>1.5 ? `<b>Now ${acwrNow.toFixed(2)} — spike territory.</b> Sharp ramp = elevated injury risk. Add easy days or cut a hard session.`
-    : acwrNow>1.3 ? `<b>Now ${acwrNow.toFixed(2)} — ramping.</b> Fine briefly; don't stack another big week on top.`
-    : acwrNow<0.8 ? `<b>Now ${acwrNow.toFixed(2)} — easing.</b> Ideal in a taper or recovery week.`
-    : `<b>Now ${acwrNow.toFixed(2)} — in the green band.</b> Load is building at a rate your body can absorb.`;
-  const loadCardBody = ldWeeks.some(v=>v>0)
-    ? pgChart(ldWeeks, wks.map(w=>w.mon), "", v=>Math.round(v)+" load")
-      + (acwrSvg? `<p class="pg-sub" style="margin:12px 0 2px">Ramp rate (ACWR) · last 16 weeks — green band 0.8–1.3 is the safe zone, dashed line 1.5 is spike risk</p>${acwrSvg}`:"")
-      + `<p class="pg-verdict">${acwrNote}</p>`
-    : `<div class="pg-empty">Fills in as you complete sessions. Load = your RPE × minutes when you log effort, else HR time-in-zone, else planned intensity.</div>`;
-  const cur=wks[wks.length-1];
-  const l4=wks.slice(-4);
-  const avg4min=l4.reduce((a,w)=>a+w.min,0)/4, avg4vert=l4.reduce((a,w)=>a+w.vert,0)/4;
-  const bigVert=Math.max.apply(null, wks.map(w=>w.vert));
-  // intensity balance (28 days)
-  const zm=athleteZoneMix(28); const ztot=zm.sec.reduce((a,b)=>a+b,0);
-  const zpct=zm.sec.map(s=> ztot? Math.round(s/ztot*100):0);
-  const easy=zpct[0]+zpct[1], hard=100-easy>0? (zpct[2]+zpct[3]+zpct[4]) : 0;
-  let verdict="";
-  if(!ztot) verdict="No completed sessions in the last 4 weeks yet — this fills in as you train.";
-  else if(easy>=75) verdict=`<b>Nicely polarized.</b> ${easy}% easy / ${hard}% hard — elite endurance lives around 80/20. Keep the easy days honest and the hard days hard.`;
-  else if(easy>=65) verdict=`<b>Drifting toward the grey zone.</b> ${easy}% easy / ${hard}% hard — champions are built on more genuinely easy volume. Slow the easy runs down.`;
-  else verdict=`<b>Too much intensity.</b> Only ${easy}% easy — this pattern caps aerobic development and invites injury. Most of your week should feel comfortable.`;
-  if(ztot && zm.estimated>zm.precise) verdict+=` <span style="color:var(--faint)">(mostly estimated from planned zones — sync Strava for HR-precise data)</span>`;
-  const zbar = ztot? zm.sec.map((s,i)=>`<i style="width:${(s/ztot*100)}%;background:${ZONES[i].c}" title="${ZONES[i].k} · ${zpct[i]}%"></i>`).join("") : "";
-  const zleg = ZONES.map((z,i)=>`<span><span class="dot" style="background:${z.c}"></span>${z.k} <b>${zpct[i]}%</b></span>`).join("");
-  // races (latest first)
-  const races=(state.races||[]).slice().sort((a,b)=> a.date<b.date?1:-1);
-  const raceRows = races.length? races.map(r=>{
-    const meta=[mdShort(r.date)+(r.date?" "+r.date.slice(0,4):""), r.k? fmtDist(+r.k):null, r.v? fmtVert(+r.v):null].filter(Boolean).join(" · ");
-    const place = r.pos? `${r.pos}${r.field? " / "+r.field:""}` : "";
-    return `<div class="pg-row"><div><div class="ttl">${esc(r.name||"Race")}</div><div class="meta">${esc(meta)}${r.notes?` · ${esc(r.notes)}`:""}</div></div>
-      <div class="right">${r.time?`<div class="big">${esc(r.time)}</div>`:""}${place?`<div class="delta">${esc(place)}</div>`:""}</div>
-      <button class="x" data-rdel="${esc(r.id)}" title="Delete race">✕</button></div>`;
-  }).join("") : `<div class="pg-empty">No races logged yet. Every race is a data point on the road to the championship — log them all, good and bad.</div>`;
-  // benchmarks grouped by name
-  const bms=(state.benchmarks||[]).slice().sort((a,b)=> a.date<b.date?-1:1);
-  const groups={};
-  bms.forEach(b=>{ const k=(b.name||"Test").trim(); (groups[k]=groups[k]||[]).push(b); });
-  const benchRows = Object.keys(groups).length? Object.keys(groups).map(name=>{
-    const g=groups[name]; const last=g[g.length-1], prev=g.length>1? g[g.length-2]:null;
-    const delta = prev!=null? (Math.round((last.value-prev.value)*100)/100) : null;
-    const dmax=Math.max.apply(null,g.map(x=>Math.abs(+x.value)||0).concat([1]));
-    const spark=g.slice(-8).map(x=>`<i style="height:${Math.max(8,Math.round(Math.abs(+x.value)/dmax*100))}%" title="${mdShort(x.date)} · ${x.value}"></i>`).join("");
-    return `<div class="pg-row"><div><div class="ttl">${esc(name)}</div><div class="meta">${g.length} result${g.length===1?"":"s"} · last ${mdShort(last.date)}</div></div>
-      <div class="pg-spark">${spark}</div>
-      <div class="right"><div class="big">${esc(String(last.value))}${last.unit?` <span style="font-weight:600;font-size:11px;color:var(--muted)">${esc(last.unit)}</span>`:""}</div>
-      ${delta!=null?`<div class="delta">${delta>0?"▲ +":delta<0?"▼ ":"– "}${delta!==0?Math.abs(delta):"same"} vs last</div>`:""}</div>
-      <button class="x" data-bdel="${esc(last.id)}" title="Delete latest result">✕</button></div>`;
-  }).join("") : `<div class="pg-empty">No tests yet. Pick 2–3 repeatable benchmarks (e.g. a fixed hill climb for time, a 20-min threshold test) and repeat them every 6–8 weeks — that's how you <i>know</i> you're getting closer.</div>`;
-  // ===== DASHBOARD — lifetime proof + metric tiles + records =====
-  const comma=n=>Math.round(n).toLocaleString('en-US'), avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-  const lastNN=a=>{ for(let i=a.length-1;i>=0;i--) if(a[i]!=null) return a[i]; return null; };
-  const tmon=mondayOf(todayISO()), vunit=state.unit==="mi"?"ft":"m";
-  let LTkm=0,LTvert=0,LTmin=0, longestRun=0,longestRunDate="";
-  const wkVertAll={}, wkMinAll={}, gKey={}, allW=new Set();
-  (state.plans||[]).forEach(rec=>{
-    const all=(rec.plan||[]).concat(rec.custom||[]).filter(w=>w&&w.date&&!(rec.deleted&&rec.deleted[w.id]));
-    const wo=id=>{ const b=all.find(x=>x.id===id); return b?Object.assign({},b,(rec.edits&&rec.edits[id])||{}):null; };
-    all.forEach(w=>{ if(!(rec.done&&rec.done[w.id]))return; const eff=wo(w.id), lg=(rec.log&&rec.log[w.id])||{};
-      const k=(lg.k!=null&&lg.k!==""?+lg.k:(eff.k||0))||0, v=(lg.v!=null&&lg.v!==""?+lg.v:(eff.v||0))||0, mn=(lg.d!=null&&lg.d!==""?+lg.d:(eff.d||0))||0;
-      LTkm+=k; LTvert+=v; LTmin+=mn; const mon=mondayOf(eff.date); wkVertAll[mon]=(wkVertAll[mon]||0)+v; wkMinAll[mon]=(wkMinAll[mon]||0)+mn;
-      if(eff.t!=="Bike"&&eff.t!=="Rest"&&k>longestRun){ longestRun=k; longestRunDate=eff.date; } });
-    const byWeek={};
-    all.forEach(w=>{ const eff=wo(w.id); if(eff.t==="Rest")return; const mon=mondayOf(eff.date); allW.add(mon); (byWeek[mon]=byWeek[mon]||[]).push({id:w.id,w:eff}); });
-    Object.entries(byWeek).forEach(([mon,items])=>{ if(mon>tmon)return;
-      let key=null,ks=-1; items.forEach(it=>{ const rk={Race:5,Simulation:4,Threshold:3,Hills:3,Descent:2,Long:1}[it.w.t]||0; if(!rk)return; const sc=rk*1e5+(loadFrom(it.w,null)||0); if(sc>ks){ks=sc;key=it;} });
-      if(key) gKey[mon]={done:!!(rec.done&&rec.done[key.id])}; });
-  });
-  const keyMons=Object.keys(gKey), keysTot=keyMons.length, keysDone=keyMons.filter(m=>gKey[m].done).length, keyHit=keysTot?Math.round(keysDone/keysTot*100):0;
-  let streak=0; keyMons.filter(m=>m<tmon).sort().reverse().some(m=> gKey[m].done?(streak++,false):true );
-  const mostVert=Object.entries(wkVertAll).reduce((a,[m,v])=>v>a.v?{m,v}:a,{m:"",v:0});
-  const bigWeek=Object.entries(wkMinAll).reduce((a,[m,v])=>v>a.v?{m,v}:a,{m:"",v:0});
-  const rhrBy={}, sleepBy={};
-  for(const date in (state.readiness||{})){ const r=state.readiness[date], mon=mondayOf(date); if(r.rhr){(rhrBy[mon]=rhrBy[mon]||[]).push(+r.rhr);} if(r.sleepH){(sleepBy[mon]=sleepBy[mon]||[]).push(+r.sleepH);} }
-  const hoursSeries=wks.map(w=>pgHours(w.min)), vertSeries=wks.map(w=>w.vert), loadSeries=ldWeeks;
-  const rhrSeries=wks.map(w=>rhrBy[w.mon]?Math.round(avg(rhrBy[w.mon])):null);
-  const sleepSeries=wks.map(w=>sleepBy[w.mon]?avg(sleepBy[w.mon]):null);
-  let ctl0=0,atl0=0; const tsbBy={}, ldDays=Object.keys(ldMap).filter(k=>ldMap[k]>0).sort();
-  if(ldDays.length){ for(let dte=ldDays[0]; dte<=todayISO(); dte=addDays(dte,1)){ const L=ldMap[dte]||0; ctl0+=(L-ctl0)/42; atl0+=(L-atl0)/7; tsbBy[mondayOf(dte)]=ctl0-atl0; } }
-  const formSeries=wks.map(w=>tsbBy[w.mon]!=null?Math.round(tsbBy[w.mon]):null);
-  const arrow=s=>{ const v=s.filter(x=>x!=null); if(v.length<3)return""; const last=v[v.length-1], em=avg(v.slice(0,Math.max(1,Math.floor(v.length/2)))); return last>em*1.03?'<span class="up">↑</span>':last<em*0.97?'<span class="dn">↓</span>':"→"; };
-  const hoursV=lastNN(hoursSeries), vertV=lastNN(vertSeries), loadV=lastNN(loadSeries), rhrV=lastNN(rhrSeries), sleepV=lastNN(sleepSeries), formV=lastNN(formSeries);
-  const loadMax=Math.max.apply(null, loadSeries.filter(x=>x!=null).concat([0]));
-  const sleepWord=sleepV==null?"":sleepV>=7.5?"good":sleepV>=6.5?"fair":"low";
-  const formWord=formV==null?"":formV>2?"fresh":formV>=-8?"sharp":"loaded";
-  const rhrTrend=(()=>{ const v=rhrSeries.filter(x=>x!=null); if(v.length<3)return""; const dd=Math.round(avg(v.slice(0,Math.floor(v.length/2)))-v[v.length-1]); return dd>0?`<span class="gd">↓ ${dd}</span>`:dd<0?`<span style="color:var(--faint)">↑ ${-dd}</span>`:""; })();
-  const tile=(label,trend,valHTML,series,color)=>`<div class="pg-tile"><div class="pg-tile-top"><span class="pg-tile-l">${label}</span><span class="pg-tile-tr">${trend}</span></div><div class="pg-tile-v">${valHTML}</div>${pgSpark(series,color)}</div>`;
-  const tiles=`<div class="pg-tiles">
-    ${tile("Hours / wk", arrow(hoursSeries), hoursV!=null?`${hoursV}<i>h</i>`:"—", hoursSeries, "var(--accent)")}
-    ${tile("Vert / wk", arrow(vertSeries), vertV!=null?`${comma(state.unit==="mi"?vertV*3.28084:vertV)}<i>${vunit}</i>`:"—", vertSeries, "#5f6691")}
-    ${tile("Resting HR", rhrTrend, rhrV!=null?`${rhrV}<i>bpm</i>`:"—", rhrSeries, "#4f7e87")}
-    ${tile("Training load", (loadV&&loadV>=loadMax&&loadMax>0)?'<span class="pk">peak</span>':"", loadV!=null?`${loadV}`:"—", loadSeries, "#a8762a")}
-    ${tile("Sleep · avg", sleepWord?`<span class="gd">${sleepWord}</span>`:"", sleepV!=null?`${Math.floor(sleepV)}<i>h</i>${String(Math.round((sleepV%1)*60)).padStart(2,"0")}<i>m</i>`:"—", sleepSeries, "#7d98a8")}
-    ${tile("Form", formWord?`<span class="gd">${formWord}</span>`:"", formV!=null?`${formV>0?"+":""}${formV}`:"—", formSeries, "#5d7350")}
-  </div>`;
-  const recs=[];
-  if(longestRun>0) recs.push({c:"var(--t-long)",l:"Longest run",sub:longestRunDate?mdShort(longestRunDate):"",v:fmtDist(longestRun,false),u:state.unit});
-  if(mostVert.v>0) recs.push({c:"var(--t-hills)",l:"Most weekly vert",sub:mostVert.m?"wk of "+mdShort(mostVert.m):"",v:comma(state.unit==="mi"?mostVert.v*3.28084:mostVert.v),u:vunit});
-  if(bigWeek.v>0) recs.push({c:"var(--accent)",l:"Biggest training week",sub:bigWeek.m?"wk of "+mdShort(bigWeek.m):"",v:pgHours(bigWeek.v),u:"h"});
-  if(streak>0) recs.push({c:"var(--good)",l:"Key-session streak",sub:"weeks without a miss",v:streak,u:streak===1?"wk":"wks"});
-  const recordsHTML = recs.length? `<div class="pg-sec2"><span>Records</span><span class="pg-sec2-r">${recs.length} personal best${recs.length===1?"":"s"}</span></div><div class="pg-recs">${recs.map(r=>`<div class="pg-rec" style="--c:${r.c}"><div class="pg-rec-main"><div class="pg-rec-l">${esc(r.l)}</div>${r.sub?`<div class="pg-rec-sub">${esc(r.sub)}</div>`:""}</div><div class="pg-rec-v">${r.v}<i>${esc(r.u)}</i></div></div>`).join("")}</div>`:"";
-  // recent run routes (GPS traces from Strava)
-  const routes=[];
-  (state.plans||[]).forEach(rec=>{ (rec.plan||[]).concat(rec.custom||[]).forEach(w=>{ if(!w||!w.date)return; const lg=(rec.log&&rec.log[w.id])||{}; if(lg.poly && rec.done&&rec.done[w.id] && !(rec.deleted&&rec.deleted[w.id])){ const eff=Object.assign({},w,(rec.edits&&rec.edits[w.id])||{}); routes.push({date:eff.date, name:eff.n||"Run", k:lg.k!=null&&lg.k!==""?+lg.k:eff.k, poly:lg.poly}); } }); });
-  routes.sort((a,b)=>a.date<b.date?1:-1);
-  const routesHTML = routes.length? `<div class="pg-sec2"><span>Recent routes</span><span class="pg-sec2-r">${routes.length} mapped</span></div><div class="pg-routes">${routes.slice(0,6).map(r=>`<div class="pg-route">${routeTraceSVG(r.poly,{w:160,h:118,cls:"rt-svg"})}<div class="pg-route-meta"><b>${esc(r.name)}</b><span>${r.k!=null?esc(fmtDist(r.k)):""} · ${esc(mdShort(r.date))}</span></div></div>`).join("")}</div>`:"";
-  const proofHTML=`<div class="pg-proof" data-proofinfo="1" role="button" tabindex="0" title="What does this mean?">
-    <div class="pg-proof-head"><span class="pg-proof-mark">◆</span> Proof of progress<span class="pg-proof-info">${ICO.info}</span></div>
-    <div class="pg-proof-sub">Everything you've completed on the road to British Fell Champion.</div>
-    <div class="pg-proof-body">${pgRing(keyHit)}
-      <div class="pg-bigstats">
-        <div class="pg-bigstat"><div class="bv"><span class="count" data-to="${Math.round(state.unit==="mi"?LTkm*0.621371:LTkm)}" data-dp="0">0</span><i>${state.unit}</i></div><div class="bl">Distance run</div></div>
-        <div class="pg-bigstat green"><div class="bv"><span class="count" data-to="${Math.round(state.unit==="mi"?LTvert*3.28084:LTvert)}" data-dp="0">0</span><i>${vunit}</i></div><div class="bl">Vertical climbed</div></div>
-        <div class="pg-bigstat"><div class="bv"><span class="count" data-to="${pgHours(LTmin)}" data-dp="1">0</span><i>h</i></div><div class="bl">Time trained</div></div>
-      </div></div></div>`;
-  host.innerHTML=`
-    <div class="pg-ctx">Lifetime · ${(state.plans||[]).length} plan${(state.plans||[]).length===1?"":"s"} · ${allW.size} weeks</div>
-    ${proofHTML}
-    ${tiles}
-    ${recordsHTML}
-    ${routesHTML}
-    ${pgSpeedEnginesHTML()}
-    <div class="pg-card"><h4>Aerobic engine · pace per heartbeat</h4><p class="pg-sub">Efficiency Factor on your easy runs (speed ÷ heart rate). When this climbs, <b>every</b> pace got cheaper — it's fitness itself, measured.</p>
-      ${engineBody}</div>
-    <div class="pg-card"><h4>Training load &amp; ramp</h4><p class="pg-sub">Weekly load (RPE × minutes when you log effort, else HR time-in-zone), and the acute:chronic ratio — the evidence-based injury-risk dial.</p>
-      ${loadCardBody}</div>
-    <div class="pg-card"><h4>Intensity balance · last 28 days</h4>
-      ${ztot?`<div class="pg-zbar">${zbar}</div><div class="pg-zleg">${zleg}</div>`:""}
-      <p class="pg-verdict">${verdict}</p></div>
-    <div class="pg-card"><h4>Races <button class="btn primary" data-addrace="1">＋ Log race</button></h4>${raceRows}</div>
-    <div class="pg-card"><h4>Benchmark tests <button class="btn primary" data-addbench="1">＋ Log test</button></h4>${benchRows}</div>`;
-  pgAnimateProof(host);
-}
-function openRaceSheet(){
-  closeSdPicker();
-  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="sdPickBack";
-  back.innerHTML=`<div class="sd-pick"><h3>Log a race</h3>
-    <div class="ci-row"><span class="ci-lab">Race name</span><input id="rcName" class="sd-f" placeholder="e.g. Coniston Fell Race" style="flex:1;min-width:0"></div>
-    <div class="ci-row"><span class="ci-lab">Date</span><input id="rcDate" class="sd-f" type="date" value="${todayISO()}"></div>
-    <div class="ci-row"><span class="ci-lab">Finish time</span><input id="rcTime" class="sd-f" placeholder="1:23:45" style="width:110px"></div>
-    <div class="ci-row"><span class="ci-lab">Position / field</span><div style="display:flex;gap:7px"><input id="rcPos" class="sd-f" type="number" inputmode="numeric" placeholder="12" style="width:70px;text-align:center"><input id="rcField" class="sd-f" type="number" inputmode="numeric" placeholder="of 140" style="width:84px;text-align:center"></div></div>
-    <div class="ci-row"><span class="ci-lab">Distance / vert</span><div style="display:flex;gap:7px"><input id="rcK" class="sd-f" type="number" step="0.1" inputmode="decimal" placeholder="km" style="width:74px;text-align:center"><input id="rcV" class="sd-f" type="number" inputmode="numeric" placeholder="m vert" style="width:84px;text-align:center"></div></div>
-    <textarea id="rcNotes" class="sd-note" placeholder="How it went, conditions, lessons… (optional)"></textarea>
-    <button class="btn primary" id="rcSave" style="width:100%;margin-top:12px">Save race</button></div>`;
-  back.addEventListener("click", ev=>{
-    if(ev.target===back){ closeSdPicker(); return; }
-    if(ev.target.id!=="rcSave") return;
-    const name=back.querySelector("#rcName").value.trim(); if(!name){ back.querySelector("#rcName").focus(); return; }
-    pushUndo();
-    state.races=state.races||[];
-    state.races.push({ id:newId(), name, date:back.querySelector("#rcDate").value||todayISO(),
-      time:back.querySelector("#rcTime").value.trim(), pos:+back.querySelector("#rcPos").value||null, field:+back.querySelector("#rcField").value||null,
-      k:+back.querySelector("#rcK").value||null, v:+back.querySelector("#rcV").value||null, notes:back.querySelector("#rcNotes").value.trim() });
-    closeSdPicker(); save(); renderProgress();
-  });
-  document.body.appendChild(back); refreshScrollLock();
-  back.querySelector("#rcName").focus();
-}
-function openBenchSheet(){
-  closeSdPicker();
-  const names=[...new Set((state.benchmarks||[]).map(b=>(b.name||"").trim()).filter(Boolean))];
-  const starters=["Hill climb test (min)","20-min threshold (km)","5k time (min)","Step-test HR (bpm)"];
-  starters.forEach(s=>{ if(!names.includes(s)) names.push(s); });
-  const back=document.createElement("div"); back.className="sd-pick-back"; back.id="sdPickBack";
-  back.innerHTML=`<div class="sd-pick"><h3>Log a benchmark test</h3>
-    <p style="font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.5">Repeat the same test on the same course/protocol every 6–8 weeks. The trend is the truth.</p>
-    <div class="ci-row"><span class="ci-lab">Test name</span><input id="bmName" class="sd-f" list="bmNames" placeholder="e.g. Hill climb test (min)" style="flex:1;min-width:0"><datalist id="bmNames">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div>
-    <div class="ci-row"><span class="ci-lab">Result</span><div style="display:flex;gap:7px"><input id="bmVal" class="sd-f" type="number" step="any" inputmode="decimal" placeholder="12.4" style="width:90px;text-align:center"><input id="bmUnit" class="sd-f" placeholder="unit (min, km…)" style="width:108px"></div></div>
-    <div class="ci-row"><span class="ci-lab">Date</span><input id="bmDate" class="sd-f" type="date" value="${todayISO()}"></div>
-    <textarea id="bmNotes" class="sd-note" placeholder="Conditions, effort, anything notable… (optional)"></textarea>
-    <button class="btn primary" id="bmSave" style="width:100%;margin-top:12px">Save result</button></div>`;
-  back.addEventListener("click", ev=>{
-    if(ev.target===back){ closeSdPicker(); return; }
-    if(ev.target.id!=="bmSave") return;
-    const name=back.querySelector("#bmName").value.trim(); const val=back.querySelector("#bmVal").value;
-    if(!name){ back.querySelector("#bmName").focus(); return; }
-    if(val===""||isNaN(+val)){ back.querySelector("#bmVal").focus(); return; }
-    pushUndo();
-    state.benchmarks=state.benchmarks||[];
-    state.benchmarks.push({ id:newId(), name, value:+val, unit:back.querySelector("#bmUnit").value.trim(), date:back.querySelector("#bmDate").value||todayISO(), notes:back.querySelector("#bmNotes").value.trim() });
-    closeSdPicker(); save(); renderProgress();
-  });
-  document.body.appendChild(back); refreshScrollLock();
-  back.querySelector("#bmName").focus();
-}
-$("#progressView").addEventListener("click", e=>{
-  if(e.target.closest("[data-proofinfo]")){ openProofInfo(); return; }
-  if(e.target.closest("[data-addrace]")){ openRaceSheet(); return; }
-  if(e.target.closest("[data-addbench]")){ openBenchSheet(); return; }
-  const rd=e.target.closest("[data-rdel]");
-  if(rd){ const r=(state.races||[]).find(x=>x.id===rd.dataset.rdel); if(r && confirm(`Delete "${r.name}"?`)){ pushUndo(); state.races=state.races.filter(x=>x.id!==r.id); save(); renderProgress(); } return; }
-  const bd=e.target.closest("[data-bdel]");
-  if(bd){ const b=(state.benchmarks||[]).find(x=>x.id===bd.dataset.bdel); if(b && confirm(`Delete the latest "${b.name}" result?`)){ pushUndo(); state.benchmarks=state.benchmarks.filter(x=>x.id!==b.id); save(); renderProgress(); } return; }
-});
 
 function renderChips(){
   const ids = Object.keys(woMap());
@@ -6569,39 +5730,6 @@ function barWorkSets(str, fb){
     out.push({reps:+r[1], each:+r[2], unit:/^s/i.test(r[3])?"s":"min", idx:blockZoneIdx(tag?tag[1]:null, fb)}); }
   return out;
 }
-function structureBarHTML(w){
-  if(!w || w.t==="Rest") return "";
-  const name=w.n||"", note=w.note||"", text=name+" "+note, Z=ZONES, EZ=Z[1].c;
-  const fb = zoneTextToIdx(w.z)==null ? 3 : zoneTextToIdx(w.z);
-  const works = barWorkSets(name, fb);   // name only — notes describe strength holds (2×20s planks) we must not read as run intervals
-  let strides=0; if(!works.length){ const st=/(\d+)\s*(?:[×x]\s*\d+\s*s\s*)?(?:relaxed\s+)?strides/i.exec(name); strides = st? +st[1] : (/strides/i.test(name)?4:0); }
-  const strength=/\b(strength|power|s\s*&\s*c|\bgym\b|lifting)\b/i.test(text);
-  const easyBase=["Easy","Recovery","Long","Bike"].includes(w.t);
-  const cols=[];
-  if(works.length || strides || strength){
-    cols.push({flex:easyBase?34:18, lab:easyBase?"Easy":"Warm-up", bars:[{h:50,c:EZ}]});
-    works.forEach(wk=>{
-      const sprint=(wk.unit==="s"||wk.each<=2)&&wk.idx<=2;       // short unzoned reps = strides/sprints
-      const idx=sprint?4:wk.idx, c=Z[idx].c, h=idx>=4?100:idx>=3?86:70;
-      const each=wk.unit==="s"?`${wk.each}s`:`${wk.each} min`, n=Math.min(wk.reps,12);
-      cols.push({flex:Math.max(13,n*3.4), work:true, lab:`${wk.reps} × ${each}`, bars:Array.from({length:n},()=>({h,c}))});
-    });
-    if(!works.length && strides){ const n=Math.min(strides,12);
-      cols.push({flex:Math.max(11,n*3), work:true, lab:`${strides} strides`, bars:Array.from({length:n},()=>({h:100,c:Z[4].c}))}); }
-    if(works.length && !easyBase) cols.push({flex:13, lab:"Cool-down", bars:[{h:50,c:EZ}]});
-    if(strength) cols.push({flex:13, lab:"Strength", bars:[{h:64,c:Z[2].c}]});
-  } else {
-    const idx=effortZoneIdx(w)??1;
-    cols.push({flex:1, slim:true, lab:(w.d?fmtDur(w.d)+" continuous · ":"Continuous · ")+Z[idx].k, bars:[{c:Z[idx].c}]});
-  }
-  const col=c=>{
-    const inner = c.slim ? `<div class="sb-slim" style="background:${c.bars[0].c}"></div>`
-      : c.work ? `<div class="sb-bars">${c.bars.map(b=>`<i style="height:${b.h}%;background:${b.c}"></i>`).join("")}</div>`
-      : `<div class="sb-bar" style="height:${c.bars[0].h}%;background:${c.bars[0].c}"></div>`;
-    return `<div class="sb-col${c.slim?" slim":""}" style="flex:${c.flex}"><div class="sb-barwrap">${inner}</div><div class="sb-lab">${esc(c.lab)}</div></div>`;
-  };
-  return `<div class="sb">${cols.map(col).join("")}</div>`;
-}
 function modalViewHTML(w){
   const lg=state.log[editingId]||{}, done=!!state.done[editingId];
   const ty=TYPES[w.t]||TYPES.Rest, es=done?execScore(w,lg):null, rest=w.t==="Rest";
@@ -6658,7 +5786,7 @@ function modalViewHTML(w){
 function hrSparkHTML(lg){
   const raw = lg && lg.hrSeries;
   const pts = Array.isArray(raw) ? raw.filter(v=>v!=null && v>0) : [];
-  if(pts.length<3) return `<div class="hr-box hr-empty">Heart-rate graph not available — sync this activity from Strava (needs HR data).</div>`;
+  if(pts.length<3) return "";
   const W=300, H=56, n=raw.length, mn=Math.min(...pts), mx=Math.max(...pts), range=Math.max(1,mx-mn);
   const xx=i=> (n>1? i/(n-1):0)*W;
   const yy=v=> 5 + (1-(v-mn)/range)*(H-12);
@@ -6917,18 +6045,6 @@ function parsePlanDate(s){
   if(/^\d{4}-\d{1,2}-\d{1,2}$/.test(s)){ const [y,m,dd]=s.split("-").map(Number); const dt=new Date(y,m-1,dd); return isNaN(dt)?null:iso(dt); }
   const dt=new Date(s); return isNaN(dt)?null:iso(dt);   // fallback for "8 Jun 2026" etc.
 }
-function planToCSV(){
-  const head=["date","session","type","duration_min","distance_km","vert_m","surface","structure","zone","phase","block","notes"];
-  const lines=[head.join(",")];
-  weekMondays().forEach(mon=>{
-    const blk=(state.blocks&&state.blocks[mon])||{};
-    for(let di=0;di<7;di++){ const date=addDays(mon,di); (state.board[date]||[]).forEach(id=>{
-      const w=getWO(id, true); if(!w) return;
-      lines.push([date,w.n,w.t,w.d??"",w.k??"",w.v??"",w.sf??"",w.struct??"",(w.z&&w.z!=="—")?w.z:"",blk.phase??"",blk.label??"",w.note??""].map(csvCell).join(","));
-    });}
-  });
-  return lines.join("\n");
-}
 function importCSV(text, name){
   const rows=parseCSV(text);
   if(rows.length<2){ alert("That CSV looks empty."); return; }
@@ -7017,14 +6133,7 @@ function openLibrarySheet(){
 /* ============================ MENU ============================ */
 const menu=$("#menu");
 function toggleMenu(show){ menu.hidden = (show===undefined)? !menu.hidden : !show; }
-$("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true;
-  // one state-aware Strava row: Connect when logged out; Sync + a small Disconnect when logged in
-  const c=(typeof stravaConnected==="function") && stravaConnected();
-  const row=$("#stravaRow");
-  if(row) row.innerHTML = c
-    ? `<button data-act="stravaSync">Sync from Strava</button><button class="menu-mini" data-act="stravaOff">Disconnect</button>`
-    : `<button data-act="strava">Connect Strava (auto-log)</button>`;
-  toggleMenu(); };
+$("#menuBtn").onclick = e=>{ e.stopPropagation(); $("#filterMenu").hidden=true; toggleMenu(); };
 document.addEventListener("click", e=>{ if(!menu.hidden && !e.target.closest(".menuwrap")) toggleMenu(false); });
 menu.addEventListener("click", e=>{
   const b=e.target.closest("button[data-act]"); if(!b) return;
@@ -7040,9 +6149,6 @@ menu.addEventListener("click", e=>{
     case "importJson": $("#importJsonFile").click(); break;
     case "clear":      if(state.activeId && confirm("Clear all completions and logs for this plan (keep the plan & layout)?")){ pushUndo(); state.done={}; state.log={}; save(); render(); showUndoToast("Progress cleared"); } break;
     case "deletePlan": if(state.activeId) deletePlan(state.activeId); break;
-    case "strava":     stravaConnect(); break;
-    case "stravaSync": stravaSync(); break;
-    case "stravaOff":  stravaDisconnect(); render(); break;
     // mobile-only settings (the topbar buttons are hidden on phones to keep the header one row)
     case "unit":  state.unit = state.unit==="km"?"mi":"km"; save(); render(); break;
     case "theme": state.theme = state.theme==="dark"?"light":"dark"; save(); render(); break;
@@ -7073,145 +6179,6 @@ window.addEventListener("dragleave", e=>{ if(!isFileDrag(e))return; dzDepth--; i
 window.addEventListener("drop",      e=>{ if(!isFileDrag(e))return; e.preventDefault(); dzDepth=0; dz.classList.remove("show");
   const f=e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
 
-/* ============================ CLOUD SYNC (private GitHub Gist) ============================ */
-const GH_API="https://api.github.com", GIST_MARKER="grisedale-tracker-sync", GIST_FILE="tracker-state.json";
-const cloud={ token:null, gistId:null, login:null, status:"off", busy:false };
-try{ cloud.token=localStorage.getItem("gh.token")||null; cloud.gistId=localStorage.getItem("gh.gistId")||null; cloud.login=localStorage.getItem("gh.login")||null; }catch(_){}
-const cloudOn=()=>!!cloud.token;
-function ghHeaders(){ return {"Authorization":"Bearer "+cloud.token,"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"}; }
-async function gh(path,opts){ const r=await fetch(GH_API+path,Object.assign({cache:"no-store",headers:ghHeaders()},opts)); if(!r.ok){ const e=new Error("GitHub "+r.status); e.status=r.status; throw e; } return r.status===204?null:r.json(); }
-function pick(keys){ const o={}; keys.forEach(k=>{ if(k in state) o[k]=state[k]; }); return o; }
-function setStatus(s){ cloud.status=s; renderCloud(); }
-
-async function cloudConnect(token,{silent}={}){
-  token=(token||"").trim(); if(!token) return;
-  cloud.token=token; setStatus("checking");
-  try{
-    try{ const me=await gh("/user"); if(me&&me.login){ cloud.login=me.login; localStorage.setItem("gh.login",me.login); } }
-    catch(e){ if(e.status===401) throw e; }
-    localStorage.setItem("gh.token",token);
-    await cloudFindGist();
-    await cloudInitialSync();
-    setStatus("synced");
-  }catch(e){
-    if(e.status===401){ cloud.token=null; try{localStorage.removeItem("gh.token");}catch(_){} setStatus("bad-token"); if(!silent) renderSyncBody(); }
-    else setStatus("error");
-  }
-}
-async function cloudFindGist(){
-  if(cloud.gistId){ try{ await gh("/gists/"+cloud.gistId); return; }catch(e){ if(e.status===404) cloud.gistId=null; else throw e; } }
-  const list=await gh("/gists?per_page=100");
-  const found=(list||[]).find(g=> g.description===GIST_MARKER || (g.files && g.files[GIST_FILE]));
-  cloud.gistId=found?found.id:null;
-  if(cloud.gistId) localStorage.setItem("gh.gistId",cloud.gistId);
-}
-async function cloudReadRemote(){
-  if(!cloud.gistId) return null;
-  const g=await gh("/gists/"+cloud.gistId); const f=g.files&&g.files[GIST_FILE]; if(!f) return null;
-  let c=f.content; if(f.truncated&&f.raw_url){ c=await (await fetch(f.raw_url,{cache:"no-store"})).text(); }
-  try{ return JSON.parse(c); }catch(_){ return null; }
-}
-function migrateRemote(remote){          // accept new {plans,…} or a legacy single-plan gist blob
-  if(remote && Array.isArray(remote.plans)) return remote;
-  if(remote && remote.plan) return { plans:[remote], updatedAt:remote.updatedAt||0 };
-  return { plans:[], updatedAt:0 };
-}
-function adoptRemote(remote){
-  remote = migrateRemote(remote);
-  state.plans = (remote.plans||[]).map(normalizeRec);
-  state.updatedAt = remote.updatedAt||0;
-  if(Array.isArray(remote.hrZones)&&remote.hrZones.length===5) state.hrZones=remote.hrZones;
-  if(Array.isArray(remote.paceZones)&&remote.paceZones.length===5) state.paceZones=remote.paceZones;
-  if(remote.strengthLog && typeof remote.strengthLog==="object") state.strengthLog=remote.strengthLog;
-  if(Array.isArray(remote.strengthDays)) state.strengthDays=remote.strengthDays.map(normStrengthDay);
-  if(remote.wstrength && typeof remote.wstrength==="object") state.wstrength={ ticks: remote.wstrength.ticks||{}, tests: remote.wstrength.tests||{} };
-  if(remote.readiness && typeof remote.readiness==="object") state.readiness=remote.readiness;
-  if(Array.isArray(remote.races)) state.races=remote.races;
-  if(Array.isArray(remote.benchmarks)) state.benchmarks=remote.benchmarks;
-  state.coachProposal = (remote.coachProposal && typeof remote.coachProposal==="object") ? remote.coachProposal : null;  // coach suggestion written by the Worker
-  if(state.activeId && !state.plans.some(p=>p.id===state.activeId)) state.activeId=null;
-  if(state.activeId===null && state.plans.length===1) state.activeId=state.plans[0].id;
-  activateMirror(state); _lastDataSer=planSig(); writeLocal(); render();
-}
-async function cloudInitialSync(){
-  const remote=await cloudReadRemote();
-  if(!remote){ await cloudPushNow(); return; }                       // cloud empty → upload this device
-  const rT=remote.updatedAt||0, lT=state.updatedAt||0;
-  if(!state.touched || rT>lT){ adoptRemote(remote); return; }        // fresh device, or cloud newer → take cloud
-  if(lT>rT){
-    const useCloud=confirm("The cloud already has a saved plan, and this device also has unsaved changes.\n\nOK = use the CLOUD copy here.\nCancel = upload THIS device's version (replaces cloud).");
-    if(useCloud) adoptRemote(remote); else await cloudPushNow();
-  }
-}
-async function cloudPull(){
-  if(!cloudOn()||cloud.busy) return; cloud.busy=true;
-  try{ if(!cloud.gistId) await cloudFindGist(); const remote=await cloudReadRemote();
-    if(remote && (remote.updatedAt||0)>(state.updatedAt||0)) adoptRemote(remote);
-    if(cloud.status==="error"||cloud.status==="checking") setStatus("synced");
-  }catch(e){}
-  finally{ cloud.busy=false; }
-}
-let _pushTimer=null;
-function cloudPush(){ if(!cloudOn()) return; if(_pushTimer) clearTimeout(_pushTimer); _pushTimer=setTimeout(cloudPushNow,1200); }
-async function cloudPushNow(){
-  _pushTimer=null; if(!cloudOn()) return;
-  syncActiveToLibrary();
-  const payload=JSON.stringify({ plans: state.plans, hrZones: state.hrZones, paceZones: state.paceZones, strengthLog: state.strengthLog, strengthDays: state.strengthDays, wstrength: state.wstrength, readiness: state.readiness, races: state.races||[], benchmarks: state.benchmarks||[], coachProposal: state.coachProposal||null, updatedAt: state.updatedAt });
-  const body=JSON.stringify({ description:GIST_MARKER, public:false, files:{ [GIST_FILE]:{ content:payload } } });
-  try{ setStatus("saving");
-    if(!cloud.gistId){ const g=await gh("/gists",{method:"POST",body}); cloud.gistId=g.id; localStorage.setItem("gh.gistId",g.id); }
-    else await gh("/gists/"+cloud.gistId,{method:"PATCH",body});
-    setStatus("synced");
-  }catch(e){ if(e.status===404){ cloud.gistId=null; try{localStorage.removeItem("gh.gistId");}catch(_){} return cloudPushNow(); } setStatus("error"); }
-}
-function cloudDisconnect(){
-  cloud.token=null; cloud.gistId=null; cloud.login=null; setStatus("off");
-  try{ localStorage.removeItem("gh.token"); localStorage.removeItem("gh.gistId"); localStorage.removeItem("gh.login"); }catch(_){}
-}
-
-/* ---- cloud UI ---- */
-function renderCloud(){
-  const b=$("#cloudBtn"); if(b){ const tick={synced:"✓",saving:"…",checking:"…",error:"!","bad-token":"!"}[cloud.status]||"";
-    b.innerHTML=ICO.cloud+(tick?`<span class="cb-tick">${tick}</span>`:""); b.dataset.state=cloud.status; b.classList.toggle("on", cloud.status==="synced"||cloud.status==="saving"); }
-  const sb=$("#syncBackdrop"); if(sb && sb.classList.contains("open")) renderSyncBody();
-}
-function renderSyncBody(){
-  const host=$("#syncBody"); if(!host) return;
-  if(cloudOn() && cloud.status!=="bad-token"){
-    const label={synced:"Synced",saving:"Saving…",checking:"Connecting…",error:"Can't reach GitHub right now"}[cloud.status]||"Connected";
-    host.innerHTML=`
-      <div class="donerow"><span class="cloud-pip ${cloud.status}"></span><div><b>${esc(label)}</b><div style="font-size:12px;color:var(--muted)">${cloud.login?("Signed in as "+esc(cloud.login)+" · "):""}private gist</div></div></div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin:0">Your plan & progress sync to a private GitHub gist. Open the app on your other device, connect with the <b>same token</b>, and they'll stay in step. Changes pull in when you switch back to the app.</p>
-      <div class="row"><button class="btn" id="syncNow">Sync now</button><button class="btn danger" id="syncOff">Disconnect this device</button></div>`;
-    $("#syncNow").onclick=async()=>{ await cloudPushNow(); await cloudPull(); };
-    $("#syncOff").onclick=()=>{ if(confirm("Stop syncing on this device? Your data stays here and in the gist — it just won't sync from this browser anymore.")) cloudDisconnect(); };
-  } else {
-    host.innerHTML=`
-      <p style="font-size:13px;color:var(--muted);line-height:1.55;margin:0">Sync your phone & laptop using your GitHub account — your data lives in a <b>private gist</b>, nothing public. The token is stored only in this browser.</p>
-      <ol>
-        <li>Create a token (it pre-selects the <b>gist</b> scope): <a href="https://github.com/settings/tokens/new?scopes=gist&description=Grisedale%20Tracker%20Sync" target="_blank" rel="noopener">github.com/settings/tokens</a> → <b>Generate token</b>.</li>
-        <li>Copy it (starts with <code>ghp_</code>) and paste it below.</li>
-        <li>Repeat on your other device with the <b>same token</b>.</li>
-      </ol>
-      ${cloud.status==="bad-token"?`<div style="color:#d9685f;font-size:12px">That token didn't work — it must be a <b>classic</b> token with the <b>gist</b> scope.</div>`:""}
-      <div class="field"><label>GitHub token</label><input id="syncToken" type="password" placeholder="ghp_…" autocomplete="off" spellcheck="false"></div>
-      <button class="btn primary" id="syncConnect">Connect & sync</button>`;
-    const go=()=>{ const t=$("#syncToken").value; if(t.trim()) cloudConnect(t); };
-    $("#syncConnect").onclick=go;
-    $("#syncToken").addEventListener("keydown",e=>{ if(e.key==="Enter") go(); });
-  }
-}
-function openSync(){ $("#syncBackdrop").classList.add("open"); renderSyncBody(); }
-function closeSync(){ $("#syncBackdrop").classList.remove("open"); }
-$("#cloudBtn").onclick=openSync;
-$("#syncClose").onclick=closeSync;
-$("#syncBackdrop").addEventListener("click",e=>{ if(e.target.id==="syncBackdrop") closeSync(); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSync(); });
-window.addEventListener("focus", ()=>cloudPull());
-window.addEventListener("pageshow", ()=>cloudPull());
-document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) cloudPull(); });
-setInterval(()=>{ if(cloudOn() && document.visibilityState==="visible") cloudPull(); }, 15000);  // poll so changes arrive without a focus event
-
 /* ---- Self-update: pull a newer deployed build so every device runs the same code (without it, a
        device on an old cached page can't read new fields like strengthDays and looks "out of sync"). ---- */
 const BUILD = (document.querySelector('meta[name="app-build"]')||{}).content || "";
@@ -7219,10 +6186,8 @@ let _updCheckedAt=0, _pendingReload=false;
 function reloadSafe(){
   if($("#sdPickBack")) return false;                                                   // strength picker open
   if($("#backdrop") && $("#backdrop").classList.contains("open")) return false;        // session modal open
-  if($("#syncBackdrop") && $("#syncBackdrop").classList.contains("open")) return false;// sync modal open
   const ae=document.activeElement;
   if(ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return false;                 // mid-typing
-  if(strava && strava.busy) return false;                                              // Strava sync running
   return true;
 }
 async function checkForUpdate(){
@@ -7240,167 +6205,12 @@ window.addEventListener("pageshow", checkForUpdate);
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) checkForUpdate(); });
 setInterval(()=>{ if(document.visibilityState==="visible") checkForUpdate(); }, 20000);
 
-/* ============================ STRAVA / COROS ACTIVITIES ============================ */
-const STRAVA_PROXY = "https://grisedale-strava.jack-mcatear.workers.dev";
-const strava = { refresh:null, name:null, busy:false };
-try{ strava.refresh=localStorage.getItem("strava.refresh")||null; strava.name=localStorage.getItem("strava.name")||null; }catch(_){}
-function stravaConnected(){ return !!strava.refresh; }
-function stravaSaveTokens(rt,name){ strava.refresh=rt; if(name) strava.name=name; try{ localStorage.setItem("strava.refresh",rt); if(name) localStorage.setItem("strava.name",name); }catch(_){} }
-function stravaConnect(){ location.href = STRAVA_PROXY+"/login?redirect="+encodeURIComponent(location.href.split('#')[0]); }
-function stravaDisconnect(){ strava.refresh=null; strava.name=null; try{ localStorage.removeItem("strava.refresh"); localStorage.removeItem("strava.name"); }catch(_){} alert("Strava disconnected on this device."); }
-// Capture the OAuth return (#strava=<refresh>&name=<n>) the Worker sends back.
-(function captureStrava(){
-  if(location.hash && location.hash.indexOf("strava=")>=0){
-    const h=new URLSearchParams(location.hash.slice(1)); const rt=h.get("strava"), nm=h.get("name");
-    if(rt){ stravaSaveTokens(rt, nm||""); history.replaceState(null,"",location.pathname+location.search);
-      setTimeout(()=>alert("Strava connected"+(nm?(" as "+nm):"")+".\n\nNow open ⋯ → \"Sync activities from Strava\" to pull your workouts onto matching days."), 350); }
-  }
-})();
-async function stravaSync(){
-  if(!stravaConnected()){ stravaConnect(); return; }
-  if(strava.busy) return; strava.busy=true;
-  try{
-    // pull from the week BEFORE the plan starts onward (captures pre-plan "Week 0" activities)
-    const after = Math.floor((d(planStartMonday()).getTime() - 7*86400000)/1000);
-    const res=await fetch(STRAVA_PROXY+"/activities",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, after})});
-    const data=await res.json();
-    if(data.error){ alert("Couldn't reach Strava ("+data.error+").\nIf you just changed the callback domain in Strava settings, give it a minute and retry."); return; }
-    if(data.refresh_token && data.refresh_token!==strava.refresh) stravaSaveTokens(data.refresh_token, strava.name);
-    const acts=mergeSplitActivities(data.activities||[]);
-    const m=matchActivities(acts);
-    const imp=m.imported||[];
-    // Compute time-in-zone from the HR stream using OUR zones (home-page thresholds), ignoring Strava's config.
-    // Recompute for: freshly imported activities + any logged activity whose stored buckets predate the current zones.
-    const ztNow=hrThresholds().join(",");
-    const zmap={}; imp.forEach(x=>{ const sids=x.sids||(x.sid!=null?[x.sid]:null); if(sids) zmap[x.id]={id:x.id, sids}; });
-    for(const id in state.log){ const lg=state.log[id]; if(!lg||lg.zt===ztNow) continue; const sids=lg.sids||(lg.sid!=null?[lg.sid]:null); if(sids) zmap[id]={id, sids}; }
-    const zlist=Object.values(zmap).slice(0,20);
-    if(zlist.length){
-      try{
-        const allIds=[...new Set(zlist.flatMap(x=>x.sids))].slice(0,30);
-        const zr=await fetch(STRAVA_PROXY+"/zones",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({refresh_token:strava.refresh, ids:allIds, thresholds:hrThresholds()})});
-        const zd=await zr.json();
-        if(zd && zd.zones){ zlist.forEach(x=>{
-          // sum zone buckets (and chain HR series) across all watch-restart parts of the session
-          let sum=null, series=[];
-          x.sids.forEach(s=>{ const arr=zd.zones[String(s)]; if(Array.isArray(arr)&&arr.length){ sum=sum||[0,0,0,0,0]; arr.slice(0,5).forEach((v,i)=>sum[i]+=v); }
-            const sr=zd.series&&zd.series[String(s)]; if(Array.isArray(sr)&&sr.length) series=series.concat(sr); });
-          if(sum){ const u={zones:sum, zt:ztNow}; if(series.length) u.hrSeries=series; state.log[x.id]=Object.assign({}, state.log[x.id]||{}, u); } }); }
-        if(zd && zd.refresh_token && zd.refresh_token!==strava.refresh) stravaSaveTokens(zd.refresh_token, strava.name);
-      }catch(_){}
-    }
-    if(m.matched||m.added||m.updated||zlist.length){ save(); render(); }
-    const withHr=acts.filter(a=>a.hr!=null).length;
-    const bits=[`${m.matched} matched`,`${m.added} added`]; if(m.updated) bits.push(`${m.updated} updated`);
-    alert(`Strava: pulled ${acts.length} activit${acts.length===1?"y":"ies"} (${withHr} with heart rate) · ${bits.join(" · ")}.`);
-  }catch(e){ alert("Strava sync failed — check your connection and try again."); }
-  finally{ strava.busy=false; }
-}
-// Watch stop/starts upload one session as several Strava files. Stitch them back together:
-// same day, same sport class, restarted within 45 min of the previous part ending = one session.
-function mergeSplitActivities(raw){
-  const sorted=(raw||[]).slice().sort((a,b)=> (a.start||"")<(b.start||"")? -1:1);
-  const out=[];
-  sorted.forEach(src=>{
-    const a=Object.assign({},src);
-    const cls=/ride|cycl|bike|virtual/i.test(a.type||"")?"bike":"run";
-    const startMs=new Date(a.start||0).getTime();
-    const endMs=startMs+((a.elapsed_time||a.moving_time||0)*1000);
-    const prev=out[out.length-1];
-    if(prev && prev._cls===cls && (prev.start||"").slice(0,10)===(a.start||"").slice(0,10)
-       && startMs>=prev._endMs-60000 && (startMs-prev._endMs)<=45*60000){
-      const t1=prev.moving_time||0, t2=a.moving_time||0;
-      if(prev.hr!=null && a.hr!=null && (t1+t2)>0) prev.hr=(prev.hr*t1+a.hr*t2)/(t1+t2); else prev.hr=prev.hr??a.hr;
-      if(a.maxhr!=null) prev.maxhr=Math.max(prev.maxhr||0, a.maxhr);
-      prev.distance=(prev.distance||0)+(a.distance||0);
-      prev.moving_time=t1+t2;
-      prev.elev=(prev.elev||0)+(a.elev||0);
-      prev._endMs=Math.max(prev._endMs, endMs);
-      (prev.sids=prev.sids||[prev.id]).push(a.id);
-      return;
-    }
-    a._cls=cls; a._endMs=endMs; out.push(a);
-  });
-  return out;
-}
-function matchActivities(acts){
-  if(!state.activeId || !acts.length) return {matched:0,added:0,updated:0,imported:[]};
-  pushUndo();
-  // map already-imported Strava id → session id (so re-sync UPDATES/backfills instead of duplicating);
-  // include every member id of previously stitched sessions
-  const bySid={};
-  (state.custom||[]).forEach(c=>{ if(c.sid!=null) bySid[String(c.sid)]=c.id; });
-  for(const id in state.log){ const lg=state.log[id]; if(!lg) continue;
-    if(lg.sid!=null) bySid[String(lg.sid)]=id;
-    (lg.sids||[]).forEach(s=>{ if(bySid[String(s)]==null) bySid[String(s)]=id; }); }
-  let matched=0, added=0, updated=0; const used=new Set(), imported=[];
-  acts.forEach(a=>{
-    const date=(a.start||"").slice(0,10); if(!date) return;
-    const isBike=a._cls==="bike" || /ride|cycl|bike|virtual/i.test(a.type||"");
-    const km  = a.distance ? Math.round(a.distance/100)/10 : null;
-    const min = a.moving_time ? Math.round(a.moving_time/60) : null;
-    const vert= a.elev!=null ? Math.round(a.elev) : null;
-    const hr  = a.hr!=null ? Math.round(a.hr) : null;
-    const poly= a.poly || null;                     // encoded route geometry for the trace map
-    const nm  = a.name || a.type || "Activity";
-    const memberIds=a.sids||[a.id];
-    // every session that previously claimed any part of this activity (a split import lands on several)
-    const owners=[...new Set(memberIds.map(s=>bySid[String(s)]).filter(x=>x!=null))]
-      .sort((x,y)=> (String(x).startsWith("sv")?1:0)-(String(y).startsWith("sv")?1:0));   // planned session beats an auto-import
-    if(owners.length){
-      const primary=owners[0];
-      const lg=state.log[primary]||{}; let ch=false;
-      if(a.sids){                                            // stitched → the primary carries the WHOLE session now
-        if(km!=null && lg.k!==km){ lg.k=km; ch=true; }
-        if(min!=null && lg.d!==min){ lg.d=min; ch=true; }
-        if(vert!=null && lg.v!==vert){ lg.v=vert; ch=true; }
-        if(hr!=null) lg.hr=hr;
-        lg.sids=memberIds; delete lg.zt;                     // force a zone re-fetch over all parts
-      }
-      if(lg.hr==null && hr!=null){ lg.hr=hr; ch=true; }
-      if(lg.sid==null) lg.sid=a.id;
-      state.log[primary]=lg;
-      owners.slice(1).forEach(oid=>{                         // absorb the spurious auto-imported duplicates
-        if(!String(oid).startsWith("sv")) return;            // never touch a planned session
-        state.custom=(state.custom||[]).filter(x=>x.id!==oid);
-        removeFromBoard(oid); delete state.done[oid]; delete state.log[oid];
-        ch=true;
-      });
-      if(!Array.isArray(lg.zones) || a.sids) imported.push({id:primary, sids:memberIds});
-      if(ch) updated++;
-      return;
-    }
-    const cands=(state.board[date]||[]).filter(id=>!used.has(id)).map(id=>({id,w:getWO(id)}))
-                  .filter(x=>x.w && x.w.t!=="Rest" && !state.done[x.id]);
-    const pref=cands.filter(x=> isBike ? x.w.t==="Bike" : x.w.t!=="Bike");
-    const pick=pref[0]||cands[0];
-    const stitched = a.sids ? ` (stitched from ${a.sids.length} watch files)` : "";
-    if(pick){                                                // fill a planned session
-      used.add(pick.id); state.done[pick.id]=true;
-      const prev=state.log[pick.id]||{};
-      state.log[pick.id]=Object.assign({}, prev, { k:km??prev.k, d:min??prev.d, v:vert??prev.v, hr:hr??prev.hr, poly:poly??prev.poly, sid:a.id,
-        c:(prev.c?prev.c+" · ":"")+"Strava: "+nm+stitched });
-      if(a.sids) state.log[pick.id].sids=memberIds;
-      imported.push({id:pick.id, sids:memberIds}); matched++;
-    } else {                                                 // no planned session that day → log it as a completed extra
-      const id="sv"+a.id;
-      const rec={ id, date, t:(isBike?"Bike":"Easy"), n:nm, d:min, k:km, v:vert, z:"—", note:"Imported from Strava."+stitched, sid:a.id };
-      (state.custom=state.custom||[]).push(rec);
-      (state.board[date]=state.board[date]||[]).push(id);
-      state.done[id]=true;
-      state.log[id]=Object.assign({}, hr!=null?{hr}:{}, poly?{poly}:{}, {sid:a.id}, a.sids?{sids:memberIds}:{});
-      imported.push({id, sids:memberIds}); added++;
-    }
-  });
-  return {matched,added,updated,imported};
-}
-
 /* ============================ GO ============================ */
 function setTopbarH(){ const tb=document.querySelector(".topbar"); document.documentElement.style.setProperty("--topbarH",((tb&&tb.offsetHeight)||60)+"px"); }
 window.addEventListener("resize", setTopbarH); setTimeout(setTopbarH,0); setTimeout(setTopbarH,600);
 let _rendered=false;
 function firstRender(){ if(_rendered) return; _rendered=true; render(); maybeAnimateView(); }
-hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); renderCloud(); if(cloudOn()) cloudConnect(cloud.token,{silent:true}); }).catch(firstRender);
+hydrate().then(()=>{ _lastDataSer=dataSig(); firstRender(); }).catch(firstRender);
 setTimeout(firstRender, 1200);   // safety: render even if the DB is slow/unavailable
 </script>
 <script>

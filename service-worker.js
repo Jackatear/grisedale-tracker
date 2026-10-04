@@ -1,8 +1,7 @@
 /* Grisedale Tracker service worker — makes the app installable + offline.
    Strategy: network-first for the page (fresh app when online, cached when offline),
-   cache-first for same-origin static assets. Cross-origin calls (GitHub gist, Strava
-   Worker) are never intercepted — they just need the network and fail gracefully offline. */
-const CACHE = 'grisedale-2026-06-09i';
+   cache-first for same-origin static assets. The app makes no other network calls. */
+const CACHE = 'grisedale-2026-06-10a';
 const SHELL = ['./', './index.html', './manifest.json', './icon.svg', './icon-maskable.svg', './fitness-engine.html'];
 
 self.addEventListener('install', e => {
@@ -27,7 +26,7 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== location.origin) return;   // leave gist/Strava/cross-origin alone
+  if (url.origin !== location.origin) return;   // leave cross-origin (fonts) alone
 
   if (req.mode === 'navigate') {
     e.respondWith(
